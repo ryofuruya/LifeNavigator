@@ -11,7 +11,7 @@
             <li><a href="{% url 'goals:goal_setting' %}">目標設定</a></li>
             <li><a href="{% url 'accountbook:accountbook_list' %}">家計簿</a></li>
             <li><a href="{% url 'calendars:calendar_view' %}">カレンダー</a></li>
-            <li><a href="{% url 'values:value-list' %}">価値観</a></li>
+            <li><a href="{% url 'values:value_list' %}">価値観</a></li>
             <li><a href="{% url 'memos:memo_list' %}">メモ</a></li>
             {% if request.user.is_authenticated %}
     <li><a href="{% url 'accounts:user_detail' request.user.pk %}">ユーザー情報</a></li>
