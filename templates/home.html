@@ -14,10 +14,11 @@
             <li><a href="{% url 'values:value_list' %}">価値観</a></li>
             <li><a href="{% url 'memos:memo_list' %}">メモ</a></li>
             {% if request.user.is_authenticated %}
-    <li><a href="{% url 'accounts:user_detail' request.user.pk %}">ユーザー情報</a></li>
-{% else %}
-    <li><a href="{% url 'login' %}">ログイン</a></li>
-{% endif %}
+            <li><a href="{% url 'accounts:user_detail' request.user.pk %}">ユーザー情報</a></li>
+            {% else %}
+            <li><a href="{% url 'accounts:login' %}">ログイン</a></li>
+            {% endif %}
+
 
             <li>
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
