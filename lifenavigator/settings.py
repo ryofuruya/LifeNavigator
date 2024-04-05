@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-!8hou#(i^+t5mz(ljyw3^n@zvbe&2=aksljoll2n8uff=4bz%_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ryofuruya.pythonanywhere.com']
+
 
 
 # Application definition
@@ -118,7 +119,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ja'
 
-TIME_ZONE = 'ASIA/TOKYO'
+TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
@@ -128,7 +129,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = '/home/ryofuruya/lifenavigator/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -150,6 +152,6 @@ EMAIL_HOST_PASSWORD = 'your-password'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-    # 他の静的ファイルディレクトリがあればここに追加
+
 ]
 
