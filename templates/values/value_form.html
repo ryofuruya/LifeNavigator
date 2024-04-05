@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>新しい価値観を追加</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">保存</button>
+    </form>
+    <a href="{% url 'values:value-list' %}" class="btn btn-secondary">戻る</a>
+</div>
+{% endblock %}

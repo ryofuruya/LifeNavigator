@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>支出一覧</h2>
+    
+        <h3>合計支出</h3>
+    <p>流動支出合計: {{ total_variable_expenses|intcomma }}円</p>
+    <p>固定支出合計: {{ total_fixed_expenses|intcomma }}円</p>
+    <p>全体の合計: {{ total_expenses|intcomma }}円</p>
+    
+    <a href="{% url 'accountbook:variable_expense_list' %}" class="btn btn-primary">流動支出</a>
+    <a href="{% url 'accountbook:monthly_fixed_expenses' %}" class="btn btn-primary">固定支出</a>
+    <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+</div>
+{% endblock %}
+
+

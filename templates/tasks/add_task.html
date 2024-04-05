@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add Daily Tasks</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+        {{ form }}
+    {% endfor %}
+    <button type="submit">Save Tasks</button>
+</form>
+<a href="{% url 'tasks:task_list' %}">Back to Task List</a>
+{% endblock %}

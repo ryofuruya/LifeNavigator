@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Profile</h2>
+    <form id="imageForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div id="dropArea" style="border: 2px dashed #ccc; width: 300px; height: 200px; text-align: center; line-height: 200px;">
+            Drag & Drop Images Here
+        </div>
+        <input type="file" id="imageInput" name="image" hidden>
+        <button type="submit">Upload Image</button>
+    </form>
+
+    <script>
+    document.getElementById('dropArea').addEventListener('dragover', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+    });
+
+    document.getElementById('dropArea').addEventListener('drop', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        document.getElementById('imageInput').files = files;
+    });
+
+    document.getElementById('imageForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        fetch('{% url 'upload_image' %}', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Image uploaded successfully');
+                location.reload();
+            } else {
+                alert('Upload failed');
+            }
+        });
+    });
+    </script>
+</div>
+{% endblock %}

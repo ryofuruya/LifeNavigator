@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>収入の集計結果</h2>
+
+    <h3>月別集計</h3>
+    <p>固定支出: {{ monthly_fixed_expenses }}</p>
+    <p>変動支出: {{ monthly_expenses }}</p>
+    <p>収入の合計: {{ total_income }}</p>
+    
+    <h3>年別集計</h3>
+    <p>今年の収入: {{ yearly_income }}</p>
+    <p>前年の収入: {{ previous_year_income }}</p>
+
+    <!-- Chart.js のグラフ描画用キャンバスを追加 -->
+    <canvas id="incomeChart" width="400" height="400"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('incomeChart').getContext('2d');
+        var incomeChart = new Chart(ctx, {
+            type: 'bar', // グラフの種類
+            data: {
+                labels: ['前月の収入', '今月の収入', '前年の収入', '今年の収入'], // ラベル
+                datasets: [{
+                    label: '収入',
+                    data: [
+                        {{ previous_month_income|default:"0" }},
+                        {{ monthly_income|default:"0" }},
+                        {{ previous_year_income|default:"0" }},
+                        {{ yearly_income|default:"0" }}
+                    ], // データ
+                    backgroundColor: [
+                        'rgba(255, 159, 64, 0.2)',
+                        'rgba(255, 205, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(54, 162, 235, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(255, 205, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(54, 162, 235, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+<a href="{% url 'accountbook:accountbook_list' %}">家計簿</a>
+<a href="{% url 'accountbook:income_list' %}">戻る</a>
+<a href="{% url 'home' %}">ホーム</a>
+{% endblock %}

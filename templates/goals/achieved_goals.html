@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>達成目標</h2>
+
+<ul>
+    {% for task in tasks %}
+    <li>{{ task.title }} - 完了日: {{ task.completed_at|date:"Y-m-d H:i" }}</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'goals:short_term_goals' %}">短期目標</a>
+<a href="{% url 'goals:medium_term_goals' %}">中期目標</a>
+<a href="{% url 'goals:long_term_goals' %}">長期目標</a>
+<a href="{% url 'goals:goal_setting' %}">戻る</a>
+<a href="{% url 'home' %}">ホーム</a>
+{% endblock %}

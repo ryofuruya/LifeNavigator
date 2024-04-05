@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task List</title>
+</head>
+<body>
+    <h2>Task List</h2>
+    <div>
+        <a href="{% url 'tasks:daily_tasks' %}">Daily</a>
+        <a href="{% url 'tasks:monthly_tasks' %}">Monthly</a>
+        <a href="{% url 'tasks:completed_tasks' %}">完了タスク</a>
+        <a href="{% url 'home' %}">戻る</a>
+    </div>
+</body>
+</html>

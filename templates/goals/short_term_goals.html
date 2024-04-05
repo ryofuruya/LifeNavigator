@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>短期目標</h2>
+
+<form method="post" action="{% url 'goals:task_complete' %}" id="task-complete-form">
+    {% csrf_token %}
+    <input type="hidden" name="redirect_page" value="short_term">
+    <ul class="no-bullets">
+        {% for task in tasks %}
+        <li>
+            <input type="checkbox" name="task_id" value="{{ task.id }}" class="task-checkbox"> <!-- 修正 -->
+            {{ task.title }} - {{ task.deadline }}
+            <a href="{% url 'goals:task_edit' task.id %}">編集</a>
+        </li>
+        {% endfor %}
+    </ul>
+</form>
+
+<a href="{% url 'goals:add_task_to_short_term_goal' %}">タスク追加</a>
+<a href="{% url 'goals:goal_setting' %}">戻る</a>
+<a href="{% url 'home' %}">ホーム</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.task-checkbox');
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            document.getElementById('task-complete-form').submit();
+        });
+    });
+});
+</script>
+
+{% endblock %}

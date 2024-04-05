@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ memo.title }}</h2>
+    <p>{{ memo.content }}</p>
+    <!-- 編集と削除のリンクを詳細ページに追加 -->
+    <a href="{% url 'memos:memo_edit' memo.id %}" class="btn btn-primary">編集</a>
+    <form action="{% url 'memos:memo_delete' memo.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</button>
+    </form>
+    <a href="{% url 'memos:memo_list' %}" class="btn btn-secondary">メモリストに戻る</a>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Bio:</strong> {{ user.userprofile.bio }}</p>
+    <p><strong>Website:</strong> <a href="{{ user.userprofile.website }}">{{ user.userprofile.website }}</a></p>
+    <p><strong>Phone:</strong> {{ user.userprofile.phone }}</p>
+    <img src="{{ user.userprofile.image.url }}" alt="Profile Image" height="100" width="100">
+    <br>
+    <a href="{% url 'edit_profile' %}">Edit Profile</a>
+</body>
+</html>

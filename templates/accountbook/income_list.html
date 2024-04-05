@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>当月の収入</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>カテゴリ</th>
+                <th>金額</th>
+                <th>説明</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for income in incomes %}
+            <tr>
+                <td class="editable date" data-id="{{ income.id }}" data-field="record_date" data-value="{{ income.record_date|date:"Y-m-d" }}">{{ income.record_date|date:"Y-m-d" }}</td>
+                <td class="editable" data-id="{{ income.id }}" data-field="category">{{ income.category }}</td>
+                <td class="editable amount" data-id="{{ income.id }}" data-field="amount">{{ income.amount|floatformat:"0"|intcomma }}円</td>
+                <td class="editable" data-id="{{ income.id }}" data-field="description">{{ income.description }}</td>
+                <td>
+                    <a href="{% url 'accountbook:delete_income' income.id %}" class="btn btn-danger">削除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>合計金額: {{ total_income|intcomma }}円</p>
+    <a href="{% url 'accountbook:add_income' %}" class="btn btn-primary">収入登録</a>
+    <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editableCells = document.querySelectorAll('.editable');
+
+    editableCells.forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
+
+            let input = document.createElement('input');
+            input.value = cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.dataset.value; // 数値のみを取得またはdata-valueの利用
+            input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
+            cell.innerHTML = ''; // セルをクリア
+            cell.appendChild(input); // input要素を追加
+            input.focus();
+
+            input.addEventListener('keydown', async function(e) {
+                if (e.key === 'Enter') {
+                    const newValue = input.value;
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (csrfToken) {
+                        headers['X-CSRFToken'] = csrfToken.value;
+                    }
+
+                    try {
+                        const response = await fetch('/accountbook/update_income/', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify({
+                                id: cell.dataset.id,
+                                field: cell.dataset.field,
+                                value: newValue
+                            })
+                        });
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : '');
+                        } else {
+                            cell.innerHTML = '更新エラー';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        cell.innerHTML = '通信エラー';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

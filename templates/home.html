@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome to LifeNavigator!</h1>
+    <p>This is the home page of the project.</p>
+    
+    <div>
+        <ul>
+            <li><a href="{% url 'tasks:task_list' %}">TaskList</a></li>
+            <li><a href="{% url 'goals:goal_setting' %}">目標設定</a></li>
+            <li><a href="{% url 'accountbook:accountbook_list' %}">家計簿</a></li>
+            <li><a href="{% url 'calendars:calendar_view' %}">カレンダー</a></li>
+            <li><a href="{% url 'values:value-list' %}">価値観</a></li>
+            <li><a href="{% url 'memos:memo_list' %}">メモ</a></li>
+            <li><a href="{% url 'accounts:user_detail' request.user.pk %}">ユーザー情報</a></li>
+            <li>
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; padding: 0; margin: 0; font: inherit; color: #007bff; cursor: pointer;">ログアウト</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

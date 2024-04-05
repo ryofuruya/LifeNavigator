@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>家計簿</h2>
+    <div>
+        <a href="{% url 'accountbook:income_list' %}" class="btn btn-primary">収入</a>
+        <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">支出</a>
+        <a href="{% url 'home' %}">ホーム</a>
+    </div>
+
+    <div class="mt-5">
+        <h3>集計結果</h3>
+        <p>収入合計: ¥{{ total_income }}</p>
+        <p>支出合計: ¥{{ total_expense }}</p>
+        <p>純収入: ¥{{ net_income }}</p>
+        <canvas id="myChart" width="400" height="400"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['収入', '支出', '純収入'],
+        datasets: [{
+            label: '金額',
+            data: [{{ total_income|default:"0" }}, {{ total_expense|default:"0" }}, {{ net_income|default:"0" }}],
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(255, 206, 86, 0.2)'
+            ],
+            borderColor: [
+                'rgba(75, 192, 192, 1)',
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 206, 86, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: { // ここを更新しました
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,4 @@
+.no-bullets {
+    list-style-type: none; /* リストアイテムの前の点を消す */
+    padding-left: 0; /* デフォルトのパディングを消す */
+}

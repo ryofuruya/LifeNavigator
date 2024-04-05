@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Goal Setting</title>
+</head>
+<body>
+    <h1>目標設定</h1>
+    <ul>
+        <li><a href="{% url 'goals:short_term_goals' %}">短期目標</a></li>
+        <li><a href="{% url 'goals:medium_term_goals' %}">中期目標</a></li>
+        <li><a href="{% url 'goals:long_term_goals' %}">長期目標</a></li>
+        <li><a href="{% url 'goals:achieved_goals' %}">達成目標</a></li>
+    </ul>
+    <a href="{% url 'home' %}">戻る</a>
+</body>
+</html>

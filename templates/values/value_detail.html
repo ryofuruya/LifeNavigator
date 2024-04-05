@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>{{ value.title }}</h2>
+    <p>{{ value.description }}</p>
+    <a href="{% url 'values:value-edit' value.id %}" class="btn btn-primary">編集</a>
+    <a href="{% url 'values:value-list' %}" class="btn btn-secondary">価値観リストに戻る</a>
+
+    <!-- 削除ボタンのフォーム -->
+    <form action="{% url 'values:value-delete' value.id %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</button>
+    </form>
+</div>
+{% endblock %}

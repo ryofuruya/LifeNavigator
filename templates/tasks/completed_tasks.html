@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Completed Tasks</h2>
+
+<form method="get">
+    {{ form.as_p }}
+    <button type="submit">検索</button>
+</form>
+
+{% if completed_tasks %}
+<ul>
+    {% for task in completed_tasks %}
+    <li>{{ task.title }} - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>完了したタスクはありません。</p>
+{% endif %}
+<a href="{% url 'tasks:task_list' %}" class="btn btn-secondary">戻る</a>
+<a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+{% endblock %}

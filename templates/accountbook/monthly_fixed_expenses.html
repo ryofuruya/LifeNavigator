@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>当月の固定支出</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>カテゴリ</th>
+                <th>金額</th>
+                <th>説明</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in expenses %}
+            <tr>
+                <td class="editable date" data-id="{{expense.id }}" data-field="record_date" data-value="{{ expense.record_date|date:"Y-m-d" }}">{{ expense.record_date|date:"Y-m-d" }}</td>
+                <td class="editable" data-id="{{expense.id }}" data-field="category">{{ expense.category }}</td>
+                <td class="editable amount" data-id="{{ expense.id }}" data-field="amount">{{ expense.amount|floatformat:"0"|intcomma }}円</td>
+                <td class="editable" data-id="{{ expense.id }}" data-field="description">{{ expense.description }}</td>
+                <td>
+                    <a href="{% url 'accountbook:delete_fixed_expense' expense.id %}" class="btn btn-danger">削除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p>合計: ¥{{ total_expenses|intcomma }}</p>
+    <a href="{% url 'accountbook:add_fixed_expense' %}" class="btn btn-primary">固定支出追加</a>
+    <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editableCells = document.querySelectorAll('.editable');
+
+    editableCells.forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
+
+            let input = document.createElement('input');
+            input.value = cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.dataset.value; // 数値のみを取得またはdata-valueの利用
+            input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
+            cell.innerHTML = ''; // セルをクリア
+            cell.appendChild(input); // input要素を追加
+            input.focus();
+
+            input.addEventListener('keydown', async function(e) {
+                if (e.key === 'Enter') {
+                    const newValue = input.type === 'date' ? input.value : input.value.replace(/[^\d]/g, '');
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (csrfToken) {
+                        headers['X-CSRFToken'] = csrfToken.value;
+                    }
+
+                    try {
+                        const response = await fetch('/accountbook/update_fixed_expense/', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify({
+                                id: cell.dataset.id,
+                                field: cell.dataset.field,
+                                value: newValue
+                            })
+                        });
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : '');
+                        } else {
+                            cell.innerHTML = '更新エラー';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        cell.innerHTML = '通信エラー';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

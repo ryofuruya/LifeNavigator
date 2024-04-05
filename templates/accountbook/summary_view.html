@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>集計結果</h2>
+    <h3>月別集計</h3>
+    <p>固定支出: {{ monthly_fixed_expenses }}</p>
+    <p>流動支出: {{ monthly_expenses }}</p>
+    <p>前月比の固定支出変化: {{ monthly_fixed_expense_change }}</p>
+    <p>前月比の流動支出変化: {{ monthly_expense_change }}</p>
+    
+    <h3>年別集計</h3>
+    <p>固定支出: {{ yearly_fixed_expenses }}</p>
+    <p>流動支出: {{ yearly_expenses }}</p>
+    <p>前年比の固定支出変化: {{ yearly_fixed_expense_change }}</p>
+    <p>前年比の流動支出変化: {{ yearly_expense_change }}</p>
+
+    <!-- Chart.js のグラフ描画用キャンバスを追加 -->
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+    <!-- "AccountBook List"画面に戻るボタンを追加 -->
+    <a href="{% url 'accountbook:variable_expense_list' %}">流動支出</a>
+    <a href="{% url 'accountbook:monthly_fixed_expenses' %}">固定支出</a>
+    <a href="{% url 'accountbook:accountbook_list' %}">戻る</a>
+    <a href="{% url 'accountbook:accountbook_list' %}">家計簿</a>
+    <a href="{% url 'home' %}">ホーム</a>
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+var ctx = document.getElementById('myChart').getContext('2d'); // IDを 'myChart' に修正
+var expensesChart = new Chart(ctx, {
+    type: 'bar', // グラフの種類
+    data: {
+        labels: ['固定支出', '変動支出'], // ラベル
+        datasets: [{
+            label: '月別支出',
+            data: [{{ monthly_fixed_expenses.total|default_if_none:"0" }}, {{ monthly_expenses.total|default_if_none:"0" }}], // データ
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

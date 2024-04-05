@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>価値観</h2>
+    <a href="{% url 'values:value-add' %}" class="btn btn-primary">価値観の追加</a>
+    <ul>
+        {% for value in values %}
+            <li><a href="{% url 'values:value-detail' value.id %}">{{ value.title }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
+</div>
+{% endblock %}

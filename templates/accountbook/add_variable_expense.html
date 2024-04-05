@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>変動費登録</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">登録</button>
+        <!-- 戻るボタンの追加 -->
+        <a href="{% url 'accountbook:variable_expense_list' %}" class="btn btn-secondary">戻る</a>
+        <a href="{% url 'home' %}">ホーム</a>
+    </form>
+</div>
+{% endblock %}

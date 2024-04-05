@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LifeNavigator{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        {% if user.is_authenticated %}
+        <div class="navbar">
+            <ul class="navbar-nav ml-auto">
+                </li>
+            </ul>
+        </div>
+        {% endif %}
+        {% block content %}
+        <!-- コンテンツはここに挿入されます -->
+        {% endblock %}
+    </div>
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

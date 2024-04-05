@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>当月の変動費</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>カテゴリ</th>
+                <th>金額</th>
+                <th>説明</th>
+                <th>操作</th> <!-- 操作列のヘッダを追加 -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for expense in variable_expenses %}
+            <tr>
+                <td class="editable date" data-id="{{ expense.id }}" data-field="payment_date" data-value="{{ expense.payment_date|date:"Y-m-d" }}">{{ expense.payment_date|date:"Y-m-d" }}</td>
+                <td class="editable" data-id="{{ expense.id }}" data-field="category">{{ expense.category }}</td>
+                <td class="editable amount" data-id="{{ expense.id }}" data-field="amount">{{ expense.amount|floatformat:"0"|intcomma }}円</td>
+                <td class="editable" data-id="{{ expense.id }}" data-field="description">{{ expense.description }}</td>
+                <td>
+                    <!-- 削除ボタンを追加 -->
+                    <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <p>合計金額: ¥{{ total_variable_expense|intcomma }}</p>
+    
+    <a href="{% url 'accountbook:add_variable_expense' %}" class="btn btn-primary">変動費登録</a>
+    <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editableCells = document.querySelectorAll('.editable');
+
+    editableCells.forEach(cell => {
+        cell.addEventListener('click', function(e) {
+            if (cell.querySelector('input')) return; // If there's already an input, do nothing
+
+            let input = document.createElement('input');
+            // 数値フォーマットの処理を削除し、カテゴリのセルでinput.valueを直接使用
+            input.value = cell.dataset.value || cell.innerText; // Use data-value or innerText directly
+            input.type = cell.classList.contains('date') ? 'date' : 'text'; // Determine the type
+            cell.innerHTML = ''; // Clear the cell
+            cell.appendChild(input); // Add the input element
+            input.focus();
+
+            input.addEventListener('keydown', async function(e) {
+                if (e.key === 'Enter') {
+                    // Enterが押されたときの処理
+                    const newValue = input.value; // 数値フォーマットの適用を除外
+                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                    };
+                    if (csrfToken) {
+                        headers['X-CSRFToken'] = csrfToken.value;
+                    }
+
+                    try {
+                        const response = await fetch('/accountbook/update_variable_expense/', {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify({
+                                id: cell.dataset.id,
+                                field: cell.dataset.field,
+                                value: newValue
+                            })
+                        });
+                        const data = await response.json();
+                        if (data.status === 'success') {
+                            // 成功時の処理を更新
+                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : ''); // カテゴリの場合は単位を追加しない
+                        } else {
+                            cell.innerHTML = '更新エラー';
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        cell.innerHTML = '通信エラー';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

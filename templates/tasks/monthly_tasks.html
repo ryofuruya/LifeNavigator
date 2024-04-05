@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Monthly Tasks</h2>
+
+{% for task in tasks %}
+    <div class="task">
+        <p>Status: {{ task.get_status_display }} - Priority: {{ task.get_priority_display }} - Title: {{ task.title }}</p>
+        <a href="{% url 'tasks:task_edit' task.id %}" class="btn btn-primary">編集</a>
+        <form action="{% url 'tasks:update_task_status' task.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">完了にする</button>
+        </form>
+    </div>
+{% endfor %}
+
+<a href="{% url 'tasks:add_monthly_task' %}" class="btn btn-primary">タスク追加</a>
+<a href="{% url 'calendars:calendar_view' %}" class="btn btn-secondary">カレンダーへ</a>
+<a href="{% url 'tasks:task_list' %}" class="btn btn-info">戻る</a>
+<a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+{% endblock %}

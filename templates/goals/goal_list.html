@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>My Goals</h2>
+<ul class="list-group">
+    {% for goal in goals %}
+        <li class="list-group-item">
+            {{ goal.title }} - {{ goal.description }}
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: {{ goal.achievement_percentage }}%;" aria-valuenow="{{ goal.achievement_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ goal.achievement_percentage }}%</div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'goals:goal_add' %}" class="btn btn-primary">Add New Goal</a>
+{% endblock %}

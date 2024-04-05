@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Daily</h2> <!-- "Daily" タイトルを追加 -->
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    {% for form in formset %}
+        <div class="task">
+            {{ form.id }}
+            {{ form.status }} {{ form.priority }} {{ form.title }}
+            <button formaction="{% url 'tasks:update_task_status' form.instance.id %}" formmethod="post">完了にする</button>
+        </div>
+    {% endfor %}
+</form>
+<a href="{% url 'tasks:add_daily_task' %}">タスク追加</a>
+<a href="{% url 'tasks:task_list' %}">戻る</a>
+<a href="{% url 'home' %}">ホーム</a>
+{% endblock %}

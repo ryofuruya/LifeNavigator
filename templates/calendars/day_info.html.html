@@ -1,0 +1,13 @@
+<!-- your_template.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>指定された日の情報</h2>
+    <!-- その日のイベントや情報を表示 -->
+    {% for event in events %}
+    <p>{{ event }}</p>
+    {% endfor %}
+</div>
+{% endblock %}
