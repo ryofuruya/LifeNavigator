@@ -22,11 +22,11 @@ class ValueUpdateView(UpdateView):
     model = Value
     form_class = ValueForm
     template_name = 'values/value_edit.html'
-    success_url = reverse_lazy('value-list')  # 編集成功後にリダイレクトするURL
+    success_url = reverse_lazy('valuelist')  # 編集成功後にリダイレクトするURL
     def get_success_url(self):
-        return reverse_lazy('values:value-list')
+        return reverse_lazy('values:value_list')
     
 class ValueDeleteView(DeleteView):
     model = Value
-    success_url = reverse_lazy('values:value-list')  # 削除後にリダイレクトするURL
+    success_url = reverse_lazy('values:value_list')  # 削除後にリダイレクトするURL
     template_name = 'values/value_confirm_delete.html'
