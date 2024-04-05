@@ -10,7 +10,6 @@ urlpatterns = [
     path('accountbook/', include('accountbook.urls', namespace='accountbook')),
     path('memos/', include('memos.urls', namespace='memos')),
     path('tasks/', include('tasks.urls')),
-    path('', include('accounts.urls')),
     path('', views.home, name='home'),
     path('about/', about, name='about'),
     path('accounts/', include(('accounts.urls', 'accounts'), namespace='accounts')),
