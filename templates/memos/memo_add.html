@@ -1,12 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <div class="container">
     <h2>メモ追加</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">追加</button>
+        <a href="{% url 'memos:memo_list' %}" class="btn btn-secondary">メモリストに戻る</a>
     </form>
 </div>
 {% endblock %}

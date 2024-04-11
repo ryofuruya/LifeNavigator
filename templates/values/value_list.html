@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <div class="container">
     <h2>価値観</h2>
     <a href="{% url 'values:value_add' %}" class="btn btn-primary">価値観の追加</a>

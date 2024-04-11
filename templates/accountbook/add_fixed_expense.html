@@ -1,12 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <div class="container">
     <h2>固定支出の追加</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">保存</button>
+        <a href="{% url 'accountbook:monthly_fixed_expenses' %}" class="btn btn-secondary">戻る</a>
+        <a href="{% url 'home' %}">ホーム</a>
     </form>
 </div>
 {% endblock %}

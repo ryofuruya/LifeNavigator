@@ -3,14 +3,47 @@
 {% load static %}
 
 {% block content %}
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
+<div class="container">
+    <h2>変動費登録</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">登録</button>
+        <!-- 戻るボタンの追加 -->
+        <a href="{% url 'accountbook:variable_expense_list' %}" class="btn btn-secondary">戻る</a>
+        <a href="{% url 'home' %}">ホーム</a>
+    </form>
+</div>
+{% endblock %}
+
 <div class="container">
     <h2>支出一覧</h2>
-    
+
         <h3>合計支出</h3>
     <p>流動支出合計: {{ total_variable_expenses|intcomma }}円</p>
     <p>固定支出合計: {{ total_fixed_expenses|intcomma }}円</p>
     <p>全体の合計: {{ total_expenses|intcomma }}円</p>
-    
+
     <a href="{% url 'accountbook:variable_expense_list' %}" class="btn btn-primary">流動支出</a>
     <a href="{% url 'accountbook:monthly_fixed_expenses' %}" class="btn btn-primary">固定支出</a>
     <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>

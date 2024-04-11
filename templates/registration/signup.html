@@ -1,10 +1,30 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<h2>Sign Up</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-</form>
+<style>
+    .center-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+    .center-form form {
+        margin: auto;
+        width: fit-content;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-align: center; /* ボタンを中央に寄せる */
+    }
+</style>
+
+<div class="center-form">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+</div>
 {% endblock %}

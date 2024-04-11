@@ -26,10 +26,7 @@ SECRET_KEY = 'django-insecure-!8hou#(i^+t5mz(ljyw3^n@zvbe&2=aksljoll2n8uff=4bz%_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# settings.py
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'ryofuruya.pythonanywhere.com']
-
+ALLOWED_HOSTS = ['ryofuruya.pythonanywhere.com']
 
 
 
@@ -93,10 +90,9 @@ WSGI_APPLICATION = 'lifenavigator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/yourusername/path/to/yourdatabase.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 
 # Password validation
@@ -141,6 +137,8 @@ STATIC_ROOT = '/home/ryofuruya/lifenavigator/static'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = 'login'
+
 # ログイン後のリダイレクト先
 LOGIN_REDIRECT_URL = 'home'
 
@@ -156,6 +154,5 @@ EMAIL_HOST_PASSWORD = 'your-password'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-
 ]
 

@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <h2>中期目標</h2>
 
 <form method="post" action="{% url 'goals:task_complete' %}" id="task-complete-form"> <!-- IDを追加 -->
@@ -12,7 +29,7 @@
             <input type="checkbox" name="task_id" value="{{ task.id }}" class="task-checkbox">
             {{ task.title }} - {{ task.deadline }}
             <!-- 編集リンク -->
-            <a href="{% url 'goals:task_edit' task.id %}">編集</a>
+            <a href="{% url 'goals:task_edit' task.id %}?next=goals:medium_term_goals">編集</a>
         </li>
         {% endfor %}
     </ul>

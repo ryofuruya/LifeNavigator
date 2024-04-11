@@ -5,6 +5,23 @@
     <title>Goal Setting</title>
 </head>
 <body>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
     <h1>目標設定</h1>
     <ul>
         <li><a href="{% url 'goals:short_term_goals' %}">短期目標</a></li>

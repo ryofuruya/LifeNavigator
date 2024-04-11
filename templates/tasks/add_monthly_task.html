@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+ <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <h2>Add Monthly Task</h2>
 <form method="post">
     {% csrf_token %}

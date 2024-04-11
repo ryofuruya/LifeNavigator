@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from accounts.models import UserProfile
 from .forms import ProfileForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
 
 @login_required
 def profile(request):
@@ -9,7 +11,12 @@ def profile(request):
     return render(request, 'registration/profile.html', {'profile': profile})
 
 def home(request):
-    return render(request, 'home.html')
+    if request.user.is_authenticated:
+        # ログインしている場合はホームページを表示
+        return render(request, 'home.html')
+    else:
+        # ログインしていない場合はサインアップページにリダイレクト
+        return redirect('accounts:signup')
 
 def about(request):
     return render(request, 'about.html')
@@ -30,10 +37,3 @@ def edit_profile(request):
         form = ProfileForm(instance=profile)
 
     return render(request, 'registration/edit_profile.html', {'form': form})
-
-@login_required
-def welcome(request):
-    # ログインしていなければログインページにリダイレクト
-    if not request.user.is_authenticated:
-        return redirect('login')
-    return render(request, 'welcome.html')

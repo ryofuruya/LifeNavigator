@@ -5,10 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.utils.timezone import localdate
 from django.forms import modelformset_factory
-from django.views.decorators.http import require_POST
-from django.http import HttpResponseRedirect
+from django.views.decorators.http import require_POST, require_http_methods
+from django.http import HttpResponseRedirect, JsonResponse
 import datetime
 from django.db.models import Q
+import json
+from django.views.decorators.csrf import csrf_exempt
 
 @login_required
 def task_list(request):
@@ -79,27 +81,28 @@ def add_monthly_task(request):
 
 @login_required
 def monthly_tasks(request):
-    today = timezone.now()
-    year = today.year
-    month = today.month
-    tasks = Task.objects.filter(
-        user=request.user,
-        deadline__year=year,
-        deadline__month=month,
-        status='in_progress',
-        task_type='monthly'
-    ).order_by('priority')
-    return render(request, 'tasks/monthly_tasks.html', {'tasks': tasks})
+    if request.method == 'POST':
+        formset = TaskFormSet(queryset=Task.objects.filter(user=request.user, deadline=localdate(), status='in_progress', task_type='daily').order_by('priority'))
+        if formset.is_valid():
+            formset.save()
+            return redirect('tasks:monthly_tasks')
+    else:
+        formset = TaskFormSet(queryset=Task.objects.filter(user=request.user, deadline=localdate(), status='in_progress').order_by('priority'))
+    return render(request, 'tasks/monthly_tasks.html', {'formset': formset})
 
-@require_POST
+
+@require_http_methods(["POST"])
 @login_required
-def update_task_status(request, task_id):
-    task = get_object_or_404(Task, pk=task_id, user=request.user)
-    if task.status != 'completed':  # タスクがまだ完了していない場合のみ更新
-        task.status = 'completed'
-        task.completed_at = timezone.now()  # 完了日時を現在の日時で更新
+def update_task(request, task_id):
+    try:
+        data = json.loads(request.body)
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        task.title = data.get('title', task.title)  # タイトルが提供されていない場合は既存の値を保持
+        # 他のフィールドも必要に応じて更新
         task.save()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 @login_required
 def completed_tasks(request):
@@ -119,3 +122,11 @@ def completed_tasks(request):
 
     completed_tasks = completed_tasks_query.order_by('-completed_at')
     return render(request, 'tasks/completed_tasks.html', {'completed_tasks': completed_tasks, 'form': form})
+
+@require_POST
+@login_required
+def update_task_status(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    task.status = 'completed'  # 例: ステータスを'completed'に更新
+    task.save()
+    return redirect('tasks:daily_tasks')  # 更新後は適切なページにリダイレクト

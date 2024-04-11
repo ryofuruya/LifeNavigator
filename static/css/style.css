@@ -1,4 +1,14 @@
 .no-bullets {
-    list-style-type: none; /* リストアイテムの前の点を消す */
-    padding-left: 0; /* デフォルトのパディングを消す */
+    list-style-type: none; /* リストの点を消す */
+    padding: 0; /* デフォルトのパディングをリセット */
+    width: 100%; /* リストの幅を指定 */
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%; /* コンテナの幅を指定 */
 }

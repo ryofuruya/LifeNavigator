@@ -13,5 +13,6 @@ urlpatterns = [
     path('add/monthly/', views.add_monthly_task, name='add_monthly_task'),
     path('task/<int:task_id>/update_status/', views.update_task_status, name='update_task_status'),
     path('completed/', views.completed_tasks, name='completed_tasks'),
+    path('task/<int:task_id>/update/', views.update_task, name='update_task'),
 ]
 

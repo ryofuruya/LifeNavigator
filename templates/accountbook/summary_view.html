@@ -1,6 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <div class="container">
     <h2>集計結果</h2>
     <h3>月別集計</h3>
@@ -8,7 +25,7 @@
     <p>流動支出: {{ monthly_expenses }}</p>
     <p>前月比の固定支出変化: {{ monthly_fixed_expense_change }}</p>
     <p>前月比の流動支出変化: {{ monthly_expense_change }}</p>
-    
+
     <h3>年別集計</h3>
     <p>固定支出: {{ yearly_fixed_expenses }}</p>
     <p>流動支出: {{ yearly_expenses }}</p>

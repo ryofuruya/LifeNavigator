@@ -1,10 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+<style>
+    .center-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+    }
+    .center-form form {
+        margin: auto;
+        width: fit-content;
+        padding: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="center-form">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="next" value="{% url 'home' %}" />
+        <button type="submit">Login</button>
+    </form>
+</div>
 {% endblock %}

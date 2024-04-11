@@ -4,6 +4,23 @@
 {% load static %}
 
 {% block content %}
+<style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        div {
+            text-align: center;
+        }
+        div a {
+            display: inline-block;
+            margin: 0 10px;
+        }
+    </style>
 <div class="container">
     <h2>当月の変動費</h2>
     <table class="table">
@@ -31,9 +48,9 @@
             {% endfor %}
         </tbody>
     </table>
-    
+
     <p>合計金額: ¥{{ total_variable_expense|intcomma }}</p>
-    
+
     <a href="{% url 'accountbook:add_variable_expense' %}" class="btn btn-primary">変動費登録</a>
     <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">戻る</a>
     <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
