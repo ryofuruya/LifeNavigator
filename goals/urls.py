@@ -17,4 +17,5 @@ urlpatterns = [
     path('add_task_to_long_term_goal/', views.add_task_to_long_term_goal, name='add_task_to_long_term_goal'),
     path('task_edit/<int:task_id>/', views.task_edit, name='task_edit'),
     path('task_complete/', views.task_complete, name='task_complete'),
+    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
 ]

@@ -141,9 +141,11 @@ def add_fixed_expense(request):
         if form.is_valid():
             fixed_expense = form.save(commit=False)
             fixed_expense.user = request.user
-            fixed_expense.payment_date = timezone.now()  # 現在の日時を設定
             fixed_expense.save()
-            return redirect('accountbook:monthly_fixed_expenses')
+            return redirect('accountbook:monthly_fixed_expenses')  # 固定支出一覧にリダイレクト
+        else:
+            # フォームが無効の場合、エラーを表示
+            return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
     else:
         form = FixedExpenseForm()
     return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
@@ -155,11 +157,13 @@ def add_variable_expense(request):
         if form.is_valid():
             variable_expense = form.save(commit=False)
             variable_expense.user = request.user
-            variable_expense.payment_date = timezone.now()  # 現在の日時を設定
-            variable_expense.save()
-            return redirect('accountbook:variable_expense_list')
+            variable_expense.save()  # データをデータベースに保存
+            return redirect('accountbook:variable_expense_list')  # 変動費一覧にリダイレクト
+        else:
+            # フォームが無効の場合、エラーを含めてフォームを再表示
+            return render(request, 'accountbook/add_variable_expense.html', {'form': form})
     else:
-        form = VariableExpenseForm()
+        form = VariableExpenseForm()  # GETリクエストの場合、空のフォームを表示
     return render(request, 'accountbook/add_variable_expense.html', {'form': form})
 
 # 収入登録ビュー
@@ -171,7 +175,7 @@ def add_income(request):
             income = form.save(commit=False)
             income.user = request.user
             income.save()
-            return redirect('accountbook:accountbook_list')
+            return redirect('accountbook:income_list')
     else:
         form = AccountBookForm()
     return render(request, 'accountbook/add_income.html', {'form': form})
@@ -270,9 +274,18 @@ def current_month_fixed_expenses(request):
 @login_required
 def monthly_fixed_expenses(request):
     now = timezone.now()
-    expenses = FixedExpense.objects.filter(user=request.user, payment_date__year=now.year, payment_date__month=now.month)
-    total_expenses = expenses.aggregate(Sum('amount'))['amount__sum'] or 0
-    return render(request, 'accountbook/monthly_fixed_expenses.html', {'expenses': expenses, 'total_expenses': total_expenses})
+    current_month_start = timezone.datetime(now.year, now.month, 1)
+    current_month_end = timezone.datetime(now.year, now.month + 1, 1) - timezone.timedelta(seconds=1)
+
+    fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__range=(current_month_start, current_month_end))
+    total_expenses = fixed_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
+
+    context = {
+        'expenses': fixed_expenses,
+        'total_expenses': total_expenses,
+    }
+    return render(request, 'accountbook/monthly_fixed_expenses.html', context)
+
 
 @login_required
 def income_summary_view(request):

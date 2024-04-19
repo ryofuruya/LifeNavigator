@@ -2,30 +2,48 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    /* ページ全体のスタイリング */
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, div button {
+        display: inline-block;
+        margin: 10px;
+    }
+    .error-message {
+        color: red; /* エラーメッセージの表示スタイル */
+    }
+    input:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px 0 rgba(74, 144, 226, 0.5); /* フォーカス時のスタイル */
+    }
+</style>
 <div class="container">
     <h2>固定費登録</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.non_field_errors }}
+        <div>
+            <label for="amount">金額:</label>
+            <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
+            <span class="tooltip">金額を入力してください（整数のみ）</span> <!-- 金額入力の説明 -->
+        </div>
+        <div>
+            <label for="description">説明:</label>
+            <input type="text" id="description" name="description" required>
+            <span class="tooltip">支出の詳細を記述してください</span> <!-- 説明入力の説明 -->
+        </div>
         <button type="submit" class="btn btn-primary">登録</button>
-        <!-- 戻るボタンの追加 -->
-        <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a> <!-- 戻るボタン -->
+        <a href="{% url 'home' %}" class="btn btn-primary">Home</a> <!-- ホームへのリンク -->
     </form>
 </div>
 {% endblock %}

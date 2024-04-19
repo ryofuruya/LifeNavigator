@@ -6,14 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}LifeNavigator{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif; /* フォント適用 */
+        }
+    </style>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <div class="container mt-4">
         {% if user.is_authenticated %}
         <div class="navbar">
             <ul class="navbar-nav ml-auto">
-                </li>
             </ul>
         </div>
         {% endif %}
@@ -25,5 +31,4 @@
     {% endblock %}
     <script src="{% static 'js/tasks.js' %}"></script>
 </body>
-
 </html>

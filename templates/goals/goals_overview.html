@@ -19,16 +19,24 @@
         }
     </style>
     <meta charset="UTF-8">
+    <!-- ページのタイトルとして「Goals Overview」を設定し、ページの内容を示します -->
     <title>Goals Overview</title>
 </head>
 <body>
+    <!-- ページの主要タイトルとして「目標設定」を表示し、ページの主目的を説明 -->
     <h1>目標設定</h1>
+    <!-- 目標カテゴリへのリンクをリスト形式で提供 -->
     <ul>
-        <li><a href="{% url 'goals:short_term_goals' %}">短期目標</a></li>
-        <li><a href="{% url 'goals:medium_term_goals' %}">中期目標</a></li>
-        <li><a href="{% url 'goals:long_term_goals' %}">長期目標</a></li>
-        <li><a href="{% url 'goals:achieved_goals' %}">達成目標</a></li>
+        <!-- 短期目標ページへのリンク -->
+        <li><a href="{% url 'goals:short_term_goals' %}" class="btn btn-primary">短期目標</a></li>
+        <!-- 中期目標ページへのリンク -->
+        <li><a href="{% url 'goals:medium_term_goals' %}" class="btn btn-primary">中期目標</a></li>
+        <!-- 長期目標ページへのリンク -->
+        <li><a href="{% url 'goals:long_term_goals' %}" class="btn btn-primary">長期目標</a></li>
+        <!-- 達成目標ページへのリンク -->
+        <li><a href="{% url 'goals:achieved_goals' %}" class="btn btn-primary">達成目標</a></li>
     </ul>
-    <a href="{% url 'home' %}">戻る</a>
+    <!-- ホームページへのリンク、ユーザーがサイトのメインページに戻ることができる -->
+    <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
 </body>
 </html>

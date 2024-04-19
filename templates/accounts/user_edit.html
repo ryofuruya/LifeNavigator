@@ -2,30 +2,94 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        height: auto;
+        margin: 0;
+        padding-top: 20px;
+    }
+    div {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .btn-custom {
+        background-color: #4CAF50;
+        color: white;
+        border: 1px solid #4CAF50;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+    .error-message {
+        color: red;
+    }
+    .alert {
+        color: red;
+        font-size: 14px;
+        padding: 10px;
+        margin: 10px 0;
+    }
+</style>
 <div class="container">
     <h1>プロファイル編集</h1>
-    <form method="post">
+    <form method="post" action="{% url 'accounts:user_edit' user.id %}">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">更新</button>
+        {{ form.non_field_errors }}
+
+        <div>
+            {{ form.first_name.label_tag }} {{ form.first_name }}
+            {% for error in form.first_name.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.last_name.label_tag }} {{ form.last_name }}
+            {% for error in form.last_name.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <label for="id_new_password1">新しいパスワード:</label>
+            <input type="password" name="new_password1" id="id_new_password1">
+            {% for error in form.new_password1.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            <label for="id_new_password2">新しいパスワード（確認）:</label>
+            <input type="password" name="new_password2" id="id_new_password2">
+            {% for error in form.new_password2.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        {% for field in form %}
+            {% if field.name not in ['first_name', 'last_name', 'new_password1', 'new_password2'] %}
+                <div>
+                    {{ field.label_tag }} {{ field }}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        <button type="submit" class="btn-custom">更新</button>
     </form>
-    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
-    <a href="{% url 'accounts:user_detail' user.id %}" class="btn btn-info">戻る</a>
+    <a href="{% url 'home' %}" class="btn-custom">ホーム</a>
+    <a href="{% url 'accounts:user_detail' user.id %}" class="btn-custom">戻る</a>
 </div>
 {% endblock %}

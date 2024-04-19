@@ -1,26 +1,74 @@
 {% extends 'base.html' %}
-
-{% load humanize %}
-{% load static %}
+{% load humanize %} 
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, div button {
+        display: inline-block;
+        margin: 10px;
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* Green background */
+        color: white;
+        border: 1px solid #4CAF50; /* Green border */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* Green text on hover */
+        border: 1px solid #4CAF50;
+    }
+    .btn-detail {
+        background-color: #3498db; /* Blue background */
+        color: white;
+        border: 1px solid #3498db; /* Blue border */
+    }
+    .btn-detail:hover {
+        background-color: white;
+        color: #3498db; /* Blue text on hover */
+        border: 1px solid #3498db;
+    }
+    input[type="number"], input[type="text"] {
+        width: 200px;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
     <h2>当月の変動費</h2>
     <table class="table">
@@ -30,33 +78,29 @@
                 <th>カテゴリ</th>
                 <th>金額</th>
                 <th>説明</th>
-                <th>操作</th> <!-- 操作列のヘッダを追加 -->
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             {% for expense in variable_expenses %}
             <tr>
-                <td class="editable date" data-id="{{ expense.id }}" data-field="payment_date" data-value="{{ expense.payment_date|date:"Y-m-d" }}">{{ expense.payment_date|date:"Y-m-d" }}</td>
+                <td class="editable date" data-id="{{ expense.id }}" data-field="payment_date">{{ expense.payment_date|date:"Y-m-d" }}</td>
                 <td class="editable" data-id="{{ expense.id }}" data-field="category">{{ expense.category }}</td>
                 <td class="editable amount" data-id="{{ expense.id }}" data-field="amount">{{ expense.amount|floatformat:"0"|intcomma }}円</td>
                 <td class="editable" data-id="{{ expense.id }}" data-field="description">{{ expense.description }}</td>
                 <td>
-                    <!-- 削除ボタンを追加 -->
-                    <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</a>
+                    <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn-custom">削除</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
     <p>合計金額: ¥{{ total_variable_expense|intcomma }}</p>
-
-    <a href="{% url 'accountbook:add_variable_expense' %}" class="btn btn-primary">変動費登録</a>
-    <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">戻る</a>
-    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+    <a href="{% url 'accountbook:add_variable_expense' %}" class="btn-custom">変動費登録</a>
+    <a href="{% url 'accountbook:expense_list' %}" class="btn-detail">戻る</a>
+    <a href="{% url 'home' %}" class="btn-custom">Home</a>
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -64,20 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     editableCells.forEach(cell => {
         cell.addEventListener('click', function(e) {
-            if (cell.querySelector('input')) return; // If there's already an input, do nothing
+            if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
 
             let input = document.createElement('input');
-            // 数値フォーマットの処理を削除し、カテゴリのセルでinput.valueを直接使用
-            input.value = cell.dataset.value || cell.innerText; // Use data-value or innerText directly
-            input.type = cell.classList.contains('date') ? 'date' : 'text'; // Determine the type
-            cell.innerHTML = ''; // Clear the cell
-            cell.appendChild(input); // Add the input element
+            input.value = (cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.innerText.trim());  // 直接innerTextから取得
+            input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
+            cell.innerHTML = ''; // セルをクリア
+            cell.appendChild(input); // input要素を追加
             input.focus();
 
             input.addEventListener('keydown', async function(e) {
                 if (e.key === 'Enter') {
-                    // Enterが押されたときの処理
-                    const newValue = input.value; // 数値フォーマットの適用を除外
+                    const newValue = input.value;
                     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
                     const headers = {
                         'Content-Type': 'application/json',
@@ -98,8 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         });
                         const data = await response.json();
                         if (data.status === 'success') {
-                            // 成功時の処理を更新
-                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : ''); // カテゴリの場合は単位を追加しない
+                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : '');
                         } else {
                             cell.innerHTML = '更新エラー';
                         }

@@ -10,10 +10,7 @@ def day_info(request, year, month, day):
     context = {
         'events': events,
     }
-    return render(request, 'day_info.html', context)  # 実際に存在するテンプレート名に置き換える
-
-
-
+    return render(request, 'calendars/day_info.html', context)  # 実際に存在するテンプレート名に置き換える
 
 def calendar_view(request):
     # ここにカレンダー表示に関するロジックを実装

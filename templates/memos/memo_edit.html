@@ -2,28 +2,63 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+        margin-bottom: 30px; /* 各divの下の余白を増やし、要素間を広げます */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+        padding: 10px 20px; /* 内部のパディングを調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 16px; /* フォントサイズの調整 */
+        border-radius: 5px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 10px; /* ボタン間のマージンを適用 */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
+    }
+    .error-message {
+        color: red; /* エラーメッセージを赤色で表示し、目立たせるスタイリング */
+    }
+</style>
 <div class="container">
+    <!-- ページのタイトルを表示し、現在の操作がメモの編集であることを明示 -->
     <h2>メモ編集</h2>
+    <!-- メモ編集用のフォーム。セキュリティのためのCSRFトークンが含まれています -->
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">更新</button>
+        <!-- フォーム全体に関連するエラーがあればここで表示されます -->
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div>
+                <!-- 各入力フィールドとそのラベル、ユーザーが入力しやすいように整理されて表示 -->
+                {{ field.label_tag }} {{ field }}
+                <!-- 入力エラーがあれば、各フィールドに対して赤色のエラーメッセージとして表示 -->
+                {% for error in field.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <!-- フォームを送信するためのボタン、変更を保存する操作を実行 -->
+        <button type="submit" class="btn-custom">更新</button>
     </form>
+    <!-- メモリストページへ戻るリンク、ユーザーがメモリストに戻ることができる -->
+    <a href="{% url 'memos:memo_list' %}" class="btn-custom">メモリストに戻る</a>
+    <!-- ホームページへのリンク、サイトのメインページに簡単に戻るための手段 -->
+    <a href="{% url 'home' %}" class="btn-custom">Home</a>
 </div>
 {% endblock %}

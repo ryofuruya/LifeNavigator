@@ -1,25 +1,74 @@
 {% extends 'base.html' %}
 {% load humanize %}
-{% load static %}
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    .btn-custom, .btn-detail {
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* Green background */
+        color: white;
+        border: 1px solid #4CAF50; /* Green border */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* Green text on hover */
+        border: 1px solid #4CAF50;
+    }
+    .btn-detail {
+        background-color: #3498db; /* Blue background */
+        color: white;
+        border: 1px solid #3498db; /* Blue border */
+    }
+    .btn-detail:hover {
+        background-color: white;
+        color: #3498db; /* Blue text on hover */
+        border: 1px solid #3498db;
+    }
+    input[type="number"], input[type="text"] {
+        width: 200px;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
     <h2>当月の固定支出</h2>
     <table class="table">
@@ -29,48 +78,46 @@
                 <th>カテゴリ</th>
                 <th>金額</th>
                 <th>説明</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
             {% for expense in expenses %}
             <tr>
-                <td class="editable date" data-id="{{expense.id }}" data-field="record_date" data-value="{{ expense.record_date|date:"Y-m-d" }}">{{ expense.record_date|date:"Y-m-d" }}</td>
-                <td class="editable" data-id="{{expense.id }}" data-field="category">{{ expense.category }}</td>
+                <td class="editable date" data-id="{{ expense.id }}" data-field="payment_date">{{ expense.payment_date|date:"Y-m-d" }}</td>
+                <td class="editable" data-id="{{ expense.id }}" data-field="category">{{ expense.category }}</td>
                 <td class="editable amount" data-id="{{ expense.id }}" data-field="amount">{{ expense.amount|floatformat:"0"|intcomma }}円</td>
                 <td class="editable" data-id="{{ expense.id }}" data-field="description">{{ expense.description }}</td>
                 <td>
-                    <a href="{% url 'accountbook:delete_fixed_expense' expense.id %}" class="btn btn-danger">削除</a>
+                    <a href="{% url 'accountbook:delete_fixed_expense' expense.id %}" class="btn-custom">削除</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <p>合計: ¥{{ total_expenses|intcomma }}</p>
-    <a href="{% url 'accountbook:add_fixed_expense' %}" class="btn btn-primary">固定支出追加</a>
-    <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">戻る</a>
-    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+    <p>合計: ¥{{ total_expenses|intcomma }}円</p>
+    <a href="{% url 'accountbook:add_fixed_expense' %}" class="btn-custom">固定支出追加</a>
+    <a href="{% url 'accountbook:expense_list' %}" class="btn-detail">戻る</a>
+    <a href="{% url 'home' %}" class="btn-custom">Home</a>
 </div>
 {% endblock %}
-
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const editableCells = document.querySelectorAll('.editable');
-
     editableCells.forEach(cell => {
         cell.addEventListener('click', function(e) {
-            if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
-
+            if (cell.querySelector('input')) return;
             let input = document.createElement('input');
-            input.value = cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.dataset.value; // 数値のみを取得またはdata-valueの利用
-            input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
-            cell.innerHTML = ''; // セルをクリア
-            cell.appendChild(input); // input要素を追加
+            input.value = cell.innerText.trim();  // 現在の値を取得
+            input.type = cell.classList.contains('date') ? 'date' : 'text';  // 日付かテキストか判断
+            cell.innerHTML = '';  // セルをクリア
+            cell.appendChild(input);  // input要素を追加
             input.focus();
 
             input.addEventListener('keydown', async function(e) {
                 if (e.key === 'Enter') {
-                    const newValue = input.type === 'date' ? input.value : input.value.replace(/[^\d]/g, '');
+                    const newValue = input.value;
                     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
                     const headers = {
                         'Content-Type': 'application/json',

@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-!8hou#(i^+t5mz(ljyw3^n@zvbe&2=aksljoll2n8uff=4bz%_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ryofuruya.pythonanywhere.com']
+# ALLOWED_HOSTS = ['ryofuruya.pythonanywhere.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 
@@ -51,6 +52,7 @@ INSTALLED_APPS = [
     'calendars',
     'values',
     'django.contrib.humanize',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

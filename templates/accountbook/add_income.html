@@ -2,30 +2,91 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        width: 300px; /* コンテナの幅を設定 */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    label {
+        display: block;
+        margin: 10px 0 5px;
+    }
+    input[type="number"], input[type="text"], input[type="date"] {
+        width: 100%; /* 入力フィールドをコンテナの幅いっぱいに展開 */
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
+        border-color: #4A90E2; /* フォーカス時に境界線の色を青に変更 */
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* フォーカス時に青色のシャドウを追加 */
+    }
+    .btn-custom, .btn-detail {
+        width: 100%; /* ボタンの幅を100%に設定して統一 */
+        padding: 10px; /* ボタンのパディングを調整 */
+        font-size: 16px; /* フォントサイズの統一 */
+        border-radius: 5px;
+        display: block; /* ボタンをブロックレベル要素にする */
+        text-align: center;
+        margin: 10px 0; /* 上下のマージンを10pxに設定 */
+        transition: background-color 0.3s, color 0.3s;
+        text-decoration: none;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50;
+    }
+    .btn-detail {
+        background-color: #3498db; /* 青色の背景 */
+        color: white;
+        border: 1px solid #3498db; /* 青色の境界線 */
+    }
+    .btn-detail:hover {
+        background-color: white;
+        color: #3498db; /* ホバー時のテキスト色を青に */
+        border: 1px solid #3498db;
+    }
+</style>
 <div class="container">
     <h2>収入登録</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">登録</button>
-        <!-- 戻るボタンの追加 -->
-        <a href="{% url 'accountbook:income_list' %}" class="btn btn-secondary">戻る</a>
+        <div>
+            <label for="record_date">日付:</label>
+            <input type="date" id="record_date" name="record_date" required>
+        </div>
+        <div>
+            <label for="category">カテゴリ:</label>
+            <input type="text" id="category" name="category" required>
+        </div>
+        <div>
+            <label for="amount">金額:</label>
+            <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
+        </div>
+        <div>
+            <label for="description">説明:</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+        <button type="submit" class="btn-custom">登録</button>
+        <a href="{% url 'accountbook:income_list' %}" class="btn-detail">戻る</a>
+        <a href="{% url 'home' %}" class="btn-custom">Home</a>
     </form>
 </div>
 {% endblock %}

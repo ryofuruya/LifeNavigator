@@ -2,41 +2,71 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
-<h2>短期目標</h2>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    .btn-custom, .btn-detail {
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50;
+    }
+    .btn-detail {
+        background-color: #3498db; /* 青色の背景 */
+        color: white;
+        border: 1px solid #3498db; /* 青色の境界線 */
+    }
+    .btn-detail:hover {
+        background-color: white;
+        color: #3498db; /* ホバー時のテキスト色を青に */
+        border: 1px solid #3498db;
+    }
+    ul.no-bullets {
+        list-style: none; /* リストマーカーを非表示にする */
+        padding: 0;
+    }
+</style>
 
+<h2>短期目標</h2>
 <form method="post" action="{% url 'goals:task_complete' %}" id="task-complete-form">
     {% csrf_token %}
     <input type="hidden" name="redirect_page" value="short_term">
     <ul class="no-bullets">
         {% for task in tasks %}
         <li>
-            <input type="checkbox" name="task_id" value="{{ task.id }}" class="task-checkbox"> <!-- 修正 -->
+            <input type="checkbox" name="task_id" value="{{ task.id }}" class="task-checkbox">
             {{ task.title }} - {{ task.deadline }}
-            <a href="{% url 'goals:task_edit' task.id %}?next=goals:short_term_goals">編集</a>
+            <a href="{% url 'goals:task_edit' task.id %}?next=goals:short_term_goals" class="btn-custom">編集</a>
+            <a href="{% url 'goals:task_detail' task.id %}" class="btn-detail">詳細</a>
         </li>
         {% endfor %}
     </ul>
 </form>
 
-<a href="{% url 'goals:add_task_to_short_term_goal' %}">タスク追加</a>
-<a href="{% url 'goals:goal_setting' %}">戻る</a>
-<a href="{% url 'home' %}">ホーム</a>
+<a href="{% url 'goals:add_task_to_short_term_goal' %}" class="btn-custom">タスク追加</a>
+<a href="{% url 'goals:goal_setting' %}" class="btn-custom">戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

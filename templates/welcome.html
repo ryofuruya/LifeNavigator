@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+    .container h1, .container a {
+        margin: 10px;
+    }
+</style>
+<div class="container">
+    <h1>Welcome to LifeNavigator</h1>
+    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
+    <a href="{% url 'signup' %}" class="btn btn-success">Sign Up</a>
+</div>
+{% endblock %}

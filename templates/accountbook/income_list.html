@@ -4,22 +4,62 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    .btn-custom, .btn-detail {
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50;
+    }
+    input[type="number"], input[type="text"] {
+        width: 200px;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
     <h2>当月の収入</h2>
     <table class="table">
@@ -34,21 +74,21 @@
         <tbody>
             {% for income in incomes %}
             <tr>
-                <td class="editable date" data-id="{{ income.id }}" data-field="record_date" data-value="{{ income.record_date|date:"Y-m-d" }}">{{ income.record_date|date:"Y-m-d" }}</td>
+                <td class="editable date" data-id="{{ income.id }}" data-field="record_date" data-value="{{ income.record_date|date:'Y-m-d' }}">{{ income.record_date|date:'Y-m-d' }}</td>
                 <td class="editable" data-id="{{ income.id }}" data-field="category">{{ income.category }}</td>
-                <td class="editable amount" data-id="{{ income.id }}" data-field="amount">{{ income.amount|floatformat:"0"|intcomma }}円</td>
+                <td class="editable amount" data-id="{{ income.id }}" data-field="amount">{{ income.amount|floatformat:'0'|intcomma }}円</td>
                 <td class="editable" data-id="{{ income.id }}" data-field="description">{{ income.description }}</td>
                 <td>
-                    <a href="{% url 'accountbook:delete_income' income.id %}" class="btn btn-danger">削除</a>
+                    <a href="{% url 'accountbook:delete_income' income.id %}" class="btn-custom">削除</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     <p>合計金額: {{ total_income|intcomma }}円</p>
-    <a href="{% url 'accountbook:add_income' %}" class="btn btn-primary">収入登録</a>
-    <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>
-    <a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+    <a href="{% url 'accountbook:add_income' %}" class="btn-custom">収入登録</a>
+    <a href="{% url 'accountbook:accountbook_list' %}" class="btn-custom">戻る</a>
+    <a href="{% url 'home' %}" class="btn-custom">Home</a>
 </div>
 {% endblock %}
 
@@ -62,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
 
             let input = document.createElement('input');
-            input.value = cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.dataset.value; // 数値のみを取得またはdata-valueの利用
+            input.value = (cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.innerText.trim());  // 直接innerTextから取得
             input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
             cell.innerHTML = ''; // セルをクリア
             cell.appendChild(input); // input要素を追加

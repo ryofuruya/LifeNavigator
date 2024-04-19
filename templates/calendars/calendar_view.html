@@ -2,28 +2,73 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+    }
+    .container {
+        text-align: center;
+        width: 80%; /* Adjust width as per your layout */
+        max-width: 600px; /* Maximum width */
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .calendar-table {
+        width: 100%; /* Match width to the container */
+        border-collapse: collapse;
+    }
+    .calendar-table th, .calendar-table td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #eee;
+        text-align: center;
+    }
+    .bg-info {
+        background-color: #007bff;
+        color: white;
+    }
+    button {
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    button:hover {
+        background-color: #005f80;
+    }
+    a {
+        display: inline-block;
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    a:hover {
+        background-color: #0056b3;
+    }
+</style>
+
 <div class="container">
     <h2 id="currentMonthAndYear"></h2>
     <button id="prevMonth">前月</button>
     <button id="nextMonth">次月</button>
-    <div id="calendar"></div>
-    <a href="{% url 'tasks:monthly_tasks' %}">Monthly</a>
+    <table id="calendar" class="calendar-table"></table>
+    <a href="{% url 'tasks:monthly_tasks' %}" class="btn btn-secondary">Monthly</a>
     <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
 </div>
 
@@ -44,30 +89,42 @@ document.addEventListener('DOMContentLoaded', function() {
         var firstDay = new Date(year, month).getDay();
         var daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        var tbl = document.getElementById("calendar");
-        tbl.innerHTML = "<table class='calendar-table'><tr><th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th></tr></table>";
+        var tbl = document.createElement("table");
+        tbl.className = "calendar-table";
+        var headRow = tbl.insertRow();
+        var daysOfWeek = ["日", "月", "火", "水", "木", "金", "土"];
+        daysOfWeek.forEach(function(day) {
+            var headerCell = document.createElement("th");
+            headerCell.textContent = day;
+            headRow.appendChild(headerCell);
+        });
 
         var date = 1;
         for (var i = 0; i < 6; i++) {
-            var row = document.createElement("tr");
+            var row = tbl.insertRow();
             for (var j = 0; j < 7; j++) {
+                var cell = row.insertCell();
                 if (i === 0 && j < firstDay) {
-                    var cell = document.createElement("td");
-                    row.appendChild(cell);
+                    continue;
                 } else if (date > daysInMonth) {
                     break;
                 } else {
-                    var cell = document.createElement("td");
-                    cell.innerText = date;
+                    cell.textContent = date;
                     if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
                         cell.classList.add("bg-info");
                     }
-                    row.appendChild(cell);
+                    cell.addEventListener('click', (function(year, month, day) {
+                        return function() {
+                            window.location.href = `/calendars/day-info/${year}/${month + 1}/${day}/`;
+                        }
+                    })(year, month, date));
                     date++;
                 }
             }
-            tbl.getElementsByTagName("table")[0].appendChild(row);
         }
+        var calendarDiv = document.getElementById("calendar");
+        calendarDiv.innerHTML = "";
+        calendarDiv.appendChild(tbl);
     }
 
     document.getElementById('prevMonth').addEventListener('click', function() {

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Arial', sans-serif;
+    }
+    .container {
+        text-align: center;
+        width: 80%;
+        max-width: 600px;
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+    .button {
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: #008CBA;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+    .button:hover {
+        background-color: #005f80;
+    }
+</style>
+<div class="container">
+    <h2>指定された日の情報</h2>
+    <!-- その日のイベントや情報をリスト表示 -->
+    {% if events %}
+        {% for event in events %}
+            <p>{{ event.title }} - {{ event.date }}: {{ event.description }}</p>
+        {% endfor %}
+    {% else %}
+        <p>この日に予定されているイベントはありません。</p>
+    {% endif %}
+    <a href="{% url 'home' %}" class="button">ホーム</a>
+    <a href="{% url 'tasks:monthly_tasks' %}" class="button">Monthly Tasks</a>
+    <a href="{% url 'calendars:calendar_view' %}" class="button">Back to Calendar</a>
+</div>
+{% endblock %}

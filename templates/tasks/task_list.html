@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Task List</title>
-     <style>
+    <!-- Bootstrap CSSの読み込み -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
         body {
             display: flex;
             flex-direction: column;
@@ -24,10 +26,11 @@
 <body>
     <h2>Task List</h2>
     <div>
-        <a href="{% url 'tasks:daily_tasks' %}">Daily</a>
-        <a href="{% url 'tasks:monthly_tasks' %}">Monthly</a>
-        <a href="{% url 'tasks:completed_tasks' %}">完了タスク</a>
-        <a href="{% url 'home' %}">戻る</a>
+        <!-- 各リンクにBootstrapのボタンスタイルを適用 -->
+        <a href="{% url 'tasks:daily_tasks' %}" class="btn btn-primary">Daily</a>
+        <a href="{% url 'tasks:monthly_tasks' %}" class="btn btn-primary">Monthly</a>
+        <a href="{% url 'tasks:completed_tasks' %}" class="btn btn-primary">完了タスク</a>
+        <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
     </div>
 </body>
 </html>

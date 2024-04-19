@@ -1,45 +1,71 @@
 {% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, div button {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    input[type="number"], input[type="text"] {
+        width: 200px;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
-    <h2>収入の集計結果</h2>
+    <h2>収入の集計結果</h2> <!-- ページの主要タイトル -->
 
     <h3>月別集計</h3>
-    <p>固定支出: {{ monthly_fixed_expenses }}</p>
-    <p>変動支出: {{ monthly_expenses }}</p>
-    <p>収入の合計: {{ total_income }}</p>
+    <p>固定支出: {{ monthly_fixed_expenses|intcomma }}円</p>
+    <p>変動支出: {{ monthly_expenses|intcomma }}円</p>
+    <p>収入の合計: {{ total_income|intcomma }}円</p>
 
     <h3>年別集計</h3>
-    <p>今年の収入: {{ yearly_income }}</p>
-    <p>前年の収入: {{ previous_year_income }}</p>
+    <p>今年の収入: {{ yearly_income|intcomma }}円</p>
+    <p>前年の収入: {{ previous_year_income|intcomma }}円</p>
 
-    <!-- Chart.js のグラフ描画用キャンバスを追加 -->
+    <!-- Chart.js を使用したグラフの描画 -->
     <canvas id="incomeChart" width="400" height="400"></canvas>
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         var ctx = document.getElementById('incomeChart').getContext('2d');
         var incomeChart = new Chart(ctx, {
-            type: 'bar', // グラフの種類
+            type: 'bar', // グラフの種類は棒グラフ
             data: {
-                labels: ['前月の収入', '今月の収入', '前年の収入', '今年の収入'], // ラベル
+                labels: ['前月の収入', '今月の収入', '前年の収入', '今年の収入'], // X軸のラベル
                 datasets: [{
                     label: '収入',
                     data: [
@@ -47,7 +73,7 @@
                         {{ monthly_income|default:"0" }},
                         {{ previous_year_income|default:"0" }},
                         {{ yearly_income|default:"0" }}
-                    ], // データ
+                    ], // データ点
                     backgroundColor: [
                         'rgba(255, 159, 64, 0.2)',
                         'rgba(255, 205, 86, 0.2)',
@@ -66,14 +92,16 @@
             options: {
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true // Y軸の開始点は0
                     }
                 }
             }
         });
     </script>
+
+    <!-- ナビゲーションリンク -->
+    <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">家計簿</a>
+    <a href="{% url 'accountbook:income_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
 </div>
-<a href="{% url 'accountbook:accountbook_list' %}">家計簿</a>
-<a href="{% url 'accountbook:income_list' %}">戻る</a>
-<a href="{% url 'home' %}">ホーム</a>
 {% endblock %}

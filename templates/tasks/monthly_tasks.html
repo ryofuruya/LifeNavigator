@@ -1,5 +1,4 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
 {% block content %}
 <style>
@@ -8,33 +7,53 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        height: 100vh; /* 画面全体の高さに合わせて中央配置します */
         margin: 0;
     }
-    div.task {
-        text-align: center;
-        margin-bottom: 10px;
+    ul {
+        list-style: none; /* リストマーカーを非表示にします */
+        padding: 0; /* リストのパディングをゼロに設定します */
     }
-    /* 他のCSSスタイル */
+    li {
+        margin: 10px 0; /* 各リストアイテムの上下のマージンを設定します */
+    }
+    .btn-custom {
+        background-color: #3498db; /* 青色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 2px solid #3498db; /* 青色の境界線 */
+        padding: 5px 10px; /* 内部のパディングを小さく調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 14px; /* フォントサイズを小さく調整 */
+        border-radius: 8px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 0 10px; /* ボタン間のマージンを適用 */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #3498db; /* ホバー時のテキスト色を青に */
+        border: 2px solid #3498db; /* ホバー時の境界線を保持 */
+    }
 </style>
 <h2>Monthly Tasks</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {{ formset.management_form }}
+<ul>
     {% for form in formset %}
-        <div class="task">
-            {{ form.id }}
-            {{ form.status }} {{ form.priority }} {{ form.title }}
-            <button formaction="{% url 'tasks:update_task_status' form.instance.id %}" formmethod="post">完了にする</button>
-        </div>
+    <li class="task">
+        {% if form.instance.status != "completed" %}
+            {{ form.instance.title }} - <strong>Priority:</strong> {{ form.instance.priority }}
+            <a href="{% url 'tasks:monthly_task_detail' form.instance.id %}" class="btn-custom">詳細</a>
+            <form action="{% url 'tasks:update_task_status' form.instance.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="completed">
+                <input type="hidden" name="redirect" value="stay">
+                <button type="submit" class="btn-custom">Complete</button>
+            </form>
+        {% endif %}
+    </li>
     {% endfor %}
-</form>
-
-<a href="{% url 'tasks:add_monthly_task' %}" class="btn btn-primary">タスク追加</a>
-<a href="{% url 'calendars:calendar_view' %}" class="btn btn-secondary">カレンダーへ</a>
-<a href="{% url 'tasks:task_list' %}" class="btn btn-info">戻る</a>
-<a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
-
-<script src="{% static 'js/tasks.js' %}"></script>
+</ul>
+<a href="{% url 'tasks:add_monthly_task' %}" class="btn-custom">Monthly Task追加</a>
+<a href="{% url 'calendars:calendar_view' %}" class="btn-custom">カレンダー</a>
+<a href="{% url 'tasks:task_list' %}" class="btn-custom">戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
 {% endblock %}

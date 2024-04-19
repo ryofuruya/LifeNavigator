@@ -1,51 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-    {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, div button {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
-    <h2>Edit Profile</h2>
+    <h1>ユーザープロファイル</h1>
+    <!-- ユーザープロファイル情報の表示 -->
+    <p><strong>ユーザー名:</strong> {{ user.username }}</p>
+    <p><strong>メール:</strong> {{ user.email }}</p>
+    <p><strong>自己紹介:</strong> {{ user.userprofile.bio }}</p>
+    <p><strong>ウェブサイト:</strong> <a href="{{ user.userprofile.website }}" class="btn btn-info">{{ user.userprofile.website }}</a></p>
+    <p><strong>電話番号:</strong> {{ user.userprofile.phone }}</p>
+    <!-- プロファイル画像の表示 -->
+    <img src="{{ user.userprofile.image.url }}" alt="プロファイル画像" height="100" width="100">
+    <br>
+    <!-- プロファイル編集ページへのリンク -->
+    <a href="{% url 'edit_profile' %}" class="btn btn-success">プロファイル編集</a>
+    <a href="{% url 'home' %}" class="btn btn-info">Home</a>
+
+    <!-- プロファイル画像のアップロードフォーム -->
+    <h2>プロファイル画像のアップロード</h2>
     <form id="imageForm" enctype="multipart/form-data">
         {% csrf_token %}
+        <!-- ドラッグ＆ドロップ可能エリア -->
         <div id="dropArea" style="border: 2px dashed #ccc; width: 300px; height: 200px; text-align: center; line-height: 200px;">
-            Drag & Drop Images Here
+            ここに画像をドラッグ＆ドロップ
         </div>
+        <!-- ファイル選択用の隠しinput -->
         <input type="file" id="imageInput" name="image" hidden>
-        <button type="submit">Upload Image</button>
+        <!-- 画像をアップロードするボタン -->
+        <button type="submit" class="btn btn-primary">画像をアップロード</button>
     </form>
+</div>
 
-    <script>
-    document.getElementById('dropArea').addEventListener('dragover', (event) => {
+<script>
+    // ドラッグ＆ドロップエリアの設定
+    document.getElementById('dropArea').addEventListener('dragover', function(event) {
         event.stopPropagation();
         event.preventDefault();
         event.dataTransfer.dropEffect = 'copy';
     });
 
-    document.getElementById('dropArea').addEventListener('drop', (event) => {
+    // ファイルがドロップされた時の処理
+    document.getElementById('dropArea').addEventListener('drop', function(event) {
         event.stopPropagation();
         event.preventDefault();
         const files = event.dataTransfer.files;
         document.getElementById('imageInput').files = files;
     });
 
-    document.getElementById('imageForm').addEventListener('submit', (event) => {
+    // フォームの送信時の処理
+    document.getElementById('imageForm').addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
         fetch('{% url 'upload_image' %}', {
@@ -55,31 +93,12 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Image uploaded successfully');
+                alert('画像が正常にアップロードされました');
                 location.reload();
             } else {
-                alert('Upload failed');
+                alert('アップロード失敗');
             }
         });
     });
-    </script>
-</div>
+</script>
 {% endblock %}
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-</head>
-<body>
-    <h1>User Profile</h1>
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <p><strong>Bio:</strong> {{ user.userprofile.bio }}</p>
-    <p><strong>Website:</strong> <a href="{{ user.userprofile.website }}">{{ user.userprofile.website }}</a></p>
-    <p><strong>Phone:</strong> {{ user.userprofile.phone }}</p>
-    <img src="{{ user.userprofile.image.url }}" alt="Profile Image" height="100" width="100">
-    <br>
-    <a href="{% url 'edit_profile' %}">Edit Profile</a>
-</body>
-</html>

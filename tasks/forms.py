@@ -5,9 +5,8 @@ from django.forms import modelformset_factory
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['status', 'priority', 'title']
+        fields = ['title', 'details', 'priority']
         widgets = {
-            'status': forms.Select(),
             'priority': forms.Select(),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
         }

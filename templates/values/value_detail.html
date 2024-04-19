@@ -2,32 +2,58 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .detail-container {
+        width: 80%; /* コンテナの幅を調整 */
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1); /* 影をつけて視覚的に分かりやすく */
+        text-align: left; /* テキストを左寄せに */
+        background: white; /* 背景色 */
+        border-radius: 8px; /* 角の丸み */
+        margin-top: 20px;
+    }
+    h2 {
+        text-align: center;
+    }
+    .detail-item {
+        margin-bottom: 10px; /* 各詳細項目の下マージン */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+</style>
 <div class="container">
-    <h2>{{ value.title }}</h2>
-    <p>{{ value.description }}</p>
-    <a href="{% url 'values:value_edit' value.id %}" class="btn btn-primary">編集</a>
-    <a href="{% url 'values:value_list' %}" class="btn btn-secondary">価値観リストに戻る</a>
+    <h2>{{ value.title }}</h2> <!-- 価値観のタイトルを表示 -->
+    <p>{{ value.description }}</p> <!-- 価値観の説明を表示 -->
+    <a href="{% url 'values:value_edit' value.id %}" class="btn-custom">編集</a> <!-- 価値観を編集するページへのリンク -->
+    <a href="{% url 'values:value_list' %}" class="btn-custom">価値観リストに戻る</a> <!-- 価値観リストページへ戻るリンク -->
+    <a href="{% url 'home' %}" class="btn-custom">Home</a> <!-- ホームページへのリンク -->
 
-    <!-- 削除ボタンのフォーム -->
+    <!-- 価値観を削除するためのフォーム -->
     <form action="{% url 'values:value_delete' value.id %}" method="post" style="display: inline;">
         {% csrf_token %}
-        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</button>
+        <button type="submit" class="btn-custom" onclick="return confirm('本当に削除しますか？');">削除</button>
     </form>
 </div>
 {% endblock %}

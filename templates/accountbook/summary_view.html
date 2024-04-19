@@ -1,77 +1,101 @@
 {% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, div button {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    input[type="number"], input[type="text"] {
+        width: 200px;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    input[type="number"]:focus, input[type="text"]:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    }
+    .tooltip {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: white;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+    }
+    input:hover + .tooltip {
+        visibility: visible;
+    }
+</style>
 <div class="container">
     <h2>集計結果</h2>
     <h3>月別集計</h3>
-    <p>固定支出: {{ monthly_fixed_expenses }}</p>
-    <p>流動支出: {{ monthly_expenses }}</p>
-    <p>前月比の固定支出変化: {{ monthly_fixed_expense_change }}</p>
-    <p>前月比の流動支出変化: {{ monthly_expense_change }}</p>
+    <p>固定支出: {{ monthly_fixed_expenses|intcomma }}円</p>
+    <p>流動支出: {{ monthly_expenses|intcomma }}円</p>
+    <p>前月比の固定支出変化: {{ monthly_fixed_expense_change|intcomma }}円</p>
+    <p>前月比の流動支出変化: {{ monthly_expense_change|intcomma }}円</p>
 
     <h3>年別集計</h3>
-    <p>固定支出: {{ yearly_fixed_expenses }}</p>
-    <p>流動支出: {{ yearly_expenses }}</p>
-    <p>前年比の固定支出変化: {{ yearly_fixed_expense_change }}</p>
-    <p>前年比の流動支出変化: {{ yearly_expense_change }}</p>
+    <p>固定支出: {{ yearly_fixed_expenses|intcomma }}円</p>
+    <p>流動支出: {{ yearly_expenses|intcomma }}円</p>
+    <p>前年比の固定支出変化: {{ yearly_fixed_expense_change|intcomma }}円</p>
+    <p>前年比の流動支出変化: {{ yearly_expense_change|intcomma }}円</p>
 
-    <!-- Chart.js のグラフ描画用キャンバスを追加 -->
+    <!-- Chart.js を使用したグラフの描画 -->
     <canvas id="myChart" width="400" height="400"></canvas>
 
-    <!-- "AccountBook List"画面に戻るボタンを追加 -->
-    <a href="{% url 'accountbook:variable_expense_list' %}">流動支出</a>
-    <a href="{% url 'accountbook:monthly_fixed_expenses' %}">固定支出</a>
-    <a href="{% url 'accountbook:accountbook_list' %}">戻る</a>
-    <a href="{% url 'accountbook:accountbook_list' %}">家計簿</a>
-    <a href="{% url 'home' %}">ホーム</a>
+    <!-- ナビゲーションリンク -->
+    <a href="{% url 'accountbook:variable_expense_list' %}" class="btn btn-primary">流動支出</a>
+    <a href="{% url 'accountbook:monthly_fixed_expenses' %}" class="btn btn-primary">固定支出</a>
+    <a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-secondary">戻る</a>
+    <a href="{% url 'home' %}" class="btn btn-info">Home</a>
 </div>
-
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-var ctx = document.getElementById('myChart').getContext('2d'); // IDを 'myChart' に修正
+var ctx = document.getElementById('myChart').getContext('2d');
 var expensesChart = new Chart(ctx, {
-    type: 'bar', // グラフの種類
+    type: 'bar', // グラフの種類は棒グラフ
     data: {
-        labels: ['固定支出', '変動支出'], // ラベル
+        labels: ['固定支出', '流動支出'], // X軸のラベル
         datasets: [{
-            label: '月別支出',
-            data: [{{ monthly_fixed_expenses.total|default_if_none:"0" }}, {{ monthly_expenses.total|default_if_none:"0" }}], // データ
+            label: '支出', // データセットのラベル
+            data: [{{ monthly_fixed_expenses|default:"0" }}, {{ monthly_expenses|default:"0" }}], // データポイント
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)'
+                'rgba(255, 99, 132, 0.2)', // 固定支出の背景色
+                'rgba(54, 162, 235, 0.2)'  // 流動支出の背景色
             ],
             borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)'
+                'rgba(255, 99, 132, 1)', // 固定支出の境界線色
+                'rgba(54, 162, 235, 1)'  // 流動支出の境界線色
             ],
-            borderWidth: 1
+            borderWidth: 1 // 境界線の幅
         }]
     },
     options: {
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true // Y軸の開始点を0から始める
             }
         }
     }

@@ -1,16 +1,28 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.utils import timezone
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tasks')
-    title = models.CharField(max_length=200)
+    STATUS_CHOICES = (
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('pending', 'Pending')
+    )
+    PRIORITY_CHOICES = (
+        ('high', 'High'),
+        ('medium', 'Medium'),
+        ('low', 'Low')
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    details = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True)
-    deadline = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=12, choices=[('in_progress', '進行中'), ('completed', '完了')], default='in_progress')
-    priority = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C')], default='B')
-    completed_at = models.DateTimeField(null=True, blank=True)  # 追加されたフィールド
-    task_type = models.CharField(max_length=10, choices=(('daily', 'Daily'), ('monthly', 'Monthly')), default='')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
+    priority = models.CharField(max_length=50, choices=PRIORITY_CHOICES, default='medium')
+    deadline = models.DateField()
+    completed_at = models.DateTimeField(null=True, blank=True)  # 完了日を保存
+    task_type = models.CharField(max_length=50)
 
     def __str__(self):
         return self.title

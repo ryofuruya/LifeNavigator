@@ -1,29 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
- <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
-<h2>Add Daily Task</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Add Task">
-</form>
-
-<a href="{% url 'tasks:daily_tasks' %}">戻る</a>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .centered-content {
+        text-align: center;
+        width: 100%;
+    }
+    .btn {
+        margin: 5px 10px; /* ボタンの間隔を調整 */
+    }
+    .form-group {
+        margin-bottom: 20px; /* フォームグループの下の間隔を調整 */
+    }
+</style>
+<div class="centered-content">
+    <h2>Daily Task追加</h2>
+    <form method="post" class="centered-content">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">追加</button>
+    </form>
+    <div>
+        <a href="{% url 'tasks:daily_tasks' %}" class="btn btn-info">戻る</a>
+        <a href="{% url 'home' %}" class="btn btn-info">Home</a>
+    </div>
+</div>
 {% endblock %}

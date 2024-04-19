@@ -2,29 +2,39 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div button, div a {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+    div button:hover, div a:hover {
+        background-color: #005f80;
+    }
+</style>
 <div class="container">
     <h2>メモ追加</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">追加</button>
-        <a href="{% url 'memos:memo_list' %}" class="btn btn-secondary">メモリストに戻る</a>
+        <a href="{% url 'memos:memo_list' %}">メモリストに戻る</a>
+        <a href="{% url 'home' %}">Home</a>
     </form>
 </div>
 {% endblock %}

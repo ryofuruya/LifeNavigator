@@ -2,19 +2,43 @@
 
 {% block content %}
 <style>
-    .center-form {
+    body {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
+        min-height: 100vh; /* ページ全体の高さを画面に合わせて中央に配置 */
+        margin: 0;
+        font-family: 'Arial', sans-serif;
     }
-    .center-form form {
-        margin: auto;
-        width: fit-content;
-        padding: 1em;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+    .center-form {
+        width: 100%; /* コンテナの幅を画面全体に広げます */
+        max-width: 320px; /* 最大幅を設定 */
+        padding: 20px;
+        border: 1px solid #ccc; /* 境界線のスタイル */
+        border-radius: 5px; /* 角の丸み */
+        background: white; /* 背景色 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影のスタイル */
+    }
+    form {
+        width: 100%; /* フォームの幅をコンテナに合わせます */
+    }
+    input, button {
+        width: 100%; /* 入力フィールドとボタンの幅を広げます */
+        padding: 10px; /* 余白 */
+        margin-top: 5px; /* 上のマージン */
+        box-sizing: border-box; /* ボックスサイズの計算方法を指定 */
+    }
+    button {
+        cursor: pointer; /* ボタンホバー時のカーソルを指定 */
+        background-color: #0056b3; /* ボタンの背景色 */
+        color: white; /* テキスト色 */
+        border: none; /* 境界線無し */
+        border-radius: 5px; /* 角の丸み */
+        transition: background-color 0.3s; /* 背景色の変化をアニメーション */
+    }
+    button:hover {
+        background-color: #004494; /* ホバー時の背景色 */
     }
 </style>
 
@@ -24,7 +48,8 @@
         {% csrf_token %}
         {{ form.as_p }}
         <input type="hidden" name="next" value="{% url 'home' %}" />
-        <button type="submit">Login</button>
+        <button type="submit" class="btn">Login</button>
     </form>
+    <a href="{% url 'home' %}" class="btn">ホームに戻る</a>
 </div>
 {% endblock %}

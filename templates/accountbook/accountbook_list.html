@@ -2,28 +2,44 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    .btn-custom, .btn-detail {
+        padding: 5px 10px;
+        text-decoration: none;
+        font-size: 14px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50;
+    }
+</style>
 <div class="container">
     <h2>家計簿</h2>
     <div>
-        <a href="{% url 'accountbook:income_list' %}" class="btn btn-primary">収入</a>
-        <a href="{% url 'accountbook:expense_list' %}" class="btn btn-secondary">支出</a>
-        <a href="{% url 'home' %}">ホーム</a>
+        <a href="{% url 'accountbook:income_list' %}" class="btn-custom">収入</a>
+        <a href="{% url 'accountbook:expense_list' %}" class="btn-custom">支出</a>
+        <!-- ボタンスタイルを変更 -->
+        <button type="button" onclick="location.href='{% url 'home' %}'" class="btn-custom">Home</button>
     </div>
 
     <div class="mt-5">
@@ -62,7 +78,7 @@ var myChart = new Chart(ctx, {
     },
     options: {
         scales: {
-            y: { // ここを更新しました
+            y: {
                 beginAtZero: true
             }
         }
@@ -70,4 +86,3 @@ var myChart = new Chart(ctx, {
 });
 </script>
 {% endblock %}
-

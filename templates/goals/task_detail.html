@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .detail-container {
+        width: 80%; /* コンテナの幅を調整 */
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1); /* 影をつけて視覚的に分かりやすく */
+        text-align: left; /* テキストを左寄せに */
+        background: white; /* 背景色 */
+        border-radius: 8px; /* 角の丸み */
+        margin-top: 20px;
+    }
+    h2 {
+        text-align: center;
+    }
+    .detail-item {
+        margin-bottom: 10px; /* 各詳細項目の下マージン */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+</style>
+<h2>タスクの詳細</h2>
+<div class="detail-container">
+    <div class="detail-item"><strong>タイトル:</strong> {{ task.title }}</div>
+    <div class="detail-item"><strong>説明:</strong> {{ task.description }}</div>
+    <div class="detail-item"><strong>完了状態:</strong> {{ task.completed|yesno:"完了,未完了" }}</div>
+    <div class="detail-item"><strong>完了日:</strong> {{ task.completed_at|date:"Y-m-d" }} {{ task.completed_at|time:"H:i" }}</div>
+    <div class="detail-item"><strong>締切日:</strong> {{ task.deadline|date:"Y-m-d" }} {{ task.deadline|time:"H:i" }}</div>
+
+</div>
+<a href="{% url 'goals:task_edit' task.id %}" class="btn-custom">編集</a>
+<a href="{% url 'goals:short_term_goals' %}" class="btn-custom">短期目標</a>
+<a href="{% url 'goals:medium_term_goals' %}" class="btn-custom">中期目標</a>
+<a href="{% url 'goals:long_term_goals' %}" class="btn-custom">長期目標</a>
+<a href="{% url 'goals:goal_setting' %}" class="btn-custom">目標設定一覧</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
+{% endblock %}

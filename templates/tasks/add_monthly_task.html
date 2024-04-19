@@ -1,29 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
- <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
-<h2>Add Monthly Task</h2>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a, input[type="submit"] {
+        display: inline-block;
+        margin: 10px;
+        background-color: #3498db; /* 青色の背景 */
+        color: white; /* 白色のテキスト */
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        border: none;
+    }
+    div a:hover, input[type="submit"]:hover {
+        background-color: white;
+        color: #3498db;
+        border: 2px solid #3498db;
+    }
+</style>
+<h2>Monthly Task追加</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="Add Task">
+    <input type="submit" value="追加" class="btn-custom">
 </form>
 
-<a href="{% url 'tasks:monthly_tasks' %}">戻る</a>
+<a href="{% url 'tasks:monthly_tasks' %}" class="btn-custom">戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
 {% endblock %}

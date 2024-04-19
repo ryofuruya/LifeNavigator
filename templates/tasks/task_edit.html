@@ -1,27 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
- <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* ページの全体を画面の中心に配置するためのスタイル */
+        margin: 0;
+    }
+    div {
+        text-align: center; /* テキストを中央揃えにする */
+    }
+    div a {
+        display: inline-block; /* リンクをインラインブロックとして表示し、マージンを設定 */
+        margin: 0 10px;
+    }
+    .error-message {
+        color: red; /* エラーメッセージを赤色で表示して、目立たせる */
+    }
+</style>
 <h2>Edit Task</h2>
+<!-- タスク編集用のフォーム -->
 <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save changes</button>
-    <a href="{% url 'tasks:monthly_tasks' %}">戻る</a>
+    {% csrf_token %} <!-- CSRFトークンを含めることで、フォームのセキュリティを強化 -->
+    {{ form.non_field_errors }} <!-- フォーム全体のエラーを表示 -->
+    {% for field in form %}
+    <div>
+        {{ field.label_tag }} {{ field }} <!-- 各フォームフィールドとそのラベルを表示 -->
+        {% for error in field.errors %}
+            <div class="error-message">{{ error }}</div> <!-- フィールドごとのエラーメッセージを表示 -->
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <button type="submit">Save changes</button> <!-- 変更を保存するためのボタン -->
+    <a href="{% url 'tasks:monthly_tasks' %}" class="btn btn-info">戻る</a> <!-- 月間タスクリストへ戻るリンク -->
+    <a href="{% url 'home' %}" class="btn btn-primary">Home</a> <!-- ホームページへのリンク -->
 </form>
 {% endblock %}

@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Goal Setting</title>
-</head>
-<body>
     <style>
         body {
             display: flex;
@@ -17,18 +15,44 @@
         div {
             text-align: center;
         }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
+        ul {
+            list-style: none; /* リストマーカーを非表示にする */
+            padding: 0;
+            margin: 0; /* リストの外側のマージンもリセット */
+        }
+        li {
+            margin: 10px 0;
+        }
+        .btn-custom {
+            background-color: #4CAF50; /* 緑色の背景 */
+            color: white; /* 白色のテキスト */
+            border: 1px solid #4CAF50; /* 緑色の境界線 */
+            padding: 10px 20px; /* 内部のパディングを調整 */
+            text-decoration: none; /* テキストの下線を削除 */
+            font-size: 16px; /* フォントサイズの調整 */
+            border-radius: 5px; /* 角の丸みを調整 */
+            transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+            display: inline-block; /* ボタンがインラインで表示されるように */
+            margin: 10px; /* ボタン間のマージンを適用 */
+        }
+        .btn-custom:hover {
+            background-color: white; /* ホバー時の背景色を白に */
+            color: #4CAF50; /* ホバー時のテキスト色を緑に */
+            border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
         }
     </style>
+</head>
+<body>
     <h1>目標設定</h1>
     <ul>
-        <li><a href="{% url 'goals:short_term_goals' %}">短期目標</a></li>
-        <li><a href="{% url 'goals:medium_term_goals' %}">中期目標</a></li>
-        <li><a href="{% url 'goals:long_term_goals' %}">長期目標</a></li>
-        <li><a href="{% url 'goals:achieved_goals' %}">達成目標</a></li>
+        <li><a href="{% url 'goals:short_term_goals' %}" class="btn-custom">短期目標</a></li>
+        <li><a href="{% url 'goals:medium_term_goals' %}" class="btn-custom">中期目標</a></li>
+        <li><a href="{% url 'goals:long_term_goals' %}" class="btn-custom">長期目標</a></li>
+        <li><a href="{% url 'goals:achieved_goals' %}" class="btn-custom">達成目標</a></li>
     </ul>
-    <a href="{% url 'home' %}">戻る</a>
+    <div>
+        <a href="{% url 'home' %}" class="btn-custom">戻る</a>
+        <a href="{% url 'home' %}" class="btn-custom">Home</a>
+    </div>
 </body>
 </html>

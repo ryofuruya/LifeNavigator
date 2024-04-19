@@ -1,25 +1,32 @@
 {% extends 'base.html' %}
 {% block content %}
- <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* 画面全体の高さに合わせて中央配置します */
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a {
+        display: inline-block;
+        margin: 0 10px;
+    }
+</style>
+<!-- タスクのタイトルを表示 -->
 <h2>{{ task.title }}</h2>
+<!-- タスクの詳細説明を表示 -->
 <p>{{ task.description }}</p>
+<!-- タスクの締切日を表示 -->
 <p>Deadline: {{ task.deadline }}</p>
+<!-- タスクの優先度を表示、get_priority_displayを使用して優先度のラベルを表示 -->
 <p>Priority: {{ task.get_priority_display }}</p>
-<a href="{% url 'tasks:task_edit' task.pk %}">Edit Task</a>
+<!-- タスクの編集ページへのリンク -->
+<a href="{% url 'tasks:task_edit' task.pk %}" class="btn btn-success">Edit Task</a>
+<!-- ホームページへのリンク -->
+<a href="{% url 'home' %}" class="btn btn-primary">Home</a>
 {% endblock %}

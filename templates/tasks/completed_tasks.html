@@ -1,39 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
- <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
-<h2>Completed Tasks</h2>
-
-<form method="get">
-    {{ form.as_p }}
-    <button type="submit">検索</button>
-</form>
-
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* 画面全体の高さに合わせて中央配置します */
+        margin: 0;
+    }
+    ul {
+        list-style: none; /* リストマーカーを非表示にします */
+        padding: 0; /* リストのパディングをゼロに設定します */
+    }
+    li {
+        margin: 10px 0; /* 各リストアイテムの上下のマージンを設定します */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+        padding: 10px 20px; /* 内部のパディングを調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 16px; /* フォントサイズの調整 */
+        border-radius: 5px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 10px; /* ボタン間のマージンを適用 */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
+    }
+</style>
+<h2>完了したタスク</h2>
 {% if completed_tasks %}
 <ul>
     {% for task in completed_tasks %}
-    <li>{{ task.title }} - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}</li>
+    <li>
+        {{ task.title }} - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}
+    </li>
     {% endfor %}
 </ul>
 {% else %}
 <p>完了したタスクはありません。</p>
 {% endif %}
-<a href="{% url 'tasks:task_list' %}" class="btn btn-secondary">戻る</a>
-<a href="{% url 'home' %}" class="btn btn-info">ホーム</a>
+<a href="{% url 'tasks:task_list' %}" class="btn-custom">タスクリストに戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
 {% endblock %}

@@ -2,29 +2,50 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+        margin-bottom: 30px; /* 各divの下の余白を増やし、要素間を広げます */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+        padding: 10px 20px; /* 内部のパディングを調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 16px; /* フォントサイズの調整 */
+        border-radius: 5px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 10px; /* ボタン間のマージンを適用 */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
+    }
+    .error-message {
+        color: red; /* エラーメッセージを赤色で表示し、目立たせるスタイリング */
+    }
+</style>
 <div class="container">
     <h2>価値観を編集</h2>
+    <!-- 価値観の編集を行うフォーム -->
     <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">更新</button>
+        {% csrf_token %} <!-- CSRFトークンを含めることで、フォームのセキュリティを強化します -->
+        {{ form.as_p }} <!-- Djangoフォームを<p>タグでラップし、各フィールドを整理して表示します -->
+        <button type="submit" class="btn-custom">更新</button> <!-- 変更を保存するためのボタン -->
     </form>
-    <a href="{% url 'values:value_list' %}" class="btn btn-secondary">戻る</a>
+    <!-- 価値観リストページへ戻るリンク -->
+    <a href="{% url 'values:value_list' %}" class="btn-custom">戻る</a>
+    <!-- ホームページへのリンク -->
+    <a href="{% url 'home' %}" class="btn-custom">Home</a>
 </div>
 {% endblock %}

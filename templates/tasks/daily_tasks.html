@@ -1,7 +1,10 @@
-{% extends "base.html" %}
-
-{% block content %}
- <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Tasks</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <style>
         body {
             display: flex;
             flex-direction: column;
@@ -13,24 +16,40 @@
         div {
             text-align: center;
         }
-        div a {
+        div a, button {
             display: inline-block;
             margin: 0 10px;
         }
+        button.btn {
+            width: 50px;
+            height: 20px;
+            font-size: 12px;
+            padding: 0;
+            line-height: 1;
+        }
     </style>
-<h2>Daily</h2> <!-- "Daily" タイトルを追加 -->
-<form method="post">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    {% for form in formset %}
-        <div class="task">
-            {{ form.id }}
-            {{ form.status }} {{ form.priority }} {{ form.title }}
-            <button formaction="{% url 'tasks:update_task_status' form.instance.id %}" formmethod="post">完了にする</button>
-        </div>
-    {% endfor %}
-</form>
-<a href="{% url 'tasks:add_daily_task' %}">タスク追加</a>
-<a href="{% url 'tasks:task_list' %}">戻る</a>
-<a href="{% url 'home' %}">ホーム</a>
-{% endblock %}
+</head>
+<body>
+    <h2>Daily Tasks</h2>
+    <ul>
+        {% for task in tasks %}
+        <li>
+            {{ task.title }} - {{ task.priority }}
+            <form action="{% url 'tasks:update_task_status' task.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">完了</button>
+            </form>
+        
+            <form action="{% url 'tasks:daily_task_detail' task.id %}" method="get" style="display: inline;">
+                <button type="submit" class="btn btn-info">詳細</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <div>
+        <a href="{% url 'tasks:add_daily_task' %}" class="btn btn-primary">追加</a>
+        <a href="{% url 'tasks:task_list' %}" class="btn btn-primary">戻る</a>
+        <a href="{% url 'home' %}" class="btn btn-primary">Home</a>
+    </div>
+</body>
+</html>

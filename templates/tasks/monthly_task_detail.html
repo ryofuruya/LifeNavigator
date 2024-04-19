@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* 画面全体の高さに合わせて中央配置します */
+        margin: 0;
+    }
+    div {
+        text-align: center;
+        margin-bottom: 20px; /* 各divの下の余白を増やして、全体的に余裕を持たせる */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+        padding: 10px 20px; /* 内部のパディングを調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 16px; /* フォントサイズの調整 */
+        border-radius: 5px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 10px; /* ボタン間のマージンを適用 */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
+    }
+</style>
+<h2>Monthly Task詳細</h2>
+<div>
+    <p><strong>Title:</strong> {{ task.title }}</p>
+    <p><strong>Status:</strong> {{ task.status }}</p>
+    <p><strong>Priority:</strong> {{ task.priority }}</p>
+    <p><strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d" }}</p>
+    <p><strong>Description:</strong> {{ task.description|default:"No description provided." }}</p>
+    <p><strong>Details:</strong> {{ task.details|default:"No details provided." }}</p>
+    <a href="{% url 'tasks:monthly_task_edit' task.id %}" class="btn-custom">編集</a>
+</div>
+<a href="{% url 'tasks:monthly_tasks' %}" class="btn-custom">戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
+{% endblock %}

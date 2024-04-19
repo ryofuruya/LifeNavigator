@@ -137,8 +137,10 @@ def complete_task(request, task_id):
 
 @login_required
 def task_detail(request, task_id):
-    task = get_object_or_404(Task, id=task_id, user=request.user)
+    # `user=request.user` を `goal__user=request.user` に変更しています
+    task = get_object_or_404(Task, id=task_id, goal__user=request.user)
     return render(request, 'goals/task_detail.html', {'task': task})
+
 
 @login_required
 def task_edit(request, task_id):
@@ -167,6 +169,7 @@ def task_complete(request):
         return redirect('goals:medium_term_goals')
     elif redirect_page == 'long_term':
         return redirect('goals:long_term_goals')
+    elif redirect_page == 'achieved':
+        return redirect('goals:achieved_goals')  # 完了したタスクのページにリダイレクト
     else:
-        return redirect('goals:goals_overview')  # 完了したタスクを達成目標ページにリダイレクト
-  # 完了したタスクを達成目標ページにリダイレクト
+        return redirect('goals:goals_overview')  # その他のケースでは目標概要ページにリダイレクト

@@ -7,24 +7,42 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
+        min-height: 100vh; /* コンテンツを垂直方向に中央配置 */
     }
     .center-form form {
         margin: auto;
-        width: fit-content;
-        padding: 1em;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        text-align: center; /* ボタンを中央に寄せる */
+        width: fit-content; /* フォームの幅を内容に合わせて自動調整 */
+        padding: 1em; /* フォームの内側の余白 */
+        border: 1px solid #ccc; /* フォームの境界線スタイル */
+        border-radius: 5px; /* フォームの角を丸くする */
+        text-align: center; /* 内容を中央揃えにする */
+    }
+    .center-form label, .center-form input {
+        display: block; /* 要素をブロックとして扱い、一行で表示 */
+        margin: 0 auto; /* 自動的に中央揃え */
+        text-align: center; /* テキストを中央に寄せる */
+        width: 100%; /* 最大幅を利用 */
+    }
+    .center-form input {
+        margin-bottom: 10px; /* 入力フィールドの下の余白 */
     }
 </style>
 
 <div class="center-form">
-    <h2>Login</h2>
+    <!-- ページのタイトルとして「ログイン」を表示 -->
+    <h2>ログイン</h2>
+    <!-- ログインフォーム。セキュリティのためのCSRFトークンが含まれています -->
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+        {% for field in form %}
+            <div>
+                <!-- 各入力フィールドのラベルとフィールドを表示 -->
+                <label>{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
+        <!-- ログインボタン -->
+        <button type="submit">ログイン</button>
     </form>
 </div>
 {% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh; /* 画面全体の高さに合わせて中央配置 */
+        margin: 0;
+    }
+    .task {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white; /* 白色のテキスト */
+        border: 1px solid #4CAF50; /* 緑色の境界線 */
+        padding: 10px 20px; /* 内部のパディングを調整 */
+        text-decoration: none; /* テキストの下線を削除 */
+        font-size: 16px; /* フォントサイズの調整 */
+        border-radius: 5px; /* 角の丸みを調整 */
+        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
+        display: inline-block; /* ボタンがインラインで表示されるように */
+        margin: 0 10px; /* ボタン間のマージンを適用 */
+        margin-top: 20px; /* ボタンの上の余白を追加して位置を下げる */
+    }
+    .btn-custom:hover {
+        background-color: white; /* ホバー時の背景色を白に */
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
+    }
+    .error-message {
+        color: red; /* エラーメッセージの視認性を高めるために赤色で表示 */
+    }
+</style>
+
+<h2>Daily Task編集</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <div class="task">
+            {{ field.label_tag }} {{ field }}
+            {% for error in field.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn-custom">Save Changes</button>
+</form>
+Task ID: {{ task.id }}
+<a href="{% url 'tasks:daily_task_detail' task.id %}" class="btn-custom">Cancel</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
+{% endblock %}

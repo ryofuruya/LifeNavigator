@@ -2,29 +2,60 @@
 
 {% block content %}
 <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        div {
-            text-align: center;
-        }
-        div a {
-            display: inline-block;
-            margin: 0 10px;
-        }
-    </style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+    div {
+        text-align: center;
+    }
+    div a {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    .error-message {
+        color: red; /* エラーメッセージを表示する際に用いられるスタイル、目立つ赤色で表示されます */
+    }
+</style>
+<!-- ページのタイトル、中期目標に対するタスク追加を説明 -->
 <h2>中期目標にタスクを追加</h2>
-
+<!-- タスク追加用のフォーム、CSRFトークンを含むセキュリティ機能も含まれています -->
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">追加</button>
+    <!-- フォーム全体に関連するエラーがあればここで表示されます -->
+    {{ form.non_field_errors }}
+    {% for field in form %}
+        <div>
+            <!-- 各入力フィールドとそのラベル、ユーザーが入力しやすいように整理されて表示 -->
+            {{ field.label_tag }} {{ field }}
+            <!-- 入力エラーがあれば、各フィールドに対して赤色のエラーメッセージとして表示 -->
+            {% for error in field.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    <!-- フォームを送信するためのボタン、タスクを追加する操作を実行 -->
+    <button type="submit" class="btn btn-primary">追加</button>
 </form>
+<!-- ナビゲーションリンク、ボタンを使って視覚的に区別しやすくする -->
+<!-- 戻るボタンは中期目標ページに戻るためのリンク -->
+<a href="{% url 'goals:medium_term_goals' %}" class="btn btn-secondary">戻る</a>
+<!-- ホームページへのリンク、サイトのメインページに簡単に戻るための手段 -->
+<a href="{% url 'home' %}" class="btn btn-primary">Home</a>
 
-<a href="{% url 'goals:medium_term_goals' %}">戻る</a>
+<!-- 日付入力フィールドで過去の日付を無効にするJavaScript、ユーザーが未来の日付のみ入力できるように制限 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var dateInputs = document.querySelectorAll('input[type="date"]');
+    var today = new Date().toISOString().split('T')[0];
+    dateInputs.forEach(function(input) {
+        input.setAttribute('min', today);
+    });
+});
+</script>
+
 {% endblock %}
