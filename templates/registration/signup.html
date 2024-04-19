@@ -11,38 +11,58 @@
     }
     .center-form form {
         margin: auto;
-        width: fit-content; /* フォームの幅を内容に合わせて自動調整 */
+        width: 300px; /* フォームの幅を適度に固定 */
         padding: 1em; /* フォームの内側の余白 */
         border: 1px solid #ccc; /* フォームの境界線スタイル */
         border-radius: 5px; /* フォームの角を丸くする */
-        text-align: center; /* 内容を中央揃えにする */
+        background: #f9f9f9; /* フォームの背景色 */
     }
     .center-form label, .center-form input {
         display: block; /* 要素をブロックとして扱い、一行で表示 */
-        margin: 0 auto; /* 自動的に中央揃え */
-        text-align: center; /* テキストを中央に寄せる */
-        width: 100%; /* 最大幅を利用 */
+        margin: 10px auto; /* 自動的に中央揃え */
+        text-align: left; /* テキストを左に寄せる */
+        width: 90%; /* 入力フィールドの幅 */
     }
     .center-form input {
-        margin-bottom: 10px; /* 入力フィールドの下の余白 */
+        padding: 0.5em; /* 入力フィールドのパディング */
+        border: 1px solid #ddd; /* 入力フィールドのボーダー */
+    }
+    .center-form button {
+        width: 100%; /* ボタンの幅を最大に */
+        padding: 10px; /* ボタンのパディング */
+        background-color: #5cb85c; /* ボタンの背景色 */
+        color: white; /* ボタンのテキスト色 */
+        border: none; /* ボタンのボーダーを削除 */
+        border-radius: 5px; /* ボタンの角を丸くする */
+        cursor: pointer; /* カーソルをポインタに */
+        font-size: 16px; /* フォントサイズ */
+    }
+    .center-form button:hover {
+        background-color: #4cae4c; /* ホバー時の背景色 */
     }
 </style>
 
 <div class="center-form">
-    <!-- ページのタイトルとして「ログイン」を表示 -->
-    <h2>ログイン</h2>
-    <!-- ログインフォーム。セキュリティのためのCSRFトークンが含まれています -->
-    <form method="post">
+    <h2>新規ユーザー登録</h2>
+    <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
-        {% for field in form %}
-            <div>
-                <!-- 各入力フィールドのラベルとフィールドを表示 -->
-                <label>{{ field.label }}</label>
-                {{ field }}
-            </div>
-        {% endfor %}
-        <!-- ログインボタン -->
-        <button type="submit">ログイン</button>
+        <div>
+            <label for="username">ユーザー名:</label>
+            <input type="text" name="username" required id="username">
+        </div>
+        <div>
+            <label for="email">メールアドレス:</label>
+            <input type="email" name="email" required id="email">
+        </div>
+        <div>
+            <label for="password1">パスワード:</label>
+            <input type="password" name="password1" required id="password1">
+        </div>
+        <div>
+            <label for="password2">パスワード確認:</label>
+            <input type="password" name="password2" required id="password2">
+        </div>
+        <button type="submit">登録</button>
     </form>
 </div>
 {% endblock %}

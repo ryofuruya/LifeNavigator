@@ -15,8 +15,8 @@ def home(request):
         # ログインしている場合はホームページを表示
         return render(request, 'home.html')
     else:
-        # ログインしていない場合はサインアップページにリダイレクト
-        return redirect('accounts:signup')
+        # ログインしていない場合はwelcome.htmlページにリダイレクト
+        return redirect('welcome')
 
 def about(request):
     return render(request, 'about.html')
@@ -37,3 +37,6 @@ def edit_profile(request):
         form = ProfileForm(instance=profile)
 
     return render(request, 'registration/edit_profile.html', {'form': form})
+
+def welcome(request):
+    return render(request, 'welcome.html')
