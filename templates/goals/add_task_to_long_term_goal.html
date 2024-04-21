@@ -12,42 +12,58 @@
     }
     div {
         text-align: center;
+        margin-bottom: 20px; /* 各divの下の余白を増やして、全体的に余裕を持たせる */
     }
-    div a {
+    .btn-custom, .btn-secondary-custom {
+        padding: 10px 20px;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
         display: inline-block;
-        margin: 0 10px;
+        margin: 10px;
+        border: none; /* 境界線を削除 */
+    }
+    .btn-custom {
+        background-color: #4CAF50; /* 緑色の背景 */
+        color: white;
+    }
+    .btn-custom:hover {
+        background-color: white;
+        color: #4CAF50; /* ホバー時のテキスト色を緑に */
+        border: 1px solid #4CAF50; /* ホバー時に境界線を表示 */
+    }
+    .btn-secondary-custom {
+        background-color: #3498db; /* 青色の背景 */
+        color: white;
+    }
+    .btn-secondary-custom:hover {
+        background-color: white;
+        color: #3498db; /* ホバー時のテキスト色を青に */
+        border: 1px solid #3498db; /* ホバー時に境界線を表示 */
     }
     .error-message {
-        color: red; /* エラーメッセージを目立たせるためのスタイリング */
+        color: red; /* エラーメッセージの視認性を高めるために赤色で表示 */
     }
 </style>
-<!-- ページのタイトルを表示し、ユーザーが行う操作を説明します -->
+
 <h2>長期目標にタスクを追加</h2>
-<!-- タスク追加用のフォーム -->
 <form method="post">
     {% csrf_token %}
-    <!-- フォーム全体のエラーを表示 -->
     {{ form.non_field_errors }}
     {% for field in form %}
-        <div>
-            <!-- 各フォームフィールドとそのラベルを表示 -->
-            {{ field.label_tag }} {{ field }}
-            <!-- フィールド固有のエラーメッセージを表示 -->
-            {% for error in field.errors %}
-                <div class="error-message">{{ error }}</div>
-            {% endfor %}
-        </div>
+    <div>
+        {{ field.label_tag }} {{ field }}
+        {% for error in field.errors %}
+            <div class="error-message">{{ error }}</div>
+        {% endfor %}
+    </div>
     {% endfor %}
-    <!-- タスクを追加するボタン -->
-    <button type="submit" class="btn btn-primary">追加</button>
+    <button type="submit" class="btn-custom">追加</button>
 </form>
-<!-- ナビゲーションリンク -->
-<!-- 戻るボタンは長期目標ページに戻ります -->
-<a href="{% url 'goals:long_term_goals' %}" class="btn btn-secondary">戻る</a>
-<!-- ホームページへのリンク -->
-<a href="{% url 'home' %}" class="btn btn-primary">Home</a>
+<a href="{% url 'goals:long_term_goals' %}" class="btn-secondary-custom">戻る</a>
+<a href="{% url 'home' %}" class="btn-custom">Home</a>
 
-<!-- 日付入力フィールドで過去の日付を無効にするJavaScriptスクリプト -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var dateInputs = document.querySelectorAll('input[type="date"]');
@@ -57,5 +73,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
 {% endblock %}
