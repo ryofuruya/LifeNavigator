@@ -1,92 +1,157 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .container {
-        width: 300px; /* コンテナの幅を設定 */
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-    label {
-        display: block;
-        margin: 10px 0 5px;
-    }
-    input[type="number"], input[type="text"], input[type="date"] {
-        width: 100%; /* 入力フィールドをコンテナの幅いっぱいに展開 */
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-    input[type="number"]:focus, input[type="text"]:focus, input[type="date"]:focus {
-        border-color: #4A90E2; /* フォーカス時に境界線の色を青に変更 */
-        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* フォーカス時に青色のシャドウを追加 */
-    }
-    .btn-custom, .btn-detail {
-        width: 100%; /* ボタンの幅を100%に設定して統一 */
-        padding: 10px; /* ボタンのパディングを調整 */
-        font-size: 16px; /* フォントサイズの統一 */
-        border-radius: 5px;
-        display: block; /* ボタンをブロックレベル要素にする */
-        text-align: center;
-        margin: 10px 0; /* 上下のマージンを10pxに設定 */
-        transition: background-color 0.3s, color 0.3s;
-        text-decoration: none;
-    }
-    .btn-custom {
-        background-color: #4CAF50; /* 緑色の背景 */
-        color: white;
-        border: 1px solid #4CAF50; /* 緑色の境界線 */
-    }
-    .btn-custom:hover {
-        background-color: white;
-        color: #4CAF50; /* ホバー時のテキスト色を緑に */
-        border: 1px solid #4CAF50;
-    }
-    .btn-detail {
-        background-color: #3498db; /* 青色の背景 */
-        color: white;
-        border: 1px solid #3498db; /* 青色の境界線 */
-    }
-    .btn-detail:hover {
-        background-color: white;
-        color: #3498db; /* ホバー時のテキスト色を青に */
-        border: 1px solid #3498db;
-    }
-</style>
-<div class="container">
-    <h2>収入登録</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div>
-            <label for="record_date">日付:</label>
-            <input type="date" id="record_date" name="record_date" required>
-        </div>
-        <div>
-            <label for="category">カテゴリ:</label>
-            <input type="text" id="category" name="category" required>
-        </div>
-        <div>
-            <label for="amount">金額:</label>
-            <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
-        </div>
-        <div>
-            <label for="description">説明:</label>
-            <input type="text" id="description" name="description" required>
-        </div>
-        <button type="submit" class="btn-custom">登録</button>
-        <a href="{% url 'accountbook:income_list' %}" class="btn-detail">戻る</a>
-        <a href="{% url 'home' %}" class="btn-custom">Home</a>
-    </form>
-</div>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>収入登録</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/accountbook.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            height: 100vh;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+            margin-top: 100px; /* Adjust for header */
+            margin-bottom: 20px;
+        }
+        .centered-content {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            padding-top: 20vh; /* Adjusted padding to 20% of the viewport height */
+        }
+        .buttons-container, .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-top: 100px;
+        }
+        .button-group {
+            flex-direction: row;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .btn {
+            font-size: 2rem;
+            padding: 15px 30px;
+            margin: 10px;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            opacity: 0.8;
+        }
+        .btn:hover {
+            color: #000000;
+            background-color: currentColor;
+            opacity: 1;
+        }
+        .add-btn { border-color: #1e90ff; color: #1e90ff; }
+        .back-btn { border-color: #32cd32; color: #32cd32; }
+        .home-btn { border-color: #ffd700; color: #ffd700; }
+        .form-group {
+            margin-bottom: 20px; /* Adjusted margin */
+        }
+        input, textarea {
+            width: 100%; /* Adjust width for form elements */
+            padding: 10px; /* Padding for input fields */
+        }
+        label {
+            font-size: 1.5rem; /* Adjusted font size for labels */
+            display: block; /* Make labels block level for better structure */
+        }
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .task-list-link { color: #3498db !important; }
+        .goal-setting-link { color: #9b59b6 !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .memo-link { color: #2ecc71 !important; }
+        .user-info-link { color: #34495e !important; }
+        .logout-link { color: #95a5a6 !important; }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <div class="centered-content">
+        <h2>収入登録</h2>
+        <form method="post" class="centered-content">
+            {% csrf_token %}
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="record_date">日付:</label>
+                    <input type="date" id="record_date" name="record_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">カテゴリ:</label>
+                    <input type="text" id="category" name="category" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">金額:</label>
+                    <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">説明:</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="btn add-btn">登録</button>
+                    <a href="{% url 'accountbook:income_list' %}" class="btn back-btn">戻る</a>
+                    <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

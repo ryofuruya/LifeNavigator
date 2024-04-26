@@ -1,4 +1,6 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% load static %}
 
 {% block content %}
 <style>
@@ -7,38 +9,55 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 100vh; /* ページ全体の高さを画面に合わせて中央に配置 */
+        min-height: 100vh;
         margin: 0;
         font-family: 'Arial', sans-serif;
+        background: url("{% static 'images/login.png' %}") no-repeat center center fixed;
+        background-size: cover;
     }
     .center-form {
-        width: 100%; /* コンテナの幅を画面全体に広げます */
-        max-width: 320px; /* 最大幅を設定 */
+        width: 100%;
+        max-width: 320px;
         padding: 20px;
-        border: 1px solid #ccc; /* 境界線のスタイル */
-        border-radius: 5px; /* 角の丸み */
-        background: white; /* 背景色 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影のスタイル */
+        border: 2px solid #00ffea; /* サイバーパンク風の青緑ネオン */
+        border-radius: 8px;
+        background: rgba(10, 10, 10, 0.8); /* 暗めの半透明背景 */
+        color: #fff;
+        box-shadow: 0 0 10px #00ffea, 0 0 20px #00ffea inset; /* ネオン内側と外側の影 */
+        text-align: center;
     }
     form {
-        width: 100%; /* フォームの幅をコンテナに合わせます */
+        width: 100%;
     }
-    input, button {
-        width: 100%; /* 入力フィールドとボタンの幅を広げます */
-        padding: 10px; /* 余白 */
-        margin-top: 5px; /* 上のマージン */
-        box-sizing: border-box; /* ボックスサイズの計算方法を指定 */
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        box-sizing: border-box;
+        border-radius: 5px;
+        border: 1px solid #009688; /* 入力フィールドのボーダー色 */
+        background-color: #000; /* 背景色 */
+        color: #0f0; /* テキストの色をネオン緑に */
     }
-    button {
-        cursor: pointer; /* ボタンホバー時のカーソルを指定 */
-        background-color: #0056b3; /* ボタンの背景色 */
-        color: white; /* テキスト色 */
-        border: none; /* 境界線無し */
-        border-radius: 5px; /* 角の丸み */
-        transition: background-color 0.3s; /* 背景色の変化をアニメーション */
+    .btn, .back-btn {
+        cursor: pointer;
+        background: linear-gradient(45deg, #ff073a, #1aff00); /* 赤から緑のグラデーション */
+        color: white;
+        border: none;
+        padding: 10px;
+        width: calc(50% - 10px); /* ボタンの幅を均等に調整 */
+        margin: 5px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        box-shadow: 0 0 15px #1aff00, 0 0 30px #1aff00 inset; /* ネオン効果の強調 */
     }
-    button:hover {
-        background-color: #004494; /* ホバー時の背景色 */
+    .btn:hover, .back-btn:hover {
+        background: linear-gradient(45deg, #1aff00, #ff073a); /* ホバー時にグラデーションを逆転 */
+    }
+    .button-container {
+        width: 100%;
+        display: flex;
+        justify-content: space-between; /* ボタン間にスペースを設定 */
     }
 </style>
 
@@ -47,9 +66,10 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <input type="hidden" name="next" value="{% url 'home' %}" />
-        <button type="submit" class="btn">Login</button>
+        <div class="button-container">
+            <button type="submit" class="btn">Login</button>
+            <a href="{% url 'home' %}" class="btn back-btn">戻る</a>
+        </div>
     </form>
-    <a href="{% url 'home' %}" class="btn">ホームに戻る</a>
 </div>
 {% endblock %}

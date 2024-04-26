@@ -1,56 +1,132 @@
-{% extends "base.html" %}
-
-{% block content %}
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh; /* 画面全体の高さに合わせて中央配置します */
-        margin: 0;
-    }
-    div {
-        text-align: center;
-        margin-bottom: 20px; /* 各divの下の余白を増やして、全体的に余裕を持たせる */
-    }
-    div a, div button {
-        display: inline-block;
-        margin: 10px; /* ボタンとリンクの周囲のマージンを増やす */
-    }
-    .btn-custom {
-        background-color: #3498db; /* 青色の背景 */
-        color: white; /* 白色のテキスト */
-        border: 2px solid #3498db; /* 青色の境界線 */
-        padding: 10px 20px; /* 内部のパディングを調整 */
-        font-size: 16px; /* フォントサイズの調整 */
-        border-radius: 8px; /* 角の丸みを調整 */
-        transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
-    }
-    .btn-custom:hover {
-        background-color: white; /* ホバー時の背景色を白に */
-        color: #3498db; /* ホバー時のテキスト色を青に */
-        border: 2px solid #3498db; /* ホバー時の境界線を保持 */
-    }
-    .error-message {
-        color: red; /* エラーメッセージが目立つように赤色で表示します */
-        margin-top: 5px; /* エラーメッセージの上の余白を設定 */
-    }
-</style>
-<h2>Monthly Task編集</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div>
-        {{ field.label_tag }} {{ field }}
-        {% for error in field.errors %}
-            <div class="error-message">{{ error }}</div>
-        {% endfor %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Task編集</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/tasklist.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+        }
+        .centered-content {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .buttons-container, .button-group {
+            display: flex;
+            flex-direction: row; /* Change to row for horizontal button layout */
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            font-size: 2rem;
+            padding: 15px 30px;
+            margin: 10px;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            opacity: 0.8;
+        }
+        .btn:hover {
+            color: #000000;
+            background-color: currentColor;
+            opacity: 1;
+        }
+        .add-btn { border-color: #1e90ff; color: #1e90ff; }
+        .back-btn { border-color: #32cd32; color: #32cd32; }
+        .home-btn { border-color: #ffd700; color: #ffd700; }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+        }
+        label {
+            font-size: 1.5rem;
+        }
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .goal-setting-link, .accountbook-link, .calendar-link, .values-link, .memo-link, .user-info-link, .logout-link {
+            color: #9b59b6 !important; /* Example for all links adjusted for simplicity */
+        }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <div class="centered-content">
+        <h2>Monthly Task編集</h2>
+        <form method="post" class="centered-content">
+            {% csrf_token %}
+            <div class="error-message">{{ form.non_field_errors }}</div>
+            <div class="form-container">
+                {% for field in form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    <div class="error-message">{{ field.errors }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn add-btn">Save</button>
+                <a href="{% url 'tasks:monthly_task_detail' task.id %}" class="btn back-btn">Cancel</a>
+                <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+            </div>
+        </form>
     </div>
-    {% endfor %}
-    <button type="submit" class="btn-custom">Save Changes</button>
-</form>
-<a href="{% url 'tasks:monthly_task_detail' task.id %}" class="btn-custom">Cancel</a>
-<a href="{% url 'home' %}" class="btn-custom">Home</a>
-{% endblock %}
+</body>
+</html>

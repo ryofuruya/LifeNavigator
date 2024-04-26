@@ -1,46 +1,134 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
 
-{% block content %}
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    .centered-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        width: 100%;
-    }
-    .no-bullets {
-        list-style-type: none;
-        padding-left: 0;
-        width: 100%;
-    }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LifeNavigator!</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/home.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Audiowide', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
 
-<div class="centered-content">
-    <h1>Welcome to LifeNavigator!</h1>
-    <p>This is the home page of the project.</p>
+        .centered-content, .description-container {
+            width: 90%;
+            max-width: 1200px;
+            text-align: center;
+        }
 
-    <ul class="no-bullets">
-        <li><a href="{% url 'tasks:task_list' %}" class="btn btn-primary">TaskList</a></li>
-        <li><a href="{% url 'goals:goal_setting' %}" class="btn btn-primary">目標設定</a></li>
-        <li><a href="{% url 'accountbook:accountbook_list' %}" class="btn btn-primary">家計簿</a></li>
-        <li><a href="{% url 'calendars:calendar_view' %}" class="btn btn-primary">カレンダー</a></li>
-        <li><a href="{% url 'values:value_list' %}" class="btn btn-primary">価値観</a></li>
-        <li><a href="{% url 'memos:memo_list' %}" class="btn btn-primary">メモ</a></li>
-        {% if request.user.is_authenticated %}
-        <li><a href="{% url 'accounts:user_detail' request.user.pk %}" class="btn btn-primary">ユーザー情報</a></li>
-        <li>
+        .buttons-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .neon-text {
+            margin-bottom: 20px;
+        }
+
+        .neon-button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            border: 2px solid;
+            color: #fff;
+            background-color: transparent;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: color 0.3s, background-color 0.3s;
+            outline: none;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 0 5px #fff, 0 0 10px #fff;
+        }
+
+        .neon-button:hover {
+            color: #000;
+            background-color: #fff; /* Fallback for non-color specific hover */
+        }
+
+        /* Individual button colors */
+        .neon-button.task-list { background-color: #3498db; border-color: #3498db; }
+        .neon-button.goal-setting { background-color: #9b59b6; border-color: #9b59b6; }
+        .neon-button.accountbook { background-color: #1abc9c; border-color: #1abc9c; }
+        .neon-button.calendar { background-color: #f39c12; border-color: #f39c12; }
+        .neon-button.values { background-color: #e74c3c; border-color: #e74c3c; }
+        .neon-button.memo { background-color: #2ecc71; border-color: #2ecc71; }
+        .neon-button.user-info { background-color: #34495e; border-color: #34495e; }
+        .neon-button.logout { background-color: #95a5a6; border-color: #95a5a6; }
+
+        .description {
+            padding: 20px;
+            background-color: #0008; /* Slightly transparent black */
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .description p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="centered-content">
+        <h1 class="neon-text">Welcome to LifeNavigator!</h1>
+        <div class="buttons-container">
+            <a href="{% url 'tasks:task_list' %}" class="neon-button task-list" data-desc="TaskList">TaskList</a>
+            <a href="{% url 'goals:goal_setting' %}" class="neon-button goal-setting" data-desc="目標設定">目標設定</a>
+            <a href="{% url 'accountbook:accountbook_list' %}" class="neon-button accountbook" data-desc="家計簿">家計簿</a>
+            <a href="{% url 'calendars:calendar_view' %}" class="neon-button calendar" data-desc="カレンダー">カレンダー</a>
+            <a href="{% url 'values:value_list' %}" class="neon-button values" data-desc="価値観">価値観</a>
+            <a href="{% url 'memos:memo_list' %}" class="neon-button memo" data-desc="メモ">メモ</a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'accounts:user_detail' request.user.pk %}" class="neon-button user-info" data-desc="ユーザー情報">ユーザー情報</a>
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
-                <button type="submit" style="background: none; border: none; padding: 0; margin: 0; font: inherit; color: #007bff; cursor: pointer;" >ログアウト</button>
+                <button type="submit" class="neon-button logout" data-desc="ログアウト">ログアウト</button>
             </form>
-        </li>
-        {% else %}
-        <li><a href="{% url 'login' %}" class="btn btn-primary">ログイン</a></li>
-        {% endif %}
-    </ul>
-</div>
+            {% else %}
+            <a href="{% url 'login' %}" class="neon-button login" data-desc="ログイン">ログイン</a>
+            {% endif %}
+        </div>
+        <div class="description-container">
+            <div id="description" class="description"></div>
+        </div>
+    </div>
 
-{% endblock %}
+    <script>
+        document.querySelectorAll('.neon-button').forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                const descriptions = {
+                    "TaskList": "概要: 一日または一ヶ月のタスクリストを管理し、完了したタスクを確認。<br>機能: 目標からマンスリータスクを派生させ、デイリータスクに落とし込む。カレンダーと連携してタスクの日程を調整。",
+                    "目標設定": "概要: 短期、中期、長期の目標を設定し、達成済みの目標を確認。<br>機能: 価値観を基に長期目標を設定し、それを中期および短期目標へと具体化。",
+                    "家計簿": "概要: 収入と支出の記録及び集計。<br>機能: 収入、固定支出、流動支出をそれぞれ記録し、集計する。",
+                    "カレンダー": "概要: カレンダー形式で日付を確認し、特定の日の予定を閲覧。<br>機能: 月間カレンダーを表示し、日付を選択してその日の予定やタスクを確認。",
+                    "価値観": "概要: 自己の価値観を明確に記録し、自己理解を深める。<br>機能: 個人の価値観をリストアップし、それを整理して記録。",
+                    "メモ": "概要: メモの作成と過去のメモの検索。<br>機能: 日常のメモを記録し、キーワード検索で過去のメモを参照。",
+                    "ユーザー情報": "概要: ユーザーの個人情報の確認と編集。<br>機能: 登録情報の確認や更新が可能。",
+                    "ログアウト": "概要: システムからログアウト。<br>機能: 安全に現在のセッションを終了し、ログアウト。",
+                    "ログイン": "概要: システムへのアクセス。"
+                };
+                document.getElementById('description').innerHTML = descriptions[button.getAttribute('data-desc')];
+            });
+        });
+    </script>
+</body>
+
+</html>

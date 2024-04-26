@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+    <h2>Tasks for {{ date|date:"Y-m-d" }}</h2>
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li>{{ task.title }}: {{ task.description }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tasks scheduled for this day.</p>
+    {% endif %}
+    <a href="{% url 'calendars:calendar_view' %}">Back to Calendar</a>
+{% endblock %}

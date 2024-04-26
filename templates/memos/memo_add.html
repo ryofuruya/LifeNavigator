@@ -1,40 +1,174 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-    }
-    div {
-        text-align: center;
-    }
-    div button, div a {
-        display: inline-block;
-        margin: 0 10px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-    }
-    div button:hover, div a:hover {
-        background-color: #005f80;
-    }
-</style>
-<div class="container">
-    <h2>メモ追加</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">追加</button>
-        <a href="{% url 'memos:memo_list' %}">メモリストに戻る</a>
-        <a href="{% url 'home' %}">Home</a>
-    </form>
-</div>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>memo追加</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/memo.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            height: 100vh;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+            margin-top: 100px; /* Adjust for header */
+            margin-bottom: 20px;
+        }
+        .centered-content {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            padding-top: 20vh; /* Adjusted padding to 20% of the viewport height */
+        }
+        .buttons-container, .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-top: 100px;
+        }
+        .button-group {
+            flex-direction: row;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .btn {
+            font-size: 2rem;
+            padding: 15px 30px;
+            margin: 10px;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            opacity: 0.8;
+        }
+        .btn:hover {
+            color: #000000;
+            background-color: currentColor;
+            opacity: 1;
+        }
+        .add-btn { border-color: #1e90ff; color: #1e90ff; }
+        .back-btn { border-color: #32cd32; color: #32cd32; }
+        .home-btn { border-color: #ffd700; color: #ffd700; }
+        .tooltip-text {
+            visibility: hidden;
+            width: 100%;
+            background-color: #0008;
+            color: #00ff00;
+            text-align: center;
+            position:absolute;
+            z-index: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            padding: 5px 0;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            overflow: hidden;
+        }
+        .btn:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        .form-group {
+            margin-bottom: 20px; /* Adjusted margin */
+        }
+        input, textarea {
+            width: 100%; /* Adjust width for form elements */
+            padding: 10px; /* Padding for input fields */
+        }
+        label {
+            font-size: 1.5rem; /* Adjusted font size for labels */
+            display: block; /* Make labels block level for better structure */
+        }
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .task-list-link {color: #3498db !important;}
+        .goal-setting-link { color: #9b59b6 !important; }
+        .accountbook-link { color: #1abc9c !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .user-info-link { color: #34495e !important; }
+        .logout-link { color: #95a5a6 !important; }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <div class="centered-content">
+        <h2>memo 追加</h2>
+        <form method="post" class="centered-content">
+            {% csrf_token %} <!-- CSRFトークンを使用してフォームのセキュリティを強化 -->
+        {{ form.non_field_errors }} <!-- フォーム全体のエラーを表示 -->
+        {% for field in form %}
+            <div>
+                {{ field.label_tag }} {{ field }} <!-- 各フィールドとラベルを表示 -->
+                {% for error in field.errors %}
+                    <div class="error-message">{{ error }}</div> <!-- 各フィールドに関するエラーメッセージを表示 -->
+                {% endfor %}
+            </div>
+        {% endfor %}
+                <div class="form-group">
+                    <label for="deadline">Deadline:</label>
+                    <input type="date" id="deadline" name="deadline" required>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn add-btn">追加</button>
+                <a href="{% url 'memos:memo_list' %}" class="btn back-btn">戻る</a>
+                <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

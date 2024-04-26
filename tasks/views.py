@@ -50,16 +50,16 @@ def daily_task_edit(request, pk):
 
 @login_required
 def monthly_tasks(request):
-    """Manage monthly tasks for the user."""
-    TaskFormSet = modelformset_factory(Task, form=TaskForm, extra=0)
-    if request.method == 'POST':
-        formset = TaskFormSet(request.POST, queryset=Task.objects.filter(user=request.user, deadline__month=timezone.now().month, deadline__year=timezone.now().year, status='in_progress', task_type='monthly').order_by('priority'))
-        if formset.is_valid():
-            formset.save()
-            return redirect('tasks:monthly_tasks')
-    else:
-        formset = TaskFormSet(queryset=Task.objects.filter(user=request.user, deadline__month=timezone.now().month, deadline__year=timezone.now().year, status='in_progress', task_type='monthly').order_by('priority'))
-    return render(request, 'tasks/monthly_tasks.html', {'formset': formset})
+    """Display a list of monthly tasks that are not completed."""
+    current_month = timezone.now().month
+    current_year = timezone.now().year
+    tasks = Task.objects.filter(
+        user=request.user,
+        task_type='monthly',
+        deadline__year=current_year,
+        deadline__month=current_month
+    ).exclude(status='completed').order_by('priority')
+    return render(request, 'tasks/monthly_tasks.html', {'tasks': tasks})
 
 @login_required
 def monthly_task_detail(request, pk):
@@ -82,7 +82,6 @@ def monthly_task_edit(request, pk):
 
 @login_required
 def add_daily_task(request):
-    """Add a new daily task."""
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
@@ -92,6 +91,8 @@ def add_daily_task(request):
             new_task.task_type = 'daily'
             new_task.save()
             return redirect('tasks:daily_tasks')
+        else:
+            logger.error(f"Form errors: {form.errors}")  # エラーをログに記録
     else:
         form = TaskForm()
     return render(request, 'tasks/add_daily_task.html', {'form': form})
@@ -105,7 +106,8 @@ def add_monthly_task(request):
             new_task = form.save(commit=False)
             new_task.user = request.user
             today = timezone.now().date()
-            new_task.deadline = today.replace(day=1)
+            first_day_of_month = today.replace(day=1)  # 月の最初の日を設定
+            new_task.deadline = first_day_of_month
             new_task.status = 'in_progress'
             new_task.task_type = 'monthly'
             new_task.save()

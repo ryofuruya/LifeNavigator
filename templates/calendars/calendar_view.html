@@ -1,75 +1,182 @@
-{% extends 'base.html' %}
-
+{% load static %}
+{% load custom_filters %}
 {% block content %}
 <style>
     body {
+        background-image: url('{% static "images/accountbook.jpeg" %}');
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+        font-family: 'Orbitron', sans-serif;
         display: flex;
         flex-direction: column;
+        justify-content: start;
         align-items: center;
-        justify-content: center;
         height: 100vh;
-        margin: 0;
-        font-family: 'Arial', sans-serif;
+        color: #00ff00;
     }
-    .container {
-        text-align: center;
-        width: 80%; /* Adjust width as per your layout */
-        max-width: 600px; /* Maximum width */
-        padding: 20px;
-        border: 2px solid #ddd;
-        border-radius: 10px;
-        background-color: #ffffff;
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    .calendar-table {
-        width: 100%; /* Match width to the container */
-        border-collapse: collapse;
-    }
-    .calendar-table th, .calendar-table td {
-        padding: 10px;
-        border: 1px solid #ccc;
-        background-color: #eee;
-        text-align: center;
-    }
-    .bg-info {
-        background-color: #007bff;
-        color: white;
-    }
-    button {
-        margin: 10px;
-        padding: 10px 20px;
-        background-color: #008CBA;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s;
-    }
-    button:hover {
-        background-color: #005f80;
-    }
-    a {
-        display: inline-block;
-        margin: 10px;
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 5px;
-    }
-    a:hover {
-        background-color: #0056b3;
-    }
-</style>
 
+    header {
+        background-color: #000;
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    header a {
+        margin: 0 20px;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: color 0.3s, background-color 0.3s;
+        color: #00ff00;
+    }
+
+    header a:hover {
+        color: #000;
+        background-color: #00ff00;
+    }
+
+    h2 {
+        font-size: 3rem;
+        text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+        margin-top: 80px; /* Adjusted for fixed header */
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .calendar-table {
+        width: 90%;
+        margin-top: 20px;
+        border-collapse: collapse;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #00ff00;
+        font-size: 1.5rem;
+    }
+
+    .calendar-table th {
+        background-color: #000;
+        color: #00ff00;
+        padding: 10px;
+        border: 1px solid #00ff00;
+    }
+
+    .calendar-table td {
+        padding: 15px;
+        border: 1px solid #00ff00;
+        transition: background-color 0.3s, color 0.3s;
+        cursor: pointer;
+        height: 50px; /* Ensures all cells are of equal height */
+    }
+
+    .calendar-table td:hover {
+        background-color: #00ff00;
+        color: #000;
+    }
+
+    .calendar-table td.bg-info {
+        background-color: #1abc9c; /* Highlight today's date */
+        color: #ffffff;
+    }
+
+    .button-group {
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
+    .btn {
+        font-size: 2rem;
+        padding: 15px 30px;
+        margin: 10px;
+        border: 2px solid #00ff00;
+        transition: all 0.3s;
+        position: relative;
+        text-decoration: none;
+        display: inline-block;
+        background-color: #000;
+        opacity: 0.8;
+    }
+
+    .btn:hover {
+        color: #000000;
+        background-color: #00ff00;
+        opacity: 1;
+    }
+    .task-list-link {
+        color: #3498db !important;
+    }
+
+    .goal-setting-link {
+        color: #9b59b6 !important;
+    }
+
+    .accountbook-link { color: #1abc9c !important; }
+
+    .values-link {
+        color: #e74c3c !important;
+    }
+
+    .memo-link {
+        color: #2ecc71 !important;
+    }
+
+    .user-info-link {
+        color: #34495e !important;
+    }
+
+    .logout-link {
+        color: #95a5a6 !important;
+    }
+    .back-btn {
+        border-color: #32cd32;
+        color: #32cd32;
+    }
+
+    .home-btn {
+        border-color: #ffd700;
+        color: #ffd700;
+    }
+    #prevMonth, #nextMonth {
+    font-size: 1.5rem;
+    padding: 10px 20px;
+    margin: 5px;
+    color: #00ff00;
+    background-color: #000;
+    border: 2px solid #00ff00;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    cursor: pointer;
+}
+
+#prevMonth:hover, #nextMonth:hover {
+    background-color: #00ff00;
+    color: #000;
+}
+
+</style>
+<header>
+    <a href="{% url 'tasks:task_list' %}" class="task-list-link">タスクリスト</a>
+    <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+    <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+    <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+    <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+    <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+    <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+</header>
 <div class="container">
     <h2 id="currentMonthAndYear"></h2>
     <button id="prevMonth">前月</button>
     <button id="nextMonth">次月</button>
     <table id="calendar" class="calendar-table"></table>
-    <a href="{% url 'tasks:monthly_tasks' %}" class="btn btn-secondary">Monthly</a>
-    <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
+    <div class="button-group">
+        <a href="{% url 'tasks:monthly_tasks' %}" class="btn back-btn">Monthly</a>
+        <a href="{% url 'home' %}" class="btn home-btn">ホーム</a>
+    </div>
 </div>
 
 <script>

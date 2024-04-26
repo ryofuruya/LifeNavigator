@@ -1,115 +1,213 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>プロファイル 編集</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/user.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #9b59b6; /* Unified color for all header links */
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        h1 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+        }
+        .centered-content {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        .buttons-container, .button-group {
+            display: flex;
+            flex-direction: row; /* Change to row for horizontal button layout */
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn {
+            font-size: 2rem;
+            padding: 15px 30px;
+            margin: 10px;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            opacity: 0.8;
+        }
+        .btn:hover {
+            color: #000000;
+            background-color: currentColor;
+            opacity: 1;
+        }
+        .add-btn { border-color: #1e90ff; color: #1e90ff; }
+        .back-btn { border-color: #32cd32; color: #32cd32; }
+        .home-btn { border-color: #ffd700; color: #ffd700; }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input, textarea {
+            width: 100%;
+        }
+        label {
+            font-size: 1.5rem;
+        }
+        .form-container {
+    background-color: rgba(0, 0, 0, 0.7); /* 半透明の黒色背景 */
+    padding: 20px;
+    border-radius: 10px;
+}
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .task-list-link {color: #3498db !important;}
+        .goal-setting-link { color: #9b59b6 !important; }
+        .accountbook-link { color: #1abc9c !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .memo-link { color: #2ecc71 !important; }
+        .logout-link { color: #95a5a6 !important; }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .content {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    width: auto;
+    font-size: 1.2rem;
+}
 
-{% block content %}
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-        padding-top: 20px;
-    }
-    .container {
-        width: 80%;
-        max-width: 500px; /* 適切な最大幅を設定 */
-    }
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        margin-bottom: 15px;
-    }
-    label {
-        margin-bottom: 5px;
-    }
-    input[type="password"], input[type="text"] {
-        width: 100%; /* フル幅を使用 */
-        padding: 8px;
-        box-sizing: border-box; /* パディングを含む幅 */
-    }
-    .btn-custom {
-        background-color: #4CAF50;
-        color: white;
-        border: 1px solid #4CAF50;
-        padding: 10px 20px;
-        text-decoration: none;
-        font-size: 16px;
-        border-radius: 5px;
-        transition: background-color 0.3s, color 0.3s;
-        display: block; /* ボタンをブロック要素として配置 */
-        width: 100%;
-        text-align: center;
-        margin: 10px 0;
-    }
-    .btn-custom:hover {
-        background-color: white;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-    }
-    .error-message {
-        color: red;
-        font-size: 14px;
-        margin-top: 5px;
-    }
-    .alert {
-        color: red;
-        font-size: 14px;
-        padding: 10px;
-        margin: 10px 0;
-    }
-</style>
-<div class="container">
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <div class="centered-content">
     <h1>プロファイル編集</h1>
-    <form method="post" action="{% url 'accounts:user_edit' user.id %}">
+    <div class="form-container">
+    <form method="post" action="{% url 'accounts:user_edit' user.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
 
-        <div class="form-group">
-            {{ form.first_name.label_tag }} 
-            {{ form.first_name }}
+        <div>
+            {{ form.username.label_tag }} {{ form.username }}
+            {% for error in form.username.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.email.label_tag }} {{ form.email }}
+            {% for error in form.email.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.first_name.label_tag }} {{ form.first_name }}
             {% for error in form.first_name.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
-        <div class="form-group">
-            {{ form.last_name.label_tag }}
-            {{ form.last_name }}
+        <div>
+            {{ form.last_name.label_tag }} {{ form.last_name }}
             {% for error in form.last_name.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
-
-        <div class="form-group">
-            <label for="id_new_password1">新しいパスワード:</label>
-            <input type="password" name="new_password1" id="id_new_password1">
-            {% for error in form.new_password1.errors %}
+        <div>
+            {{ profile_form.bio.label_tag }} {{ profile_form.bio }}
+            {% for error in profile_form.bio.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
-        <div class="form-group">
-            <label for="id_new_password2">新しいパスワード（確認）:</label>
-            <input type="password" name="new_password2" id="id_new_password2">
-            {% for error in form.new_password2.errors %}
+        <div>
+            {{ profile_form.website.label_tag }} {{ profile_form.website }}
+            {% for error in profile_form.website.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ profile_form.phone.label_tag }} {{ profile_form.phone }}
+            {% for error in profile_form.phone.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ profile_form.image.label_tag }} {{ profile_form.image }}
+            {% for error in profile_form.image.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
 
-        {% for field in form %}
-            {% if field.name not in exclude_fields %}
-                <div class="form-group">
-                    {{ field.label_tag }} {{ field }}
-                    {% for error in field.errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        <button type="submit" class="btn-custom">更新</button>
-    </form>
-    <a href="{% url 'home' %}" class="btn-custom">ホーム</a>
-    <a href="{% url 'accounts:user_detail' user.id %}" class="btn-custom">戻る</a>
-</div>
-{% endblock %}
+        <h2>パスワード変更</h2>
+        {{ password_form.non_field_errors }}
+        <div>
+            {{ password_form.current_password.label_tag }} {{ password_form.current_password }}
+            {% for error in password_form.current_password.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ password_form.new_password1.label_tag }} {{ password_form.new_password1 }}
+            {% for error in password_form.new_password1.errors %}
+                <div class="error-message">{{ error }}</div
+            {% endfor %}
+        </div>
+        <div>
+            {{ password_form.new_password2.label_tag }} {{ password_form.new_password2 }}
+            {% for error in password_form.new_password2.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn add-btn">Save</button>
+                <a href="{% url 'accounts:user_detail' request.user.pk %}" class="btn back-btn">戻る</a>
+        <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

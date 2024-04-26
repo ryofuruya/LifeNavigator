@@ -1,48 +1,82 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 <style>
+    html, body {
+        height: 100%; /* Full height of the screen */
+        margin: 0; /* No margin */
+        padding: 0; /* No padding */
+        display: flex; /* Using flexbox for layout */
+        flex-direction: column; /* Elements arranged in a column */
+        background: url("{% static 'images/signup.png' %}") no-repeat center center fixed; /* Background image setup */
+        background-size: cover; /* Cover the entire viewport */
+    }
     .center-form {
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh; /* コンテンツを垂直方向に中央配置 */
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+        min-height: 100vh; /* Minimum height is full viewport height */
+        width: 80%; /* Use 80% of the viewport width */
+        margin: auto; /* Center the form horizontally */
     }
     .center-form form {
-        margin: auto;
-        width: 300px; /* フォームの幅を適度に固定 */
-        padding: 1em; /* フォームの内側の余白 */
-        border: 1px solid #ccc; /* フォームの境界線スタイル */
-        border-radius: 5px; /* フォームの角を丸くする */
-        background: #f9f9f9; /* フォームの背景色 */
+        width: 100%; /* Form takes full width of the container */
+        max-width: 600px; /* Maximum width of the form */
+        padding: 1em; /* Padding around the form */
+        border: 1px solid transparent; /* Transparent border */
+        border-radius: 5px; /* Rounded corners */
+        background: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+        box-shadow: 0 0 20px rgba(0, 0, 255, 0.5); /* Blue glow from the form */
     }
-    .center-form label, .center-form input {
-        display: block; /* 要素をブロックとして扱い、一行で表示 */
-        margin: 10px auto; /* 自動的に中央揃え */
-        text-align: left; /* テキストを左に寄せる */
-        width: 90%; /* 入力フィールドの幅 */
+    .center-form h2 {
+        font-size: 2.5em; /* Larger font size for the title */
+        color: white; /* White color text */
+        text-shadow: 0 0 10px blue, 0 0 20px deepskyblue, 0 0 30px dodgerblue; /* Neon blue text shadow */
+    }
+    .center-form label {
+        display: block; /* Block display for full width */
+        margin: 10px auto; /* Margin for top and bottom auto for center */
+        color: #ADD8E6; /* Light blue color */
+        text-shadow: 0 0 5px blue, 0 0 10px deepskyblue, 0 0 15px dodgerblue; /* Text shadow for neon effect */
+        font-size: 1.2em; /* Slightly larger font size */
     }
     .center-form input {
-        padding: 0.5em; /* 入力フィールドのパディング */
-        border: 1px solid #ddd; /* 入力フィールドのボーダー */
+        padding: 0.5em; /* Padding inside the input */
+        border: 1px solid #ddd; /* Light grey border */
+        background: rgba(0, 0, 0, 0.2); /* Slightly transparent background */
+        color: white; /* White text */
+        width: 90%; /* Width of the input field */
+        margin: 0 auto; /* Center the input fields */
+        border-radius: 5px; /* Rounded corners for input fields */
     }
-    .center-form button {
-        width: 100%; /* ボタンの幅を最大に */
-        padding: 10px; /* ボタンのパディング */
-        background-color: #5cb85c; /* ボタンの背景色 */
-        color: white; /* ボタンのテキスト色 */
-        border: none; /* ボタンのボーダーを削除 */
-        border-radius: 5px; /* ボタンの角を丸くする */
-        cursor: pointer; /* カーソルをポインタに */
-        font-size: 16px; /* フォントサイズ */
+    .center-form button, .back-button {
+        width: calc(50% - 10px); /* Calculate width to fit two buttons */
+        padding: 10px; /* Padding inside the buttons */
+        color: white; /* White text color */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 1.2em; /* Larger font size */
+        background: rgba(50, 205, 50, 0.6); /* Semi-transparent green background */
+        text-align: center; /* Center text horizontally */
+        box-shadow: 0 0 10px #32CD32, 0 0 20px #32CD32, 0 0 30px #32CD32; /* Green glow */
+    }
+    .back-button {
+        background: rgba(255, 99, 71, 0.6); /* Semi-transparent red background */
+        box-shadow: 0 0 10px #FF6347, 0 0 20px #FF6347, 0 0 30px #FF6347; /* Red glow */
     }
     .center-form button:hover {
-        background-color: #4cae4c; /* ホバー時の背景色 */
+        background: rgba(46, 139, 87, 0.8); /* Darker green on hover */
+    }
+    .back-button:hover {
+        background: rgba(233, 150, 122, 0.8); /* Darker red on hover */
     }
     .error-message {
-        color: red; /* エラーメッセージの色 */
-        font-weight: bold;
+        color: red; /* Red color for error messages */
+        font-weight: bold; /* Bold font for emphasis */
     }
 </style>
 
@@ -50,7 +84,6 @@
     <h2>新規ユーザー登録</h2>
     <form method="post" action="{% url 'signup' %}">
         {% csrf_token %}
-        <!-- エラーがあればここに表示 -->
         {% if form.non_field_errors %}
             <div class="error-message">
                 {{ form.non_field_errors }}
@@ -88,11 +121,14 @@
             <input type="password" name="password2" required id="password2">
             {% if form.password2.errors %}
                 {% for error in form.password2.errors %}
-                    <div class="error-message">{{ error }}</div>
+                    <div class="error-message">{{ error }}</div
                 {% endfor %}
             {% endif %}
         </div>
-        <button type="submit">登録</button>
+        <div style="display: flex; justify-content: space-between; width: 100%;">
+            <button type="submit" {% if form.errors %}disabled{% endif %}>登録</button>
+            <a href="{% url 'home' %}" class="back-button">戻る</a>
+        </div>
     </form>
 </div>
 {% endblock %}

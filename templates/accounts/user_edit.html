@@ -44,10 +44,22 @@
 </style>
 <div class="container">
     <h1>プロファイル編集</h1>
-    <form method="post" action="{% url 'accounts:user_edit' user.id %}">
+    <form method="post" action="{% url 'accounts:user_edit' user.id %}" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.non_field_errors }}
 
+        <div>
+            {{ form.username.label_tag }} {{ form.username }}
+            {% for error in form.username.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ form.email.label_tag }} {{ form.email }}
+            {% for error in form.email.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
         <div>
             {{ form.first_name.label_tag }} {{ form.first_name }}
             {% for error in form.first_name.errors %}
@@ -60,36 +72,49 @@
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
-
         <div>
-            <label for="id_new_password1">新しいパスワード:</label>
-            <input type="password" name="new_password1" id="id_new_password1">
-            {% for error in form.new_password1.errors %}
+            {{ profile_form.bio.label_tag }} {{ profile_form.bio }}
+            {% for error in profile_form.bio.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
         <div>
-            <label for="id_new_password2">新しいパスワード（確認）:</label>
-            <input type="password" name="new_password2" id="id_new_password2">
-            {% for error in form.new_password2.errors %}
+            {{ profile_form.website.label_tag }} {{ profile_form.website }}
+            {% for error in profile_form.website.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ profile_form.phone.label_tag }} {{ profile_form.phone }}
+            {% for error in profile_form.phone.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ profile_form.image.label_tag }} {{ profile_form.image }}
+            {% for error in profile_form.image.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
 
-        {% for field in form %}
-            {% if field.name not in ['first_name', 'last_name', 'new_password1', 'new_password2'] %}
-                <div>
-                    {{ field.label_tag }} {{ field }}
-                    {% for error in field.errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endfor %}
-
-        <button type="submit" class="btn-custom">更新</button>
-    </form>
-    <a href="{% url 'home' %}" class="btn-custom">ホーム</a>
-    <a href="{% url 'accounts:user_detail' user.id %}" class="btn-custom">戻る</a>
-</div>
+        <h2>パスワード変更</h2>
+        {{ password_form.non_field_errors }}
+        <div>
+            {{ password_form.current_password.label_tag }} {{ password_form.current_password }}
+            {% for error in password_form.current_password.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div>
+            {{ password_form.new_password1.label_tag }} {{ password_form.new_password1 }}
+            {% for error in password_form.new_password1.errors %}
+                <div class="error-message">{{ error }}</div
+            {% endfor %}
+        </div>
+        <div>
+            {{ password_form.new_password2.label_tag }} {{ password_form.new_password2 }}
+            {% for error in password_form.new_password2.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
 {% endblock %}

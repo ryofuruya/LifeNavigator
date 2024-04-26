@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from .forms import CustomUserChangeForm, ProfileForm, SignUpForm
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,7 +6,6 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, UpdateView, DeleteView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views import generic
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.http import HttpResponseRedirect
@@ -35,29 +34,15 @@ class UserEditView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if 'password_form' not in context:
-            context['password_form'] = self.second_form_class(self.request.user)
+        if self.request.user.is_authenticated:
+            if 'password_form' not in context:
+                context['password_form'] = self.second_form_class(self.request.user)
+            if self.request.POST:
+                context['password_form'] = self.second_form_class(self.request.user, self.request.POST)
         return context
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        form = self.get_form()
-        password_form = self.second_form_class(request.user, request.POST)
-        if form.is_valid() and password_form.is_valid():
-            return self.form_valid(form, password_form)
-        else:
-            return self.form_invalid(form, password_form)
-
-    def form_valid(self, form, password_form):
-        form.save()
-        password_form.save()
-        update_session_auth_hash(self.request, password_form.user)  # Important!
-        return HttpResponseRedirect(self.get_success_url())
-
-    def form_invalid(self, form, password_form):
-        return self.render_to_response(self.get_context_data(form=form, password_form=password_form))
-
+    
     def get_success_url(self):
+        # 編集成功後にユーザー詳細ページにリダイレクト
         return reverse('accounts:user_detail', kwargs={'pk': self.object.pk})
 
 # ユーザー登録ビュー
@@ -82,23 +67,19 @@ class SignUpView(CreateView):
         else:
             return self.form_invalid(form)
 
-
 @login_required
 def edit_profile(request):
-    user = request.user
-    profile_form = ProfileForm(instance=user.profile)
-    password_form = PasswordChangeForm(user)
+    user_form = CustomUserChangeForm(instance=request.user)
+    password_form = PasswordChangeForm(request.user)
     if request.method == 'POST':
-        if 'update_profile' in request.POST:
-            profile_form = ProfileForm(request.POST, instance=user.profile)
-            if profile_form.is_valid():
-                profile_form.save()
-        elif 'change_password' in request.POST:
-            password_form = PasswordChangeForm(user, request.POST)
-            if password_form.is_valid():
-                user = password_form.save()
-                update_session_auth_hash(request, user)
-    return render(request, 'registration/edit_profile.html', {
-        'profile_form': profile_form,
-        'password_form': password_form,
+        user_form = CustomUserChangeForm(request.POST, instance=request.user)
+        password_form = PasswordChangeForm(request.user, request.POST)
+        if user_form.is_valid() and password_form.is_valid():
+            user_form.save()
+            user = password_form.save()
+            update_session_auth_hash(request, user)  # パスワード変更後もセッション維持
+            return redirect('accounts:user_detail', user.id)
+    return render(request, 'accounts/edit_profile.html', {
+        'user_form': user_form,
+        'password_form': password_form
     })

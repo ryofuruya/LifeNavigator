@@ -1,58 +1,127 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Goal Setting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
+            background-image: url('{% static "images/goals.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            height: 100vh;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        .buttons-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            width: 100%;
+            padding-top: 100px;
         }
-        div {
+        .btn {
+            font-size: 2rem;
+            padding: 15px 30px;
+            margin: 10px;
+            width: 60%;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            position: relative;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            opacity: 0.8; /* Adjusted opacity for better visibility */
+        }
+        .daily { border-color: #1e90ff; color: #1e90ff; }
+        .monthly { border-color: #32cd32; color: #32cd32; }
+        .completed { border-color: #ff4500; color: #ff4500; }
+        .home { border-color: #ffd700; color: #ffd700; }
+        .long-term { border-color: #8A2BE2; color: #8A2BE2; } /* New style for long term goals */
+
+        .btn:hover {
+            color: #000000;
+            background-color: currentColor;
+            opacity: 1;
+        }
+        .tooltip-text {
+            visibility: hidden;
+            width: 100%;
+            background-color: #0008;
+            color: #00ff00;
             text-align: center;
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            padding: 5px 0;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            overflow: hidden;
         }
-        ul {
-            list-style: none; /* リストマーカーを非表示にする */
-            padding: 0;
-            margin: 0; /* リストの外側のマージンもリセット */
+        .btn:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
-        li {
-            margin: 10px 0;
-        }
-        .btn-custom {
-            background-color: #4CAF50; /* 緑色の背景 */
-            color: white; /* 白色のテキスト */
-            border: 1px solid #4CAF50; /* 緑色の境界線 */
-            padding: 10px 20px; /* 内部のパディングを調整 */
-            text-decoration: none; /* テキストの下線を削除 */
-            font-size: 16px; /* フォントサイズの調整 */
-            border-radius: 5px; /* 角の丸みを調整 */
-            transition: background-color 0.3s, color 0.3s; /* 色変更時のアニメーションを追加 */
-            display: inline-block; /* ボタンがインラインで表示されるように */
-            margin: 10px; /* ボタン間のマージンを適用 */
-        }
-        .btn-custom:hover {
-            background-color: white; /* ホバー時の背景色を白に */
-            color: #4CAF50; /* ホバー時のテキスト色を緑に */
-            border: 1px solid #4CAF50; /* ホバー時の境界線を保持 */
-        }
+	    .task-list-link {color: #3498db !important;}
+        .accountbook-link { color: #1abc9c !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .memo-link { color: #2ecc71 !important; }
+        .user-info-link { color: #34495e !important; }
+        .logout-link { color: #95a5a6 !important; }
     </style>
 </head>
 <body>
-    <h1>目標設定</h1>
-    <ul>
-        <li><a href="{% url 'goals:short_term_goals' %}" class="btn-custom">短期目標</a></li>
-        <li><a href="{% url 'goals:medium_term_goals' %}" class="btn-custom">中期目標</a></li>
-        <li><a href="{% url 'goals:long_term_goals' %}" class="btn-custom">長期目標</a></li>
-        <li><a href="{% url 'goals:achieved_goals' %}" class="btn-custom">達成目標</a></li>
-    </ul>
-    <div>
-        <a href="{% url 'home' %}" class="btn-custom">戻る</a>
-        <a href="{% url 'home' %}" class="btn-custom">Home</a>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <div class="buttons-container">
+        <h2>目標設定</h2>
+        <a href="{% url 'goals:short_term_goals' %}" class="btn daily">短期目標<span class="tooltip-text">1年以内の目標</span></a>
+        <a href="{% url 'goals:medium_term_goals' %}" class="btn monthly">中期目標<span class="tooltip-text">1年〜5年以内の目標</span></a>
+        <a href="{% url 'goals:long_term_goals' %}" class="btn long-term">長期目標<span class="tooltip-text">5年以上後の目標</span></a>
+        <a href="{% url 'goals:achieved_goals' %}" class="btn completed">Completed<span class="tooltip-text">今まで完了した目標</span></a>
+        <a href="{% url 'home' %}" class="btn home">Home<span class="tooltip-text">Home画面へ</span></a>
     </div>
 </body>
 </html>

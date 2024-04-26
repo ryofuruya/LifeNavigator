@@ -1,52 +1,81 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 <style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        background-color: #f8f9fa; /* 軽いグレーの背景色 */
-        border-radius: 15px; /* 角の丸み */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* ソフトシャドウ */
-        padding: 20px;
+    html, body {
+        height: 100%; /* 画面全体の高さを100%に設定 */
+        margin: 0; /* マージンを0に */
+        padding: 0; /* パディングを0に */
+        display: flex; /* フレックスボックスを利用 */
+        flex-direction: column; /* 子要素を縦方向に並べる */
     }
-    .container h1 {
-        color: #333; /* タイトルの色 */
-        margin-bottom: 20px; /* タイトル下の余白 */
+    .container {
+        flex: 1; /* コンテナをフレキシブルに伸縮させる */
+        display: flex; /* フレックスボックスを利用 */
+        flex-direction: column; /* 子要素を縦方向に並べる */
+        align-items: center; /* 中央揃え */
+        justify-content: center; /* コンテンツを中央寄せ */
+        padding: 20px; /* パディングを設定 */
+        background-image: url("{% static 'images/welcome.png' %}"); /* 背景画像を設定 */
+        background-size: cover; /* 背景画像をカバーするように設定 */
+        background-position: center; /* 背景画像を中央に設定 */
+        background-repeat: no-repeat; /* 背景画像の繰り返しをなくす */
+        background-attachment: fixed; /* 背景画像を固定 */
+    }
+    .header h1 {
+        font-size: 128px; /* フォントサイズをさらに大きくする */
+        color: gold; /* テキストの色をゴールドに */
+        background: linear-gradient(45deg, #28a745, #dc3545); /* 緑と赤のグラデーション */
+        -webkit-background-clip: text; /* クリップをテキストに */
+        background-clip: text; /* テキストの背景のみにグラデーションを適用 */
+        text-shadow: 0px 0px 10px rgba(255, 215, 0, 0.75); /* テキストのネオン効果 */
+        text-align: center; /* テキストを中央に配置 */
+    }
+    .footer-buttons {
+        width: 100%; /* 幅を100%に */
+        display: flex; /* フレックスボックスを利用 */
+        justify-content: center; /* 中央揃え */
+        position: absolute; /* 絶対位置 */
+        bottom: 20px; /* 下から20pxの位置に */
     }
     .btn {
-        padding: 10px 20px; /* ボタン内のパディング */
+        padding: 15px 30px; /* ボタン内のパディングを増やす */
         text-transform: uppercase; /* テキストを大文字に */
-        transition: background-color 0.3s, color 0.3s; /* 色の変化にアニメーションを追加 */
         border: none; /* 枠線を消す */
-        margin-top: 20px; /* 上のマージン */
-        margin-bottom: 20px; /* 下のマージン */
         cursor: pointer; /* カーソルをポインターに */
-        font-size: 16px; /* フォントサイズ */
+        font-size: 18px; /* フォントサイズを大きくする */
         font-weight: bold; /* フォントの太さ */
-        width: 80%; /* ボタンの幅を80%に */
+        margin: 0 10px; /* 左右のマージン */
+        border-radius: 25px; /* ボタンの角を丸くする */
+        transition: all 0.3s ease; /* スムーズな色変化 */
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.1) inset; /* 内側と外側の影 */
     }
     .btn-primary {
-        background-color: #007bff; /* プライマリボタンの背景色 */
-        color: white; /* プライマリボタンのテキスト色 */
+        background: linear-gradient(45deg, #ff073a, #007bff); /* 赤と青のグラデーション */
+        color: white; /* テキスト色 */
     }
     .btn-primary:hover {
-        background-color: #0056b3; /* ホバー時の背景色 */
+        background: linear-gradient(45deg, #007bff, #ff073a); /* ホバーでグラデーションを逆転 */
+        box-shadow: 0 0 20px #007bff; /* ホバー時のネオン効果 */
     }
     .btn-success {
-        background-color: #28a745; /* サクセスボタンの背景色 */
-        color: white; /* サクセスボタンのテキスト色 */
+        background: linear-gradient(45deg, #28a745, #dc3545); /* 緑と赤のグラデーション */
+        color: white; /* テキスト色 */
     }
     .btn-success:hover {
-        background-color: #1e7e34; /* ホバー時の背景色 */
+        background: linear-gradient(45deg, #dc3545, #28a745); /* ホバーでグラデーションを逆転 */
+        box-shadow: 0 0 20px #28a745; /* ホバー時のネオン効果 */
     }
 </style>
 <div class="container">
-    <h1>Welcome to LifeNavigator</h1>
-    <a href="{% url 'login' %}" class="btn btn-primary">Login</a>
-    <a href="{% url 'accounts:signup' %}" class="btn btn-success">Sign Up</a>
+    <div class="header">
+        <h1>Welcome to LifeNavigator</h1>
+    </div>
+    <div class="footer-buttons">
+        <a href="{% url 'login' %}" class="btn btn-primary" title="アカウントをお持ちの方はこちら">Login</a>
+        <a href="{% url 'accounts:signup' %}" class="btn btn-success" title="新規アカウント作成はこちら">Sign Up</a>
+    </div>
 </div>
 {% endblock %}

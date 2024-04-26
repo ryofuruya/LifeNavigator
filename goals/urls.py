@@ -10,12 +10,12 @@ urlpatterns = [
     path('medium_term_goals/', views.medium_term_goals, name='medium_term_goals'),
     path('long_term_goals/', views.long_term_goals, name='long_term_goals'),
     path('achieved_goals/', views.achieved_goals, name='achieved_goals'),
-    path('task/<int:task_id>/complete/', views.complete_task, name='complete_task'),
+    path('task/<int:task_id>/complete/', views.complete_task, name='complete_task'),  # タスクの完了アクション
     path('task/<int:task_id>/', views.task_detail, name='task_detail'),
     path('add_task_to_short_term_goal/', views.add_task_to_short_term_goal, name='add_task_to_short_term_goal'),
     path('add_task_to_medium_term_goal/', views.add_task_to_medium_term_goal, name='add_task_to_medium_term_goal'),
     path('add_task_to_long_term_goal/', views.add_task_to_long_term_goal, name='add_task_to_long_term_goal'),
-    path('task_edit/<int:task_id>/', views.task_edit, name='task_edit'),
-    path('task_complete/', views.task_complete, name='task_complete'),
-    path('task/<int:task_id>/', views.task_detail, name='task_detail'),
+    path('task_edit/<int:task_id>/', views.task_edit, name='task_edit'),  # タスクの編集
+    path('task/<int:task_id>/complete/', views.complete_task, name='complete_task'),  # 一括でタスクを完了するアクション
+    path('task_detail/<int:task_id>/', views.task_detail, name='task_detail'),  # タスクの詳細ページ、URLが重複していたため修正
 ]

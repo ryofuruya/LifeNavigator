@@ -1,157 +1,314 @@
-{% extends 'base.html' %}
-{% load humanize %} 
+{% load humanize %}
+{% load static %}
 
 {% block content %}
 <style>
     body {
+        background-image: url('{% static "images/accountbook.jpeg" %}');
+        background-size: cover;
+        background-position: center;
+        margin: 0;
+        padding: 0;
+        font-family: 'Orbitron', sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+        align-items: center;
+        height: 100vh;
+        color: #00ff00;
+    }
+
+    header {
+        background-color: #000;
+        padding: 10px 0;
+        width: 100%;
+        text-align: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    header a {
+        margin: 0 20px;
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: color 0.3s, background-color 0.3s;
+    }
+
+    header a:hover {
+        color: #000;
+    }
+
+    h2 {
+        font-size: 3rem;
+        text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+        margin-top: 60px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .buttons-container,
+    .button-group {
         display: flex;
         flex-direction: column;
         align-items: center;
+        width: 100%;
+        padding-top: 100px;
+    }
+
+    .button-group {
+        flex-direction: row;
         justify-content: center;
-        height: 100vh;
-        margin: 0;
+        margin-top: 10px;
     }
-    div {
-        text-align: center;
-    }
-    div a, div button {
-        display: inline-block;
+
+    .btn {
+        font-size: 2rem;
+        padding: 15px 30px;
         margin: 10px;
-        padding: 5px 10px;
+        border: 2px solid #00ff00;
+        transition: all 0.3s;
+        position: relative;
         text-decoration: none;
-        font-size: 14px;
+        display: inline-block;
+        background-color: #000;
+        opacity: 0.8;
+    }
+
+    .btn:hover {
+        color: #000000;
+        background-color: currentColor;
+        opacity: 1;
+    }
+
+    .add-btn {
+        border-color: #1e90ff;
+        color: #1e90ff;
+    }
+
+    .back-btn {
+        border-color: #32cd32;
+        color: #32cd32;
+    }
+
+    .home-btn {
+        border-color: #ffd700;
+        color: #ffd700;
+    }
+
+    .complete-btn {
+        border-color: #ff4500;
+        color: #ff4500;
+    }
+
+    .complete-btn:hover {
+        background-color: #ff4500;
+        color: white;
+    }
+
+    .details-btn {
+        border-color: #800080;
+        color: #800080;
+    }
+
+    .details-btn:hover {
+        background-color: #800080;
+        color: white;
+    }
+
+    .delete-btn {
+    font-size: 1.6rem;
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    background-color: transparent; /* 背景を透明に変更 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.delete-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #ff4757; /* ホバー時に背景色を表示 */
+}
+
+
+    ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    li {
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
         border-radius: 5px;
-        transition: background-color 0.3s, color 0.3s;
+        margin: 10px 0;
+        font-size: 1.5rem;
     }
-    .btn-custom {
-        background-color: #4CAF50; /* Green background */
-        color: white;
-        border: 1px solid #4CAF50; /* Green border */
+
+    .task-list-link {
+        color: #3498db !important;
     }
-    .btn-custom:hover {
-        background-color: white;
-        color: #4CAF50; /* Green text on hover */
-        border: 1px solid #4CAF50;
+
+    .goal-setting-link {
+        color: #9b59b6 !important;
     }
-    .btn-detail {
-        background-color: #3498db; /* Blue background */
-        color: white;
-        border: 1px solid #3498db; /* Blue border */
+
+    .calendar-link {
+        color: #f39c12 !important;
     }
-    .btn-detail:hover {
-        background-color: white;
-        color: #3498db; /* Blue text on hover */
-        border: 1px solid #3498db;
+
+    .values-link {
+        color: #e74c3c !important;
     }
-    input[type="number"], input[type="text"] {
-        width: 200px;
-        padding: 8px;
+
+    .memo-link {
+        color: #2ecc71 !important;
+    }
+
+    .user-info-link {
+        color: #34495e !important;
+    }
+
+    .logout-link {
+        color: #95a5a6 !important;
+    }
+
+    tr.highlight {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .total-income {
+        padding: 5px 10px;
+        border-radius: 5px;
+        display: inline-block;
         margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        background-color: rgba(0, 0, 0, 0.5); /* Added semi-transparent background */
+        width: auto; /* Automatically adjusts the width */
+        color: #00ff00; /* Adjusts text color for visibility */
     }
-    input[type="number"]:focus, input[type="text"]:focus {
-        border-color: #4A90E2;
-        box-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+    .add-btn {
+        border-color: #1e90ff;
+        color: #1e90ff;
     }
-    .tooltip {
-        visibility: hidden;
-        width: 140px;
-        background-color: black;
-        color: white;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 0;
-        position: absolute;
-        z-index: 1;
+    .adc-btn {
+        border-color: #1abc9c
+        color: #1abc9c
     }
-    input:hover + .tooltip {
-        visibility: visible;
+
+    .back-btn {
+        border-color: #32cd32;
+        color: #32cd32;
+    }
+
+    .home-btn {
+        border-color: #ffd700;
+        color: #ffd700;
     }
 </style>
+<header>
+    <a href="{% url 'tasks:task_list' %}" class="task-list-link">タスクリスト</a>
+    <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
+    <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+    <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+    <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+    <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+    <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+</header>
 <div class="container">
     <h2>当月の変動費</h2>
+
     <table class="table">
         <thead>
-            <tr>
-                <th>日付</th>
-                <th>カテゴリ</th>
-                <th>金額</th>
-                <th>説明</th>
-                <th>操作</th>
+            <tr class="highlight">
+                <th colspan="5" style="background-color: rgba(0, 0, 0, 0.5); text-align: center;">
+                    直接クリックして編集するか追加ボタンから新しい費用を追加してください
+                </th>
+            </tr>
+            <tr class="highlight">
+                <th style="background-color: rgba(0, 0, 0, 0.5);">日付</th>
+                <th style="background-color: rgba(0, 0, 0, 0.5);">カテゴリ</th>
+                <th style="background-color: rgba(0, 0, 0, 0.5);">金額</th>
+                <th style="background-color: rgba(0, 0, 0, 0.5);">説明</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for expense in variable_expenses %}
-            <tr>
-                <td class="editable date" data-id="{{ expense.id }}" data-field="payment_date">{{ expense.payment_date|date:"Y-m-d" }}</td>
+            <tr class="highlight" style="background-color: rgba(0, 0, 0, 0.5);">
+                <td class="editable date" data-id="{{ expense.id }}" data-field="record_date" data-value="{{ expense.payment_date|date:"Y-m-d" }}">{{ expense.payment_date|date:"Y-m-d" }}</td>
                 <td class="editable" data-id="{{ expense.id }}" data-field="category">{{ expense.category }}</td>
                 <td class="editable amount" data-id="{{ expense.id }}" data-field="amount">{{ expense.amount|floatformat:"0"|intcomma }}円</td>
                 <td class="editable" data-id="{{ expense.id }}" data-field="description">{{ expense.description }}</td>
                 <td>
-                    <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn-custom">削除</a>
+                    <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="delete-btn">削除</a>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <p>合計金額: ¥{{ total_variable_expense|intcomma }}</p>
-    <a href="{% url 'accountbook:add_variable_expense' %}" class="btn-custom">変動費登録</a>
-    <a href="{% url 'accountbook:expense_list' %}" class="btn-detail">戻る</a>
-    <a href="{% url 'home' %}" class="btn-custom">Home</a>
+    <p class="total-income">合計金額: ¥{{ total_variable_expense|intcomma }}</p>
+    <div class="button-group">
+        <a href="{% url 'accountbook:add_variable_expense' %}" class="btn add-btn">追加</a>
+        <a href="{% url 'accountbook:expense_list' %}" class="btn back-btn">戻る</a>
+        <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+    </div>
 </div>
 {% endblock %}
+
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const editableCells = document.querySelectorAll('.editable');
+    document.addEventListener('DOMContentLoaded', function () {
+        const editableCells = document.querySelectorAll('.editable');
 
-    editableCells.forEach(cell => {
-        cell.addEventListener('click', function(e) {
-            if (cell.querySelector('input')) return; // 既存のinputがあれば何もしない
+        editableCells.forEach(cell => {
+            cell.addEventListener('click', function (e) {
+                if (cell.querySelector('input')) return;
 
-            let input = document.createElement('input');
-            input.value = (cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.innerText.trim());  // 直接innerTextから取得
-            input.type = cell.classList.contains('date') ? 'date' : 'text'; // タイプの判断
-            cell.innerHTML = ''; // セルをクリア
-            cell.appendChild(input); // input要素を追加
-            input.focus();
+                let input = document.createElement('input');
+                input.value = (cell.classList.contains('amount') ? cell.innerText.replace(/[^\d]/g, '') : cell.innerText.trim());
+                input.type = cell.classList.contains('date') ? 'date' : 'text';
+                cell.innerHTML = '';
+                cell.appendChild(input);
+                input.focus();
 
-            input.addEventListener('keydown', async function(e) {
-                if (e.key === 'Enter') {
-                    const newValue = input.value;
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
-                    const headers = {
-                        'Content-Type': 'application/json',
-                    };
-                    if (csrfToken) {
-                        headers['X-CSRFToken'] = csrfToken.value;
-                    }
-
-                    try {
-                        const response = await fetch('/accountbook/update_variable_expense/', {
-                            method: 'POST',
-                            headers: headers,
-                            body: JSON.stringify({
-                                id: cell.dataset.id,
-                                field: cell.dataset.field,
-                                value: newValue
-                            })
-                        });
-                        const data = await response.json();
-                        if (data.status === 'success') {
-                            cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : '');
-                        } else {
-                            cell.innerHTML = '更新エラー';
+                input.addEventListener('keydown', async function (e) {
+                    if (e.key === 'Enter') {
+                        const newValue = input.value;
+                        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+                        const headers = {
+                            'Content-Type': 'application/json',
+                        };
+                        if (csrfToken) {
+                            headers['X-CSRFToken'] = csrfToken.value;
                         }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        cell.innerHTML = '通信エラー';
+
+                        try {
+                            const response = await fetch('/accountbook/update_variable_expense/', {
+                                method: 'POST',
+                                headers: headers,
+                                body: JSON.stringify({
+                                    id: cell.dataset.id,
+                                    field: cell.dataset.field,
+                                    value: newValue
+                                })
+                            });
+                            const data = await response.json();
+                            if (data.status === 'success') {
+                                cell.innerHTML = newValue + (cell.classList.contains('amount') ? '円' : '');
+                            } else {
+                                cell.innerHTML = '更新エラー';
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            cell.innerHTML = '通信エラー';
+                        }
                     }
-                }
+                });
             });
         });
     });
-});
 </script>
 {% endblock %}

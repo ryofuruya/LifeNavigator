@@ -157,14 +157,15 @@ def add_variable_expense(request):
         if form.is_valid():
             variable_expense = form.save(commit=False)
             variable_expense.user = request.user
-            variable_expense.save()  # データをデータベースに保存
-            return redirect('accountbook:variable_expense_list')  # 変動費一覧にリダイレクト
+            variable_expense.save()
+            return redirect('accountbook:variable_expense_list')
         else:
-            # フォームが無効の場合、エラーを含めてフォームを再表示
-            return render(request, 'accountbook/add_variable_expense.html', {'form': form})
+            # フォームが無効な場合、エラー情報をコンテキストに渡す
+            return render(request, 'accountbook/add_variable_expense.html', {'form': form, 'errors': form.errors})
     else:
-        form = VariableExpenseForm()  # GETリクエストの場合、空のフォームを表示
+        form = VariableExpenseForm()
     return render(request, 'accountbook/add_variable_expense.html', {'form': form})
+
 
 # 収入登録ビュー
 @login_required
@@ -389,7 +390,7 @@ def delete_variable_expense(request, expense_id):
 def delete_fixed_expense(request, expense_id):
     expense = get_object_or_404(FixedExpense, id=expense_id, user=request.user)
     expense.delete()
-    return redirect('accountbook:expense_list')
+    return redirect('accountbook:monthly_fixed_expenses')
 
 @csrf_exempt
 def update_variable_expense(request):

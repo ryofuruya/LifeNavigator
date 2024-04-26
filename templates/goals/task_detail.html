@@ -1,61 +1,119 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Task詳細</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/goals.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #00ff00;
+            padding-top: 70px; /* Additional padding to prevent overlap with the header */
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header a {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+        }
+        header a:hover {
+            color: #000;
+        }
+        .task-list-link {color: #3498db !important;}
+        .accountbook-link { color: #1abc9c !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .memo-link { color: #2ecc71 !important; }
+        .user-info-link { color: #34495e !important; }
+        .logout-link { color: #95a5a6 !important; }
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+            margin-top: 20px;
+        }
+        .content {
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            width: auto;
+            font-size: 1.2rem;
+        }
+        .btn {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            margin: 10px;
+            border: 2px solid #00ff00; /* Default green border */
+            background-color: #000; /* Black background */
+            color: #00ff00; /* Green text */
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            opacity: 0.8;
+            border-radius: 5px; /* Rounded corners */
+        }
+        .btn:hover {
+            background-color: #00ff00;
+            color: #000;
+            opacity: 1;
+        }
+        .edit-btn { border-color: #1e90ff; color: #1e90ff; }
+        .back-btn { border-color: #32cd32; color: #32cd32; }
+        .home-btn { border-color: #ffd700; color: #ffd700; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+    </header>
+    <h2>Task詳細</h2>
+    <div class="content">
+        <strong>Title:</strong> {{ task.title }}<br>
+        <strong>Details:</strong> {{ task.details|default:"No details provided." }}<br>
+        <strong>Status:</strong> {{ task.status }}<br>
+        <strong>Priority:</strong> {{ task.priority }}<br>
+        <strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d" }}
+    </div>
+    <div>
+        <a href="{% url 'goals:task_edit' task.id %}" class="btn edit-btn">編集</a>
+        {% if goal_type == 'short_term' %}
+            <a href="{% url 'goals:short_term_goals' %}" class="btn back-btn">戻る</a>
+        {% elif goal_type == 'medium_term' %}
+            <a href="{% url 'goals:medium_term_goals' %}" class="btn back-btn">戻る</a>
+        {% elif goal_type == 'long_term' %}
+            <a href="{% url 'goals:long_term_goals' %}" class="btn back-btn">戻る</a>
+        {% endif %}
 
-{% block content %}
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .detail-container {
-        width: 80%; /* コンテナの幅を調整 */
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1); /* 影をつけて視覚的に分かりやすく */
-        text-align: left; /* テキストを左寄せに */
-        background: white; /* 背景色 */
-        border-radius: 8px; /* 角の丸み */
-        margin-top: 20px;
-    }
-    h2 {
-        text-align: center;
-    }
-    .detail-item {
-        margin-bottom: 10px; /* 各詳細項目の下マージン */
-    }
-    .btn-custom {
-        background-color: #4CAF50; /* 緑色の背景 */
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        text-decoration: none;
-        font-size: 16px;
-        border-radius: 5px;
-        transition: background-color 0.3s, color 0.3s;
-        display: inline-block;
-        margin: 10px;
-    }
-    .btn-custom:hover {
-        background-color: white;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-    }
-</style>
-<h2>タスクの詳細</h2>
-<div class="detail-container">
-    <div class="detail-item"><strong>タイトル:</strong> {{ task.title }}</div>
-    <div class="detail-item"><strong>説明:</strong> {{ task.description }}</div>
-    <div class="detail-item"><strong>完了状態:</strong> {{ task.completed|yesno:"完了,未完了" }}</div>
-    <div class="detail-item"><strong>完了日:</strong> {{ task.completed_at|date:"Y-m-d" }} {{ task.completed_at|time:"H:i" }}</div>
-    <div class="detail-item"><strong>締切日:</strong> {{ task.deadline|date:"Y-m-d" }} {{ task.deadline|time:"H:i" }}</div>
-
-</div>
-<a href="{% url 'goals:task_edit' task.id %}" class="btn-custom">編集</a>
-<a href="{% url 'goals:short_term_goals' %}" class="btn-custom">短期目標</a>
-<a href="{% url 'goals:medium_term_goals' %}" class="btn-custom">中期目標</a>
-<a href="{% url 'goals:long_term_goals' %}" class="btn-custom">長期目標</a>
-<a href="{% url 'goals:goal_setting' %}" class="btn-custom">目標設定一覧</a>
-<a href="{% url 'home' %}" class="btn-custom">Home</a>
-{% endblock %}
+        <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+    </div>
+</body>
+</html>
