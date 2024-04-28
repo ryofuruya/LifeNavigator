@@ -1,0 +1,25 @@
+.no-bullets {
+    list-style-type: none; /* リストの点を消す */
+    padding: 0; /* デフォルトのパディングをリセット */
+    width: 100%; /* リストの幅を指定 */
+}
+
+.centered-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%; /* コンテナの幅を指定 */
+}
+
+.error-message {
+    color: red;        /* テキストカラーを赤に設定 */
+    font-weight: bold; /* テキストを太字にする */
+    margin: 10px 0;    /* 上下にマージンを設定 */
+}
+
+.btn {
+    margin: 5px; /* マージン調整 */
+    padding: 10px 20px; /* パディング調整 */
+}

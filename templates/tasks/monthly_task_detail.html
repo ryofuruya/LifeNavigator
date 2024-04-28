@@ -104,7 +104,7 @@
         <strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d" }}
     </div>
     <div>
-        <a href="{% url 'tasks:daily_task_edit' task.id %}" class="btn edit-btn">編集</a>
+        <a href="{% url 'tasks:monthly_task_edit' task.id %}" class="btn edit-btn">編集</a>
         <a href="{% url 'tasks:monthly_tasks' %}" class="btn back-btn">戻る</a>
         <a href="{% url 'home' %}" class="btn home-btn">Home</a>
     </div>

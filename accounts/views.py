@@ -7,9 +7,11 @@ from django.views.generic import DetailView, UpdateView, DeleteView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from django.contrib.auth import authenticate, login, update_session_auth_hash
+from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
 from django.http import HttpResponseRedirect
 from .models import UserProfile
+from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 
 # ユーザー詳細ビュー
 @method_decorator(login_required, name='dispatch')
@@ -50,7 +52,7 @@ class SignUpView(CreateView):
     model = User
     form_class = SignUpForm
     template_name = 'registration/signup.html'
-    success_url = '/registration/login/'  # 登録後のリダイレクト先
+    success_url = reverse_lazy('home')  # 登録後のリダイレクト先を動的に解決
 
     def form_valid(self, form):
         user = form.save(commit=False)
@@ -59,11 +61,11 @@ class SignUpView(CreateView):
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password1')
         user = authenticate(username=username, password=password)
-        if user is not None:
+        if user:
             login(self.request, user)
             if not UserProfile.objects.filter(user=user).exists():
                 UserProfile.objects.create(user=user)
-            return super(SignUpView, self).form_valid(form)
+            return super().form_valid(form)  # Python 3 では super() だけで十分です
         else:
             return self.form_invalid(form)
 
@@ -83,3 +85,12 @@ def edit_profile(request):
         'user_form': user_form,
         'password_form': password_form
     })
+
+class CustomLogoutView(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        logout(request)
+        return redirect('login') 

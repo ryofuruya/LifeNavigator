@@ -73,65 +73,37 @@ def add_account_entry(request):
 
 @login_required
 def summary_view(request):
-    current_month = now().month
-    current_year = now().year
+    current_month = timezone.now().month
+    current_year = timezone.now().year
     
-    # 月別集計
-    monthly_expenses = VariableExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))
-    monthly_fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))
-    
-    # 年別集計
-    yearly_expenses = VariableExpense.objects.filter(user=request.user, payment_date__year=current_year).aggregate(total=Sum('amount'))
-    yearly_fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__year=current_year).aggregate(total=Sum('amount'))
-    
-    # 前月の集計
-    previous_month = current_month - 1 if current_month > 1 else 12
-    previous_year = current_year if current_month > 1 else current_year - 1
-    previous_month_expenses = VariableExpense.objects.filter(
-        user=request.user, 
-        payment_date__year=previous_year, 
-        payment_date__month=previous_month
-    ).aggregate(total=Sum('amount'))
-    previous_month_fixed_expenses = FixedExpense.objects.filter(
-        user=request.user, 
-        payment_date__year=previous_year, 
-        payment_date__month=previous_month
-    ).aggregate(total=Sum('amount'))
-    
-    # 前年の集計
-    previous_year_expenses = VariableExpense.objects.filter(
+    # 月別収入の集計
+    monthly_incomes = AccountBook.objects.filter(
         user=request.user,
-        payment_date__year=current_year - 1
-    ).aggregate(total=Sum('amount'))
-    previous_year_fixed_expenses = FixedExpense.objects.filter(
+        record_date__year=current_year,
+        record_date__month=current_month,
+        type='income'  # ここで収入だけをフィルタリング（'type'は収入を指定するフィールド名に応じて適宜調整してください）
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    # 月別支出の集計（固定支出と変動支出の合計）
+    monthly_expenses = VariableExpense.objects.filter(
         user=request.user,
-        payment_date__year=current_year - 1
-    ).aggregate(total=Sum('amount'))
+        payment_date__year=current_year,
+        payment_date__month=current_month
+    ).aggregate(total=Sum('amount'))['total'] or 0
     
-    # 変化率の計算
-    def calculate_change(current, previous):
-        if previous and previous['total']:
-            return (current['total'] or 0) - (previous['total'] or 0)
-        return 0
-    
-    # 前月比、前年比の変化量の計算
-    monthly_expense_change = calculate_change(monthly_expenses, previous_month_expenses)
-    yearly_expense_change = calculate_change(yearly_expenses, previous_year_expenses)
-    monthly_fixed_expense_change = calculate_change(monthly_fixed_expenses, previous_month_fixed_expenses)
-    yearly_fixed_expense_change = calculate_change(yearly_fixed_expenses, previous_year_fixed_expenses)
-    
+    monthly_fixed_expenses = FixedExpense.objects.filter(
+        user=request.user,
+        payment_date__year=current_year,
+        payment_date__month=current_month
+    ).aggregate(total=Sum('amount'))['total'] or 0
+
+    total_monthly_outflow = monthly_expenses + monthly_fixed_expenses
+
     context = {
-        'monthly_expenses': monthly_expenses['total'],
-        'monthly_fixed_expenses': monthly_fixed_expenses['total'],
-        'yearly_expenses': yearly_expenses['total'],
-        'yearly_fixed_expenses': yearly_fixed_expenses['total'],
-        'monthly_expense_change': monthly_expense_change,
-        'previous_month_expenses': previous_month_expenses,
-        'previous_month_fixed_expenses': previous_month_fixed_expenses,
-        'previous_year_expenses': previous_year_expenses,
-        'previous_year_fixed_expenses': previous_year_fixed_expenses,
+        'monthly_incomes': monthly_incomes,  # 月別収入
+        'total_monthly_outflow': total_monthly_outflow,  # 月別支出の合計
     }
-    
+
     return render(request, 'accountbook/summary_view.html', context)
 
 @login_required

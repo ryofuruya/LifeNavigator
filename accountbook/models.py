@@ -13,7 +13,7 @@ class AccountBook(models.Model):
         ('income', 'Income'),
         ('expense', 'Expense'),
     ]
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='expense')
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='income')
 
     def __str__(self):
         return f"{self.category}: {self.amount}"
