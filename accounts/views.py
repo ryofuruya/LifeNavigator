@@ -11,7 +11,8 @@ from django.contrib.auth import authenticate, login, update_session_auth_hash, l
 from django.http import HttpResponseRedirect
 from .models import UserProfile
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from accounts.models import UserProfile
 
 # ユーザー詳細ビュー
 @method_decorator(login_required, name='dispatch')
@@ -52,22 +53,22 @@ class SignUpView(CreateView):
     model = User
     form_class = SignUpForm
     template_name = 'registration/signup.html'
-    success_url = reverse_lazy('home')  # 登録後のリダイレクト先を動的に解決
+    success_url = reverse_lazy('home')  # 登録後のリダイレクト先
 
     def form_valid(self, form):
-        user = form.save(commit=False)
-        user.set_password(form.cleaned_data['password1'])
-        user.save()
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        if user:
-            login(self.request, user)
-            if not UserProfile.objects.filter(user=user).exists():
-                UserProfile.objects.create(user=user)
-            return super().form_valid(form)  # Python 3 では super() だけで十分です
+        # ユーザーオブジェクトを保存
+        user = form.save()
+        # ログイン処理
+        login(self.request, user)
+        # リダイレクト先を設定
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        if self.object:
+            return super().get_success_url()
         else:
-            return self.form_invalid(form)
+            # フォールバックとしてホームへのURLを返す
+            return reverse_lazy('home')
 
 @login_required
 def edit_profile(request):
@@ -87,10 +88,10 @@ def edit_profile(request):
     })
 
 class CustomLogoutView(View):
-    @method_decorator(csrf_exempt)
+    @method_decorator(csrf_protect)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
-    def get(self, request):
+    def post(self, request):
         logout(request)
-        return redirect('login') 
+        return redirect('welcome')
