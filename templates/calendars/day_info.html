@@ -3,7 +3,7 @@
 {% block content %}
 <style>
     body {
-        background-image: url('{% static "images/accountbook.jpeg" %}');
+        background-image: url('{% static "images/calendar.jpeg" %}');
         background-size: cover;
         background-position: center;
         margin: 0;
@@ -173,7 +173,7 @@
 }
 </style>
 <header>
-    <a href="{% url 'tasks:task_list' %}" class="task-list-link">タスクリスト</a>
+    <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
     <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
     <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
     <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
@@ -196,17 +196,17 @@
         {% endif %}
     </div>
     <div class="tasks-section">
-        <h3>タスク</h3>
-        {% if tasks %}
-            <ul>
-                {% for task in tasks %}
-                    <li>{{ task.title }} - {{ task.deadline }}: {{ task.description }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>この日に予定されているタスクはありません。</p>
-        {% endif %}
-    </div>
+    <h3>タスク</h3>
+    {% if tasks %}
+        <ul>
+            {% for task in tasks %}
+                <li><a href="{% url 'tasks:monthly_task_detail' task.id %}">{{ task.title }} - {{ task.deadline }}: {{ task.description }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>この日に予定されているタスクはありません。</p>
+    {% endif %}
+</div>
     <div class="button-group">
         <a href="{% url 'calendars:calendar_view' %}" class="btn back-btn">戻る</a>
         <a href="{% url 'home' %}" class="btn home-btn">ホーム</a>

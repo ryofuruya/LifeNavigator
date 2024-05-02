@@ -118,20 +118,21 @@
     }
 
     .delete-btn {
-        font-size: 1.6rem;
-        padding: 10px 20px;
-        border: none;
-        background: linear-gradient(145deg, #ff4757, #e84118);
-        color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
+    font-size: 1.6rem;
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    background-color: transparent; /* 背景を透明に変更 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
 
-    .delete-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    }
+.delete-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #ff4757; /* ホバー時に背景色を表示 */
+}
 
     ul {
         list-style: none;

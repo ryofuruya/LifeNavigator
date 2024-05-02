@@ -6,9 +6,10 @@ from django.utils import timezone
 from django.utils.timezone import localdate
 from django.forms import modelformset_factory
 from django.views.decorators.http import require_POST, require_http_methods
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -105,16 +106,20 @@ def add_monthly_task(request):
         if form.is_valid():
             new_task = form.save(commit=False)
             new_task.user = request.user
-            today = timezone.now().date()
-            first_day_of_month = today.replace(day=1)  # 月の最初の日を設定
-            new_task.deadline = first_day_of_month
+
+            # ユーザーがフォームで指定した日付を使用します。
+            user_defined_deadline = form.cleaned_data['deadline']
+
+            new_task.deadline = user_defined_deadline  # フォームから取得した日付をそのまま使用
             new_task.status = 'in_progress'
             new_task.task_type = 'monthly'
             new_task.save()
             return redirect('tasks:monthly_tasks')
+        else:
+            return render(request, 'tasks/add_monthly_task.html', {'form': form})
     else:
         form = TaskForm()
-    return render(request, 'tasks/add_monthly_task.html', {'form': form})
+        return render(request, 'tasks/add_monthly_task.html', {'form': form})
 
 @login_required
 @require_POST

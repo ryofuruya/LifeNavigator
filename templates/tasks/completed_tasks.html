@@ -114,9 +114,15 @@
     <h2>完了したタスク</h2>
     {% if completed_tasks %}
     <ul>
-        {% for task in completed_tasks %}
-        <li>{{ task.title }} - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}</li>
-        {% endfor %}
+       {% for task in completed_tasks %}
+<li>
+    {% if task.task_type == 'daily' %}
+    <a href="{% url 'tasks:daily_task_detail' pk=task.pk %}">{{ task.title }}</a> - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}
+    {% elif task.task_type == 'monthly' %}
+    <a href="{% url 'tasks:monthly_task_detail' pk=task.pk %}">{{ task.title }}</a> - 完了日時: {{ task.completed_at|date:"Y-m-d H:i" }}
+    {% endif %}
+</li>
+{% endfor %}
     </ul>
     {% else %}
     <p>完了したタスクはありません。</p>

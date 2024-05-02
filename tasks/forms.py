@@ -5,10 +5,11 @@ from django.forms import modelformset_factory
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'details', 'priority']
+        fields = ['title', 'details', 'priority', 'deadline']  # 'deadline'を追加
         widgets = {
             'priority': forms.Select(),
             'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'deadline': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # deadline用のウィジェットを追加
         }
 
 TaskFormSet = modelformset_factory(Task, form=TaskForm, extra=0)
