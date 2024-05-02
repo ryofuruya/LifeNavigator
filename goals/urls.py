@@ -17,5 +17,4 @@ urlpatterns = [
     path('add_task_to_long_term_goal/', views.add_task_to_long_term_goal, name='add_task_to_long_term_goal'),
     path('task_edit/<int:task_id>/', views.task_edit, name='task_edit'),  # タスクの編集
     path('task/<int:task_id>/complete/', views.complete_task, name='complete_task'),  # 一括でタスクを完了するアクション
-    path('task_detail/<int:task_id>/', views.task_detail, name='task_detail'),  # タスクの詳細ページ、URLが重複していたため修正
 ]
