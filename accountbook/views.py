@@ -1,15 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import AccountBook,FixedExpense, VariableExpense, Expense
+from .models import AccountBook, FixedExpense, VariableExpense, Expense
 from django.contrib.auth.decorators import login_required
-from .forms import AccountBookForm, FixedExpenseForm, VariableExpenseForm, ExpenseFilterForm, FixedExpense
-from django.db.models import Sum, F
-from django.utils.timezone import now
+from .forms import AccountBookForm, FixedExpenseForm, VariableExpenseForm, ExpenseFilterForm
+from django.db.models import Sum
 from django.utils import timezone
-from .forms import ExpenseFilterForm
 import datetime
 import pytz
 import calendar
-from django.db.models.functions import TruncMonth, TruncYear
 from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -36,15 +33,12 @@ def accountbook_list(request):
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
 
     incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end))
-    # 収入合計
     total_income = incomes.aggregate(Sum('amount'))['amount__sum'] or 0
 
-    # 支出合計 (変動費と固定費を合算)
     total_variable_expense = VariableExpense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0
     total_fixed_expense = FixedExpense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0
     total_expense = total_variable_expense + total_fixed_expense
 
-    # 純収入
     net_income = total_income - total_expense
     
     context = {
@@ -70,21 +64,18 @@ def add_account_entry(request):
         form = AccountBookForm()
     return render(request, 'accountbook/add_entry.html', {'form': form})
 
-
 @login_required
 def summary_view(request):
     current_month = timezone.now().month
     current_year = timezone.now().year
     
-    # 月別収入の集計
     monthly_incomes = AccountBook.objects.filter(
         user=request.user,
         record_date__year=current_year,
         record_date__month=current_month,
-        type='income'  # ここで収入だけをフィルタリング（'type'は収入を指定するフィールド名に応じて適宜調整してください）
+        type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
 
-    # 月別支出の集計（固定支出と変動支出の合計）
     monthly_expenses = VariableExpense.objects.filter(
         user=request.user,
         payment_date__year=current_year,
@@ -100,8 +91,8 @@ def summary_view(request):
     total_monthly_outflow = monthly_expenses + monthly_fixed_expenses
 
     context = {
-        'monthly_incomes': monthly_incomes,  # 月別収入
-        'total_monthly_outflow': total_monthly_outflow,  # 月別支出の合計
+        'monthly_incomes': monthly_incomes,
+        'total_monthly_outflow': total_monthly_outflow,
     }
 
     return render(request, 'accountbook/summary_view.html', context)
@@ -114,9 +105,8 @@ def add_fixed_expense(request):
             fixed_expense = form.save(commit=False)
             fixed_expense.user = request.user
             fixed_expense.save()
-            return redirect('accountbook:monthly_fixed_expenses')  # 固定支出一覧にリダイレクト
+            return redirect('accountbook:monthly_fixed_expenses')
         else:
-            # フォームが無効の場合、エラーを表示
             return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
     else:
         form = FixedExpenseForm()
@@ -132,14 +122,11 @@ def add_variable_expense(request):
             variable_expense.save()
             return redirect('accountbook:variable_expense_list')
         else:
-            # フォームが無効な場合、エラー情報をコンテキストに渡す
             return render(request, 'accountbook/add_variable_expense.html', {'form': form, 'errors': form.errors})
     else:
         form = VariableExpenseForm()
     return render(request, 'accountbook/add_variable_expense.html', {'form': form})
 
-
-# 収入登録ビュー
 @login_required
 def add_income(request):
     if request.method == 'POST':
@@ -153,7 +140,6 @@ def add_income(request):
         form = AccountBookForm()
     return render(request, 'accountbook/add_income.html', {'form': form})
 
-# 支出登録ビュー
 @login_required
 def add_expense(request):
     if request.method == 'POST':
@@ -169,15 +155,11 @@ def add_expense(request):
 
 @login_required
 def income_list(request):
-    # 当月を取得
     now = timezone.now()
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
     
-    # 当月の収入データをフィルタリング
     incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end))
-    
-    # 合計金額を計算
     total_income = incomes.aggregate(Sum('amount'))['amount__sum'] or 0
     
     context = {
@@ -193,10 +175,7 @@ def variable_expense_list(request):
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
 
-    # 当月の変動費データをフィルタリング
     variable_expenses = VariableExpense.objects.filter(user=request.user, payment_date__range=(month_start, month_end))
-    
-    # 合計金額を計算
     total_variable_expense = variable_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
     
     context = {
@@ -259,14 +238,12 @@ def monthly_fixed_expenses(request):
     }
     return render(request, 'accountbook/monthly_fixed_expenses.html', context)
 
-
 @login_required
 def income_summary_view(request):
     now = timezone.now()
     current_year = now.year
     current_month = now.month
     
-    # 当月の開始と終了の日時を計算
     current_month_start = datetime.datetime(current_year, current_month, 1, tzinfo=pytz.UTC)
     if current_month == 12:
         current_month_end = datetime.datetime(current_year + 1, 1, 1, tzinfo=pytz.UTC) - datetime.timedelta(seconds=1)
@@ -276,44 +253,36 @@ def income_summary_view(request):
     monthly_fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
     monthly_expenses = VariableExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
     
-    # ここに収入の合計を計算するコードを追加
     total_income = AccountBook.objects.filter(user=request.user, record_date__year=current_year, record_date__month=current_month, type='income').aggregate(total=Sum('amount'))['total'] or 0
 
-    # 月別の収入集計
     monthly_income = AccountBook.objects.filter(
         user=request.user,
         record_date__range=(current_month_start, current_month_end),
         type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
 
-    # 年別の収入集計
     yearly_income = AccountBook.objects.filter(
         user=request.user,
         record_date__year=current_year,
         type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
 
-    # 前月と前年の日付を計算
     previous_month = current_month - 1 if current_month > 1 else 12
     previous_year = current_year if current_month > 1 else current_year - 1
     previous_month_start = datetime.datetime(previous_year, previous_month, 1, tzinfo=pytz.UTC)
     previous_month_end = previous_month_start + datetime.timedelta(days=calendar.monthrange(previous_year, previous_month)[1]) - datetime.timedelta(seconds=1)
 
-    # 前月の収入集計
     previous_month_income = AccountBook.objects.filter(
         user=request.user,
         record_date__range=(previous_month_start, previous_month_end),
         type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
 
-    # 前年の収入集計
     previous_year_income = AccountBook.objects.filter(
         user=request.user,
         record_date__year=previous_year,
         type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
-
-
 
     context = {
         'monthly_fixed_expenses': monthly_fixed_expenses,
@@ -326,6 +295,7 @@ def income_summary_view(request):
     }
 
     return render(request, 'accountbook/income_summary_view.html', context)
+
 @csrf_exempt
 def update_income(request):
     if request.method == 'POST':
@@ -337,7 +307,6 @@ def update_income(request):
         if field == 'record_date':
             value = parse_date(value)
 
-        # 収入データを更新
         income = AccountBook.objects.get(id=income_id)
         setattr(income, field, value)
         income.save()
@@ -374,7 +343,6 @@ def update_variable_expense(request):
 
         expense = VariableExpense.objects.get(id=expense_id)
 
-        # amountフィールドの場合、値を整数に変換
         if field == 'amount':
             value = int(round(float(value)))
 
@@ -395,7 +363,6 @@ def update_fixed_expense(request):
 
         expense = FixedExpense.objects.get(id=expense_id)
 
-        # amountフィールドの場合、値を整数に変換
         if field == 'amount':
             value = int(round(float(value)))
 
@@ -405,7 +372,6 @@ def update_fixed_expense(request):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'failed'}, status=400)
 
-        
 @require_POST
 @csrf_exempt
 def update_expense(request):
@@ -417,6 +383,7 @@ def update_expense(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
     
 @login_required
 def edit_account_book(request, model_type, id):
@@ -434,39 +401,37 @@ def edit_account_book(request, model_type, id):
         form = AccountBookForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
-            # リダイレクト先を詳細ビューに変更し、必要なパラメータを渡します。
             return redirect('accountbook:detail_account_book', model_type=model_type, id=id)
-
     else:
         form = AccountBookForm(instance=instance)
+        # Amountフィールドの値を整数にキャスト
+        if 'Amount' in form.fields:
+            form.initial['Amount'] = int(form.initial['Amount'])
 
     context = {
         'form': form,
-        'model_type': model_type,  # この行を追加または確認
-        'instance': instance,      # instance 自体を context に追加
-        'page_type': model_type    # income, variable_expense, or monthly_fixed_expense
+        'model_type': model_type,
+        'instance': instance,
     }
     return render(request, 'accountbook/account_book_edit.html', context)
 
+
 @login_required
 def detail_account_book(request, model_type, id):
-    # モデルクラスの辞書
     model_classes = {
         'income': AccountBook,
         'variable_expense': VariableExpense,
         'monthly_fixed_expense': FixedExpense
     }
 
-    # モデルクラスを取得
     model = model_classes.get(model_type)
     if not model:
         raise Http404("Account type not found.")
 
-    # インスタンスを取得
     instance = get_object_or_404(model, pk=id)
 
     context = {
         'instance': instance,
-        'model_type': model_type  # テンプレートで表示をカスタマイズするための情報
+        'model_type': model_type
     }
     return render(request, 'accountbook/detail_account_book.html', context)

@@ -15,7 +15,7 @@
             background-attachment: fixed;
             margin: 0;
             padding: 0;
-            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
+            padding-top: 60px;
             font-family: 'Orbitron', sans-serif;
             display: flex;
             flex-direction: column;
@@ -33,7 +33,7 @@
             z-index: 1000;
         }
         header a {
-            color: #9b59b6; /* Unified color for all header links */
+            color: #9b59b6;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
@@ -49,7 +49,7 @@
         }
         .buttons-container, .button-group {
             display: flex;
-            flex-direction: row; /* Change to row for horizontal button layout */
+            flex-direction: row;
             justify-content: center;
             margin-top: 20px;
         }
@@ -88,9 +88,9 @@
             border-radius: 10px;
         }
         .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
+            color: red;
+            font-size: 1.2rem;
+            margin-top: 5px;
         }
         .task-list-link { color: #3498db !important; }
         .goal-setting-link { color: #9b59b6 !important; }
@@ -122,10 +122,15 @@
                     <label for="{{ field.id_for_label }}">
                         {{ field.label }}
                         {% if field.field.required %}
-                        <span class="required" style="color: red;">*</span> <!-- 必須フィールドに赤いアスタリスクを表示 -->
+                        <span class="required" style="color: red;">*</span>
                         {% endif %}
                     </label>
-                    {{ field|default_if_none:"" }}  <!-- 小数点なしでフィールド表示 -->
+                    {% if field.name == 'Amount' %}
+                        <!-- Amountフィールドの場合、小数点以下を切り捨てて整数のみ表示 -->
+                        <input type="number" step="1" name="{{ field.name }}" value="{{ field.value|floatformat:0|default_if_none:'' }}">
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
                     {% if field.errors %}
                         {% for error in field.errors %}
                         <div class="error-message">{{ error }}</div>
@@ -143,3 +148,12 @@
     </div>
 </body>
 </html>
+<script>
+    // Amountフィールドの入力を整数のみに制限する
+    document.addEventListener("DOMContentLoaded", function() {
+        var amountField = document.querySelector('input[name="Amount"]');
+        amountField.addEventListener('input', function() {
+            this.value = this.value.replace(/[^\d]/g, ''); // 数字以外の文字を削除
+        });
+    });
+</script>
