@@ -11,8 +11,8 @@ import json
 @login_required
 def day_info(request, year, month, day):
     date = datetime.date(year, month, day)
-    events = Event.objects.filter(date=date)  # その日のイベントを取得
-    tasks = Task.objects.filter(deadline=date)  # 'date' を 'deadline' に変更
+    events = Event.objects.filter(date=date, is_deleted=False)  # 削除されていないイベントのみ取得
+    tasks = Task.objects.filter(deadline=date, is_deleted=False)  # 削除されていないタスクのみ取得
     context = {
         'events': events,
         'tasks': tasks,
@@ -25,8 +25,8 @@ def calendar_view(request):
     current_year = today.year
     current_month = today.month
 
-    events = Event.objects.filter(date__year=current_year, date__month=current_month)
-    tasks = Task.objects.filter(deadline__year=current_year, deadline__month=current_month)
+    events = Event.objects.filter(date__year=current_year, date__month=current_month, is_deleted=False)
+    tasks = Task.objects.filter(deadline__year=current_year, deadline__month=current_month, is_deleted=False)
 
     event_days = [event.date.day for event in events]
     task_days = [task.deadline.day for task in tasks]
@@ -40,7 +40,7 @@ def calendar_view(request):
     return render(request, 'calendars/calendar_view.html', context)
 
 def event_list(request):
-    events = Event.objects.all().order_by('date')
+    events = Event.objects.filter(is_deleted=False).order_by('date')  # 削除されていないイベントのみ取得
     return render(request, 'calendars/event_list.html', {'events': events})
 
 def event_detail(request, event_id):

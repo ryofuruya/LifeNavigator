@@ -13,34 +13,36 @@
     div {
         text-align: center;
     }
-    div a {
+    div a, div button {
         display: inline-block;
-        margin: 0 10px;
+        margin: 10px;
     }
     .error-message {
-        color: red; /* エラーメッセージを赤色で表示し、目立たせるためのスタイリング */
+        color: red; /* エラーメッセージを赤色で表示 */
+    }
+    .required {
+        color: red; /* 必須フィールドのアスタリスクを赤色で表示 */
     }
 </style>
-<!-- ページのタイトルを表示し、現在の操作がプロファイルの編集であることを明示 -->
 <h2>Edit Profile</h2>
-<!-- プロファイル編集用のフォーム。セキュリティのためのCSRFトークンが含まれています -->
 <form method="post">
     {% csrf_token %}
-    <!-- フォーム全体に関連するエラーがあればここで表示されます -->
     {{ form.non_field_errors }}
     {% for field in form %}
         <div>
-            <!-- 各入力フィールドとそのラベル、ユーザーが入力しやすいように整理されて表示 -->
-            {{ field.label_tag }} {{ field }}
-            <!-- 入力エラーがあれば、各フィールドに対して赤色のエラーメッセージとして表示 -->
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}
+                    <span class="required">*</span> <!-- 必須マークを表示 -->
+                {% endif %}
+            </label>
+            {{ field }}
             {% for error in field.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
     {% endfor %}
-    <!-- フォームを送信するためのボタン、変更を保存する操作を実行 -->
     <button type="submit">Save changes</button>
-    <!-- ホームページへのリンク、サイトのメインページに簡単に戻るための手段 -->
     <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
 </form>
 {% endblock %}

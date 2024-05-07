@@ -42,14 +42,14 @@
         h2 {
             font-size: 3rem;
             text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
-            margin-top: 100px; /* Adjust for header */
+            margin-top: 100px;
             margin-bottom: 20px;
         }
         .centered-content {
             width: 90%;
             max-width: 600px;
             text-align: center;
-            padding-top: 20vh; /* Adjusted padding to 20% of the viewport height */
+            padding-top: 20vh;
         }
         .buttons-container, .button-group {
             display: flex;
@@ -83,43 +83,30 @@
         .add-btn { border-color: #1e90ff; color: #1e90ff; }
         .back-btn { border-color: #32cd32; color: #32cd32; }
         .home-btn { border-color: #ffd700; color: #ffd700; }
-        .tooltip-text {
-            visibility: hidden;
-            width: 100%;
-            background-color: #0008;
-            color: #00ff00;
-            text-align: center;
-            position:absolute;
-            z-index: 1;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            padding: 5px 0;
-            opacity: 0;
-            transition: opacity 0.3s, visibility 0.3s;
-            overflow: hidden;
-        }
-        .btn:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
         .form-group {
-            margin-bottom: 20px; /* Adjusted margin */
+            margin-bottom: 20px;
         }
         input, textarea {
-            width: 100%; /* Adjust width for form elements */
-            padding: 10px; /* Padding for input fields */
+            width: 100%;
+            padding: 10px;
         }
         label {
-            font-size: 1.5rem; /* Adjusted font size for labels */
-            display: block; /* Make labels block level for better structure */
+            font-size: 1.5rem;
+            display: block;
         }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        .required {
+            color: red;
         }
         .goal-setting-link { color: #9b59b6 !important; }
         .accountbook-link { color: #1abc9c !important; }
@@ -128,11 +115,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -148,23 +130,28 @@
     <div class="centered-content">
         <h2>Monthly Task追加</h2>
         <form method="post" class="centered-content">
-    {% csrf_token %}
-    <div class="error-message">{{ form.non_field_errors }}</div>
-    <div class="form-container">
-        {% for field in form %}
-        <div class="form-group">
-            {{ field.label_tag }}
-            {{ field }}
-            <div class="error-message">{{ field.errors }}</div>
-        </div>
-        {% endfor %}
-    </div>
-    <div class="button-group">
-        <button type="submit" class="btn add-btn">追加</button>
-        <a href="{% url 'tasks:monthly_tasks' %}" class="btn back-btn">戻る</a>
-        <a href="{% url 'home' %}" class="btn home-btn">Home</a>
-    </div>
-</form>
+            {% csrf_token %}
+            <div class="error-message">{{ form.non_field_errors }}</div>
+            <div class="form-container">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required">*</span> <!-- 必須マークを表示 -->
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    <div class="error-message">{{ field.errors }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn add-btn">追加</button>
+                <a href="{% url 'tasks:monthly_tasks' %}" class="btn back-btn">戻る</a>
+                <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+            </div>
+        </form>
     </div>
 </body>
 </html>

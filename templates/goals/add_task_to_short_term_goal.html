@@ -93,6 +93,7 @@
         label {
             font-size: 1.5rem; /* Adjusted font size for labels */
             display: block; /* Make labels block level for better structure */
+            margin-bottom: 5px;
         }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
@@ -100,18 +101,21 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
-        .task-list-link {color: #3498db !important;}
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required {
+            color: red; /* 必須マークの色を赤に設定 */
+        }
+        .task-list-link { color: #3498db !important; }
         .accountbook-link { color: #1abc9c !important; }
         .calendar-link { color: #f39c12 !important; }
         .values-link { color: #e74c3c !important; }
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -132,7 +136,12 @@
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required">*</span>
+                        {% endif %}
+                    </label>
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>

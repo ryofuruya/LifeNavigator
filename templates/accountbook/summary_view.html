@@ -185,28 +185,71 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['支出', '収入'],
-                datasets: [{
-                    label: '金額',
-                    data: [{{ total_monthly_outflow }}, {{ monthly_incomes }}],
-                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)'],
-                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['支出', '収入'],
+            datasets: [{
+                label: '金額',
+                data: [{{ total_monthly_outflow }}, {{ monthly_incomes }}],
+                backgroundColor: ['rgba(233, 30, 99, 0.8)', 'rgba(33, 150, 243, 0.8)'],
+                borderColor: ['rgba(233, 30, 99, 1)', 'rgba(33, 150, 243, 1)'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: 16
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 16
+                        }
                     }
                 }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        font: {
+                            size: 18
+                        }
+                    }
+                }
+            },
+            layout: {
+                padding: {
+                    left: 20,
+                    right: 20,
+                    top: 20,
+                    bottom: 20
+                }
+            },
+            plugins: {
+                tooltip: {
+                    enabled: true
+                },
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: 'black'
+                    }
+                },
+                background: {
+                    color: 'rgba(255, 255, 255, 0.8)' // 半透明の白背景を追加
+                }
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>

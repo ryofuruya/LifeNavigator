@@ -100,6 +100,12 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required { color: red; }
         .task-list-link { color: #3498db !important; }
         .goal-setting-link { color: #9b59b6 !important; }
         .calendar-link { color: #f39c12 !important; }
@@ -107,11 +113,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .alert-danger {
-            color: red;
-            font-size: 1.2rem;
-            margin-top: 5px;
-        }
     </style>
 </head>
 <body>
@@ -128,38 +129,34 @@
         <h2>変動費登録</h2>
         <form method="post" class="centered-content">
             {% csrf_token %}
-            {% if errors %}
-            <div class="alert alert-danger">
-                <ul>
-                    {% for field, error_list in errors.items %}
-                        {% for error in error_list %}
-                            <li>{{ field }}: {{ error }}</li>
-                        {% endfor %}
+            <div class="form-container">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>エラーが発生しました:</strong>
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required" style="color: red;">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
                     {% endfor %}
-                </ul>
+                </div>
+                {% endfor %}
             </div>
             {% endif %}
-            <div class="form-container">
-                <div class="form-group">
-                    <label for="record_date">日付:費用発生日</label>
-                    <input type="date" id="record_date" name="record_date" required>
                 </div>
-                <div class="form-group">
-                    <label for="payment_date">支払日:現金が動く日</label>
-                    <input type="date" id="payment_date" name="payment_date" required>
-                </div>
-                <div class="form-group">
-                    <label for="category">カテゴリ:費用の分類</label>
-                    <input type="text" id="category" name="category" required>
-                </div>
-                <div class="form-group">
-                    <label for="amount">金額:</label>
-                    <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">説明:費用の詳細 メモ</label>
-                    <textarea id="description" name="description" required></textarea>
-                </div>
+                {% endfor %}
                 <div class="button-group">
                     <button type="submit" class="btn add-btn">登録</button>
                     <a href="{% url 'accountbook:variable_expense_list' %}" class="btn back-btn">戻る</a>

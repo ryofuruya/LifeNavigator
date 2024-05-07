@@ -1,29 +1,61 @@
 from django import forms
 from .models import AccountBook, FixedExpense, VariableExpense
 from django.utils.timezone import localtime
-from .models import AccountBook
-
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 class AccountBookForm(forms.ModelForm):
-    record_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
-
     class Meta:
         model = AccountBook
-        fields = ['amount', 'category', 'record_date', 'description']
+        fields = ['category', 'amount', 'record_date', 'description']
+        widgets = {
+            'record_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+    amount = forms.IntegerField(help_text='整数を入力してください。')  # 小数点なしの整数フィールドに変更
+
+    def __init__(self, *args, **kwargs):
+        super(AccountBookForm, self).__init__(*args, **kwargs)
+        self.fields['category'].required = True
+        self.fields['amount'].required = True
+        self.fields['record_date'].required = True
+        self.fields['description'].required = True
+        self.fields['amount'].widget.attrs.update({'step': '1'})
 
 class FixedExpenseForm(forms.ModelForm):
     payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
+    amount = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'step': '1'}),
+        help_text=_('整数のみを入力してください。')
+    )
 
     class Meta:
         model = FixedExpense
         fields = ['payment_date', 'amount', 'category', 'description']
 
+    def __init__(self, *args, **kwargs):
+        super(FixedExpenseForm, self).__init__(*args, **kwargs)
+        self.fields['payment_date'].required = True
+        self.fields['amount'].required = True
+        self.fields['category'].required = True
+        self.fields['description'].required = True
+
 class VariableExpenseForm(forms.ModelForm):
     payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
+    amount = forms.IntegerField(
+        widget=forms.NumberInput(attrs={'step': '1'}),
+        help_text=_('整数のみを入力してください。')
+    )
 
     class Meta:
         model = VariableExpense
         fields = ['payment_date', 'amount', 'category', 'description']
+
+    def __init__(self, *args, **kwargs):
+        super(VariableExpenseForm, self).__init__(*args, **kwargs)
+        self.fields['payment_date'].required = True
+        self.fields['amount'].required = True
+        self.fields['category'].required = True
+        self.fields['description']. required = True
 
 class ExpenseFilterForm(forms.Form):
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))

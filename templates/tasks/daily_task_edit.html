@@ -15,7 +15,7 @@
             background-attachment: fixed;
             margin: 0;
             padding: 0;
-            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
+            padding-top: 60px;
             font-family: 'Orbitron', sans-serif;
             display: flex;
             flex-direction: column;
@@ -33,7 +33,7 @@
             z-index: 1000;
         }
         header a {
-            color: #9b59b6; /* Unified color for all header links */
+            color: #9b59b6;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
@@ -49,7 +49,7 @@
         }
         .buttons-container, .button-group {
             display: flex;
-            flex-direction: row; /* Change to row for horizontal button layout */
+            flex-direction: row;
             justify-content: center;
             margin-top: 20px;
         }
@@ -81,6 +81,7 @@
         }
         label {
             font-size: 1.5rem;
+            display: block;
         }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
@@ -88,9 +89,12 @@
             border-radius: 10px;
         }
         .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
+            color: red;
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        .required {
+            color: red;
         }
         .goal-setting-link { color: #9b59b6 !important; }
         .accountbook-link { color: #1abc9c !important; }
@@ -99,11 +103,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -124,19 +123,20 @@
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required">*</span> <!-- 必須マークを赤色で表示 -->
+                        {% endif %}
+                    </label>
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>
                 {% endfor %}
-                <div class="form-group"> <!-- Added Deadline field -->
-                    <label for="deadline">Deadline:</label>
-                    <input type="date" id="deadline" name="deadline" value="{{ task.deadline|date:'Y-m-d' }}" required>
-                </div>
             </div>
             <div class="button-group">
                 <button type="submit" class="btn add-btn">Save</button>
-                <a href="{% url 'tasks:daily_task_detail' task.id %}" class="btn back-btn">Cancel</a>
+                <a href="{% url 'tasks:daily_tasks' %}" class="btn back-btn">Cancel</a>
                 <a href="{% url 'home' %}" class="btn home-btn">Home</a>
             </div>
         </form>

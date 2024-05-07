@@ -131,6 +131,8 @@
     <div class="content">
     <!-- メモの内容を表示 -->
     <p>{{ memo.content }}</p>
+    <p>追加日: {{ memo.created_at|date:"Y-m-d" }}</p>
+    <p>更新日: {{ memo.updated_at|date:"Y-m-d" }}</p>
     </div>
     <div>
     <!-- メモの編集ページへのリンクを提供。ボタンスタイルで視覚的に強調 -->

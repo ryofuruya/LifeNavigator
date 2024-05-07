@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import accountbook_list, add_account_entry, summary_view,income_list, variable_expense_list, expense_list, delete_income
+from .views import accountbook_list, add_account_entry, summary_view,income_list, variable_expense_list, expense_list, delete_income, edit_account_book, detail_account_book
 
 app_name = 'accountbook' 
 
@@ -23,4 +23,6 @@ urlpatterns = [
     path('delete_fixed_expense/<int:expense_id>/', views.delete_fixed_expense, name='delete_fixed_expense'),
     path('update_variable_expense/', views.update_variable_expense, name='update_variable_expense'),
     path('update_fixed_expense/', views.update_fixed_expense, name='update_fixed_expense'), # type: ignore
+    path('edit/<str:model_type>/<int:id>/', edit_account_book, name='edit_account_book'),
+    path('detail/<str:model_type>/<int:id>/', detail_account_book, name='detail_account_book'),
 ]

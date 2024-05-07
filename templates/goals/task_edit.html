@@ -99,6 +99,9 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
+        .required {
+            color: red; /* 必須フィールドのアスタリスクを赤色で表示 */
+        }
     </style>
 </head>
 <body>
@@ -120,6 +123,9 @@
                 {% for field in form %}
                 <div class="form-group">
                     {{ field.label_tag }}
+                    {% if field.field.required %}
+                            <span class="required">*</span> <!-- 必須マークを赤色で表示 -->
+                        {% endif %}
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>

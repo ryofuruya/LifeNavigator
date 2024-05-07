@@ -3,19 +3,19 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>価値観 編集</title>
+    <title>編集</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
-            background-image: url('{% static "images/values.png" %}');
+            background-image: url('{% static "images/accountbook.jpeg" %}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
             margin: 0;
             padding: 0;
-            padding-top: 60px;
+            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
             font-family: 'Orbitron', sans-serif;
             display: flex;
             flex-direction: column;
@@ -33,7 +33,7 @@
             z-index: 1000;
         }
         header a {
-            color: #9b59b6;
+            color: #9b59b6; /* Unified color for all header links */
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
@@ -49,7 +49,7 @@
         }
         .buttons-container, .button-group {
             display: flex;
-            flex-direction: row;
+            flex-direction: row; /* Change to row for horizontal button layout */
             justify-content: center;
             margin-top: 20px;
         }
@@ -88,16 +88,12 @@
             border-radius: 10px;
         }
         .error-message {
-            color: red;
-            font-size: 1.2rem;
-            margin-top: 5px;
-        }
-        .required {
-            color: red;
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
         }
         .task-list-link { color: #3498db !important; }
         .goal-setting-link { color: #9b59b6 !important; }
-        .accountbook-link { color: #1abc9c !important; }
         .calendar-link { color: #f39c12 !important; }
         .values-link { color: #e74c3c !important; }
         .memo-link { color: #2ecc71 !important; }
@@ -109,32 +105,38 @@
     <header>
         <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
         <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
-        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
         <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
     </header>
     <div class="centered-content">
-        <h2>価値観 編集</h2>
+        <h2>編集</h2>
         <form method="post" class="centered-content">
             {% csrf_token %}
             <div class="error-message">{{ form.non_field_errors }}</div>
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
-                    {% if field.field.required %}
-                            <span class="required">*</span>
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                        <span class="required" style="color: red;">*</span> <!-- 必須フィールドに赤いアスタリスクを表示 -->
                         {% endif %}
-                    {{ field }}
-                    <div class="error-message">{{ field.errors }}</div>
+                    </label>
+                    {{ field|default_if_none:"" }}  <!-- 小数点なしでフィールド表示 -->
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>
             <div class="button-group">
                 <button type="submit" class="btn add-btn">Save</button>
-                <a href="{% url 'values:value_list' %}" class="btn back-btn">戻る</a>
+                <a href="{% url 'accountbook:detail_account_book' model_type=model_type id=instance.id %}" class="btn back-btn">戻る</a>
                 <a href="{% url 'home' %}" class="btn home-btn">Home</a>
             </div>
         </form>

@@ -10,7 +10,7 @@ import datetime
 import pytz
 import calendar
 from django.db.models.functions import TruncMonth, TruncYear
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_date
@@ -417,3 +417,56 @@ def update_expense(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+    
+@login_required
+def edit_account_book(request, model_type, id):
+    model_classes = {
+        'income': AccountBook,
+        'variable_expense': VariableExpense,
+        'monthly_fixed_expense': FixedExpense
+    }
+    model = model_classes.get(model_type)
+    if not model:
+        raise Http404("Account type not found.")
+
+    instance = get_object_or_404(model, pk=id)
+    if request.method == 'POST':
+        form = AccountBookForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            # リダイレクト先を詳細ビューに変更し、必要なパラメータを渡します。
+            return redirect('accountbook:detail_account_book', model_type=model_type, id=id)
+
+    else:
+        form = AccountBookForm(instance=instance)
+
+    context = {
+        'form': form,
+        'model_type': model_type,  # この行を追加または確認
+        'instance': instance,      # instance 自体を context に追加
+        'page_type': model_type    # income, variable_expense, or monthly_fixed_expense
+    }
+    return render(request, 'accountbook/account_book_edit.html', context)
+
+@login_required
+def detail_account_book(request, model_type, id):
+    # モデルクラスの辞書
+    model_classes = {
+        'income': AccountBook,
+        'variable_expense': VariableExpense,
+        'monthly_fixed_expense': FixedExpense
+    }
+
+    # モデルクラスを取得
+    model = model_classes.get(model_type)
+    if not model:
+        raise Http404("Account type not found.")
+
+    # インスタンスを取得
+    instance = get_object_or_404(model, pk=id)
+
+    context = {
+        'instance': instance,
+        'model_type': model_type  # テンプレートで表示をカスタマイズするための情報
+    }
+    return render(request, 'accountbook/detail_account_book.html', context)

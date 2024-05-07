@@ -83,27 +83,6 @@
         .add-btn { border-color: #1e90ff; color: #1e90ff; }
         .back-btn { border-color: #32cd32; color: #32cd32; }
         .home-btn { border-color: #ffd700; color: #ffd700; }
-        .tooltip-text {
-            visibility: hidden;
-            width: 100%;
-            background-color: #0008;
-            color: #00ff00;
-            text-align: center;
-            position:absolute;
-            z-index: 1;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            padding: 5px 0;
-            opacity: 0;
-            transition: opacity 0.3s, visibility 0.3s;
-            overflow: hidden;
-        }
-        .btn:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
         .form-group {
             margin-bottom: 20px; /* Adjusted margin */
         }
@@ -121,6 +100,14 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required {
+            color: red; /* 必須フィールドのアスタリスクを赤色で表示 */
+        }
         .goal-setting-link { color: #9b59b6 !important; }
         .accountbook-link { color: #1abc9c !important; }
         .calendar-link { color: #f39c12 !important; }
@@ -128,11 +115,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -153,7 +135,12 @@
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required">*</span> <!-- 必須マークを表示 -->
+                        {% endif %}
+                    </label>
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>

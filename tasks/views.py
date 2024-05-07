@@ -88,7 +88,7 @@ def add_daily_task(request):
         if form.is_valid():
             new_task = form.save(commit=False)
             new_task.user = request.user
-            new_task.deadline = timezone.localdate()
+            new_task.deadline = form.cleaned_data['deadline']  # フォームから日付を取得
             new_task.task_type = 'daily'
             new_task.save()
             return redirect('tasks:daily_tasks')
@@ -106,11 +106,7 @@ def add_monthly_task(request):
         if form.is_valid():
             new_task = form.save(commit=False)
             new_task.user = request.user
-
-            # ユーザーがフォームで指定した日付を使用します。
-            user_defined_deadline = form.cleaned_data['deadline']
-
-            new_task.deadline = user_defined_deadline  # フォームから取得した日付をそのまま使用
+            new_task.deadline = form.cleaned_data['deadline']  # フォームから日付を取得
             new_task.status = 'in_progress'
             new_task.task_type = 'monthly'
             new_task.save()

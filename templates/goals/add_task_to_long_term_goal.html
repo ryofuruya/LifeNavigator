@@ -100,6 +100,14 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required {
+            color: red; /* 必須マークの色を赤に設定 */
+        }
         .task-list-link {color: #3498db !important;}
         .accountbook-link { color: #1abc9c !important; }
         .calendar-link { color: #f39c12 !important; }
@@ -107,11 +115,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -128,20 +131,31 @@
         <h2>長期目標 追加</h2>
         <form method="post" class="centered-content">
             {% csrf_token %}
-            <div class="error-message">{{ form.non_field_errors }}</div>
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>エラーが発生しました:</strong>
+                {% for error in form.non_field_errors %}
+                <div class="error-message">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
-                    {{ field.label_tag }}
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}
+                    </label>
                     {{ field }}
-                    <div class="error-message">{{ field.errors }}</div>
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
                 </div>
                 {% endfor %}
-            </div>
-            <div class="button-group">
-                <button type="submit" class="btn add-btn">追加</button>
-                <a href="{% url 'goals:long_term_goals' %}" class="btn back-btn">戻る</a>
-                <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+                <div class="button-group">
+                    <button type="submit" class="btn add-btn">追加</button>
+                    <a href="{% url 'goals:long_term_goals' %}" class="btn back-btn">戻る</a>
+                    <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+                </div>
             </div>
         </form>
     </div>

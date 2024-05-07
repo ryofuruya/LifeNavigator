@@ -98,6 +98,8 @@
     <h2>{{ value.title }} 詳細</h2>
     <div class="content">
     <p>{{ value.description }}</p> <!-- 価値観の説明を表示 -->
+    <p>追加日: {{ value.created_at|date:"Y-m-d" }}</p>
+    <p>更新日: {{ value.updated_at|date:"Y-m-d" }}</p>
     </div>
     <div>
         <a href="{% url 'values:value_edit' value.id %}" class="btn edit-btn">編集</a>

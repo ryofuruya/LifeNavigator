@@ -15,7 +15,7 @@
             background-attachment: fixed;
             margin: 0;
             padding: 0;
-            padding-top: 60px; /* Adjust padding to ensure header does not cover content */
+            padding-top: 60px;
             font-family: 'Orbitron', sans-serif;
             display: flex;
             flex-direction: column;
@@ -49,7 +49,7 @@
         }
         .buttons-container, .button-group {
             display: flex;
-            flex-direction: row; /* Change to row for horizontal button layout */
+            flex-direction: row;
             justify-content: center;
             margin-top: 20px;
         }
@@ -87,13 +87,13 @@
             padding: 20px;
             border-radius: 10px;
         }
-        .goal-setting-link, .accountbook-link, .calendar-link, .values-link, .memo-link, .user-info-link, .logout-link {
-            color: #9b59b6 !important; /* Example for all links adjusted for simplicity */
-        }
         .error-message {
             color: red; /* エラーメッセージを赤色で表示 */
             font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
             margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required {
+            color: red; /* 必須フィールドのアスタリスクを赤色で表示 */
         }
         .goal-setting-link { color: #9b59b6 !important; }
         .accountbook-link { color: #1abc9c !important; }
@@ -123,6 +123,9 @@
                 {% for field in form %}
                 <div class="form-group">
                     {{ field.label_tag }}
+                    {% if field.field.required %}
+                            <span class="required">*</span>
+                        {% endif %}
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>

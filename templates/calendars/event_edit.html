@@ -81,6 +81,7 @@
         }
         label {
             font-size: 1.5rem;
+            display: block; /* Make labels block level for better structure */
         }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
@@ -92,6 +93,36 @@
             font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
             margin-top: 5px; /* エラーメッセージのマージン調整 */
         }
+        .required {
+            color: red; /* 必須マークの色を赤に設定 */
+        }
+        .task-list-link {
+        color: #3498db !important;
+    }
+
+    .goal-setting-link {
+        color: #9b59b6 !important;
+    }
+
+    .accountbook-link {
+        color: #1abc9c !important;
+    }
+
+    .values-link {
+        color: #e74c3c !important;
+    }
+
+    .memo-link {
+        color: #2ecc71 !important;
+    }
+
+    .user-info-link {
+        color: #34495e !important;
+    }
+
+    .logout-link {
+        color: #95a5a6 !important;
+    }
     </style>
 </head>
 <body>
@@ -107,18 +138,41 @@
     <div class="centered-content">
         <h2>イベント編集</h2>
         <form method="post" action="{% url 'calendars:event_edit' event.id %}" class="form-container">
-    {% csrf_token %}
-    <div class="error-message">{{ form.non_field_errors }}</div>
-    {% for field in form %}
-    <div class="form-group">
-        {{ field.label_tag }}
-        {{ field }}
-        <div class="error-message">{{ field.errors }}</div>
-    </div>
-    {% endfor %}
+            {% csrf_token %}
+            <div class="error-message">{{ form.non_field_errors }}</div>
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}
+                        <span class="required">*</span>
+                    {% endif %}
+                </label>
+                {{ field }}
+                {% if form.errors %}
+            <div class="alert alert-danger" role="alert">
+                <strong>エラーが発生しました:</strong>
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="required" style="color: red;">*</span>
+                        {% endif %}
+                    </label>
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            </div>
+            {% endfor %}
             <div class="button-group">
                 <button type="submit" class="btn add-btn">更新</button>
-                <a href="{% url 'calendars:event_detail' %}" class="btn back-btn">戻る</a>
+                <a href="{% url 'calendars:event_detail' event.id %}" class="btn back-btn">戻る</a>
                 <a href="{% url 'home' %}" class="btn home-btn">Home</a>
             </div>
         </form>
