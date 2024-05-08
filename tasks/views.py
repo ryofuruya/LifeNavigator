@@ -141,3 +141,4 @@ def completed_tasks(request):
     """Display completed tasks."""
     completed_tasks = Task.objects.filter(user=request.user, status='completed').order_by('-completed_at')
     return render(request, 'tasks/completed_tasks.html', {'completed_tasks': completed_tasks})
+

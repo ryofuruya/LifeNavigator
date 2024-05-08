@@ -24,6 +24,7 @@ class Task(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)  # 完了日を保存
     task_type = models.CharField(max_length=50)
     is_deleted = models.BooleanField(default=False)  # 削除されたタスクを追跡するためのフィールド
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title

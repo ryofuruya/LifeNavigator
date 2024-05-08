@@ -16,7 +16,6 @@
         height: 100vh;
         color: #00ff00;
     }
-
     header {
         background-color: #000;
         padding: 10px 0;
@@ -27,7 +26,6 @@
         left: 0;
         z-index: 1000;
     }
-
     header a {
         margin: 0 20px;
         font-size: 1.5rem;
@@ -35,12 +33,10 @@
         transition: color 0.3s, background-color 0.3s;
         color: #00ff00;
     }
-
     header a:hover {
         color: #000;
         background-color: #00ff00;
     }
-
     h2 {
         font-size: 3rem;
         text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
@@ -48,7 +44,6 @@
         margin-bottom: 20px;
         text-align: center;
     }
-
     .calendar-table {
         width: 90%;
         margin-top: 20px;
@@ -57,14 +52,12 @@
         color: #00ff00;
         font-size: 1.5rem;
     }
-
     .calendar-table th {
         background-color: #000;
         color: #00ff00;
         padding: 10px;
         border: 1px solid #00ff00;
     }
-
     .calendar-table td {
         padding: 15px;
         border: 1px solid #00ff00;
@@ -72,23 +65,19 @@
         cursor: pointer;
         height: 50px; /* Ensures all cells are of equal height */
     }
-
     .calendar-table td:hover {
         background-color: #00ff00;
         color: #000;
     }
-
     .calendar-table td.bg-info {
         background-color: #1abc9c; /* Highlight today's date */
         color: #ffffff;
     }
-
     .button-group {
         flex-direction: row;
         justify-content: center;
         margin-top: 10px;
     }
-
     .btn {
         font-size: 2rem;
         padding: 15px 30px;
@@ -101,7 +90,6 @@
         background-color: #000;
         opacity: 0.8;
     }
-
     .btn:hover {
         color: #000000;
         background-color: #00ff00;
@@ -110,25 +98,19 @@
     .task-list-link {
         color: #3498db !important;
     }
-
     .goal-setting-link {
         color: #9b59b6 !important;
     }
-
     .accountbook-link { color: #1abc9c !important; }
-
     .values-link {
         color: #e74c3c !important;
     }
-
     .memo-link {
         color: #2ecc71 !important;
     }
-
     .user-info-link {
         color: #34495e !important;
     }
-
     .logout-link {
         color: #95a5a6 !important;
     }
@@ -136,41 +118,37 @@
         border-color: #32cd32;
         color: #32cd32;
     }
-
     .home-btn {
         border-color: #ffd700;
         color: #ffd700;
     }
     #prevMonth, #nextMonth {
-    font-size: 1.5rem;
-    padding: 10px 20px;
-    margin: 5px;
-    color: #00ff00;
-    background-color: #000;
-    border: 2px solid #00ff00;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-    cursor: pointer;
-}
-
-#prevMonth:hover, #nextMonth:hover {
-    background-color: #00ff00;
-    color: #000;
-}
-.events-section {
-    background-color: rgba(255, 255, 255, 0.8); /* 白い半透明の背景 */
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 10px;
-}
-
-.tasks-section {
-    background-color: rgba(0, 0, 0, 0.8); /* 黒い半透明の背景 */
-    color: #ffffff;
-    padding: 15px;
-    margin-top: 20px;
-    border-radius: 10px;
-}
+        font-size: 1.5rem;
+        padding: 10px 20px;
+        margin: 5px;
+        color: #00ff00;
+        background-color: #000;
+        border: 2px solid #00ff00;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    #prevMonth:hover, #nextMonth:hover {
+        background-color: #00ff00;
+        color: #000;
+    }
+    .events-section {
+        background-color: rgba(255, 255, 255, 0.8); /* 白い半透明の背景 */
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+    .tasks-section {
+        background-color: rgba(0, 0, 0, 0.8); /* 黒い半透明の背景 */
+        color: #ffffff;
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
 </style>
 <header>
     <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
@@ -188,7 +166,7 @@
         {% if events %}
             <ul>
                 {% for event in events %}
-                    <li>{{ event.title }} - {{ event.date }}: {{ event.description }}</li>
+                    <li><a href="{% url 'calendars:event_detail' event.id %}">{{ event.title }} - {{ event.date }}</a>: {{ event.description }}</li>
                 {% endfor %}
             </ul>
         {% else %}
@@ -196,17 +174,17 @@
         {% endif %}
     </div>
     <div class="tasks-section">
-    <h3>タスク</h3>
-    {% if tasks %}
-        <ul>
-            {% for task in tasks %}
-                <li><a href="{% url 'tasks:monthly_task_detail' task.id %}">{{ task.title }} - {{ task.deadline }}: {{ task.description }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>この日に予定されているタスクはありません。</p>
-    {% endif %}
-</div>
+        <h3>タスク</h3>
+        {% if tasks %}
+            <ul>
+                {% for task in tasks %}
+                    <li><a href="{% url 'tasks:monthly_task_detail' task.id %}">{{ task.title }} - {{ task.deadline }}: {{ task.description }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>この日に予定されているタスクはありません。</p>
+        {% endif %}
+    </div>
     <div class="button-group">
         <a href="{% url 'calendars:event_create' %}" class="btn add-btn">追加</a>
         <a href="{% url 'calendars:calendar_view' %}" class="btn back-btn">戻る</a>
