@@ -4,12 +4,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _  # 国際化のサポートのためにインポート
 
 class MemoSearchForm(forms.Form):
-    keyword = forms.CharField(label=_('Search for Memos'), max_length=100, required=False)
+    keyword = forms.CharField(label=_('Search for Memos'), max_length=100, required=False, help_text=_("タイトルまたは内容で検索"))
+    start_date = forms.DateField(label=_('Start Date'), required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(label=_('End Date'), required=False, widget=forms.DateInput(attrs={'type': 'date'}))
 
     def clean_keyword(self):
         keyword = self.cleaned_data.get('keyword', '').strip()
         return keyword
-
+    
 class MemoForm(forms.ModelForm):
     class Meta:
         model = Memo

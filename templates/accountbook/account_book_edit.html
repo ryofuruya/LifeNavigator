@@ -113,32 +113,30 @@
     </header>
     <div class="centered-content">
         <h2>編集</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="form-container">
             {% csrf_token %}
             <div class="error-message">{{ form.non_field_errors }}</div>
-            <div class="form-container">
-                {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}
-                        <span class="required" style="color: red;">*</span>
-                        {% endif %}
-                    </label>
-                    {% if field.name == 'Amount' %}
-                        <!-- Amountフィールドの場合、小数点以下を切り捨てて整数のみ表示 -->
-                        <input type="number" step="1" name="{{ field.name }}" value="{{ field.value|floatformat:0|default_if_none:'' }}">
-                    {% else %}
-                        {{ field }}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}
+                    <span class="required" style="color: red;">*</span>
                     {% endif %}
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                        <div class="error-message">{{ error }}</div>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-                {% endfor %}
+                </label>
+                {% if field.name == 'Amount' %}
+                    <!-- Amountフィールドの場合、typeをnumberに設定し、小数点以下を切り捨てる -->
+                    <input type="number" name="{{ field.name }}" value="{{ field.value|default_if_none:''|floatformat:0 }}" min="0" step="1">
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                    <div class="error-message">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
             </div>
+            {% endfor %}
             <div class="button-group">
                 <button type="submit" class="btn add-btn">Save</button>
                 <a href="{% url 'accountbook:detail_account_book' model_type=model_type id=instance.id %}" class="btn back-btn">戻る</a>
@@ -146,14 +144,16 @@
             </div>
         </form>
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    var amountField = document.querySelector('input[name="amount"]');  // フィールド名が正しいか確認
+    if (amountField) {
+        amountField.value = parseInt(amountField.value) || 0;  // NaN の場合は0を設定
+        amountField.addEventListener('input', function() {
+            this.value = parseInt(this.value.replace(/[^\d]/g, '')) || '';  // 数値以外が入力された場合は空文字を設定
+        });
+    }
+});
+</script>
 </body>
 </html>
-<script>
-    // Amountフィールドの入力を整数のみに制限する
-    document.addEventListener("DOMContentLoaded", function() {
-        var amountField = document.querySelector('input[name="Amount"]');
-        amountField.addEventListener('input', function() {
-            this.value = this.value.replace(/[^\d]/g, ''); // 数字以外の文字を削除
-        });
-    });
-</script>

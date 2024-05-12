@@ -133,6 +133,7 @@
     <div class="centered-content">
         <h2>固定費登録</h2>
         <form method="post" class="centered-content">
+        <div id="error-message" style="color: red; display: none;"></div>
             {% csrf_token %}
             {% if form.errors %}
             <div class="alert alert-danger" role="alert">
@@ -182,5 +183,28 @@
             </div>
         </form>
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const recordDateInput = document.getElementById('record_date');
+        const paymentDateInput = document.getElementById('payment_date');
+        const errorMessageDiv = document.getElementById('error-message');
+
+        form.addEventListener('submit', function (event) {
+            const recordDate = new Date(recordDateInput.value);
+            const paymentDate = new Date(paymentDateInput.value);
+
+            if (paymentDate < recordDate) {
+                // エラーメッセージを設定して表示
+                errorMessageDiv.textContent = '支払日は費用発生日以降の日付を選択してください。';
+                errorMessageDiv.style.display = 'block'; // エラーメッセージを表示
+                event.preventDefault(); // フォームの送信を阻止
+            } else {
+                // エラーがない場合はエラーメッセージを隠す
+                errorMessageDiv.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

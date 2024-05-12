@@ -2,16 +2,31 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Memo
 from .forms import MemoSearchForm, MemoForm
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
+from django.utils.timezone import localtime
 
 @login_required
 def memo_list(request):
     form = MemoSearchForm(request.GET or None)
     if form.is_valid():
-        keyword = form.cleaned_data.get('keyword', '')
-        memos = Memo.objects.filter(user=request.user, content__icontains=keyword)
+        keyword = form.cleaned_data['keyword']
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        memos = Memo.objects.filter(user=request.user)
+        
+        if keyword:
+            memos = memos.filter(Q(title__icontains=keyword) | Q(content__icontains=keyword))
+        
+        if start_date:
+            memos = memos.filter(created_at__date__gte=start_date)  # created を created_at に修正
+        
+        if end_date:
+            memos = memos.filter(created_at__date__lte=end_date)  # created を created_at に修正
+
     else:
         memos = Memo.objects.filter(user=request.user)
-    return render(request, 'memos/memo_list.html', {'memos': memos, 'form': form})
+
+    return render(request, 'memos/memo_list.html', {'form': form, 'memos': memos})
 
 @login_required
 def memo_add(request):

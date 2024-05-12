@@ -194,8 +194,8 @@
             datasets: [{
                 label: '金額',
                 data: [{{ total_monthly_outflow }}, {{ monthly_incomes }}],
-                backgroundColor: ['rgba(233, 30, 99, 0.8)', 'rgba(33, 150, 243, 0.8)'],
-                borderColor: ['rgba(233, 30, 99, 1)', 'rgba(33, 150, 243, 1)'],
+                backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'], // 色を交換
+                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'], // 色を交換
                 borderWidth: 2
             }]
         },
@@ -219,11 +219,19 @@
             },
             plugins: {
                 legend: {
+                    display: false,
                     labels: {
                         font: {
                             size: 18
-                        }
+                        },
+                        color: '#000'
                     }
+                },
+                tooltip: {
+                    enabled: true
+                },
+                background: {
+                    color: 'rgba(255, 255, 255, 0.8)'
                 }
             },
             layout: {
@@ -232,20 +240,6 @@
                     right: 20,
                     top: 20,
                     bottom: 20
-                }
-            },
-            plugins: {
-                tooltip: {
-                    enabled: true
-                },
-                legend: {
-                    position: 'top',
-                    labels: {
-                        color: 'black'
-                    }
-                },
-                background: {
-                    color: 'rgba(255, 255, 255, 0.8)' // 半透明の白背景を追加
                 }
             }
         }

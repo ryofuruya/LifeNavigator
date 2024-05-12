@@ -176,7 +176,7 @@
                     </span>
                     <div class="task-actions">
                         <a href="{% url 'accountbook:detail_account_book' model_type='variable_expense' id=expense.id %}" class="btn complete-btn">詳細</a>
-                        <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn details-btn">削除</a>
+                        <a href="{% url 'accountbook:delete_variable_expense' expense.id %}" class="btn details-btn" onclick="return confirm('本当に削除しますか？');">削除</a>
                     </div>
                 </div>
             </li>

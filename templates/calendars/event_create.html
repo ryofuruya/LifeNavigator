@@ -149,29 +149,13 @@
         <form method="post" action="{% url 'calendars:event_create' %}" class="form-container">
             {% csrf_token %}
             {% for field in form %}
-            <div class="form-group">
-                {{ field.label_tag }}{% if field.field.required %}<span style="color: red;">*</span>{% endif %}
-                {{ field }}
-                {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-                <strong>エラーが発生しました:</strong>
-                {% for field in form %}
                 <div class="form-group">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}
-                            <span class="required" style="color: red;">*</span>
-                        {% endif %}
-                    </label>
+                    {{ field.label_tag }}{% if field.field.required %}<span style="color: red;">*</span>{% endif %}
                     {{ field }}
                     {% for error in field.errors %}
                         <div class="error-message">{{ error }}</div>
                     {% endfor %}
                 </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            </div>
             {% endfor %}
             <div class="button-group">
                 <button type="submit" class="btn add-btn">追加</button>

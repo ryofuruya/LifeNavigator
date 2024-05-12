@@ -5,8 +5,14 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 class EventForm(forms.ModelForm):
-    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
-    deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    date = forms.DateField(
+        label=_('イベント開始日'),  # ラベルを直接フィールドに設定
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    deadline = forms.DateField(
+        label=_('イベント終了日'),  # ラベルを直接フィールドに設定
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
 
     class Meta:
         model = Event
