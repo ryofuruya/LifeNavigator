@@ -97,32 +97,32 @@
             color: red; /* 必須マークの色を赤に設定 */
         }
         .task-list-link {
-        color: #3498db !important;
-    }
+            color: #3498db !important;
+        }
 
-    .goal-setting-link {
-        color: #9b59b6 !important;
-    }
+        .goal-setting-link {
+            color: #9b59b6 !important;
+        }
 
-    .accountbook-link {
-        color: #1abc9c !important;
-    }
+        .accountbook-link {
+            color: #1abc9c !important;
+        }
 
-    .values-link {
-        color: #e74c3c !important;
-    }
+        .values-link {
+            color: #e74c3c !important;
+        }
 
-    .memo-link {
-        color: #2ecc71 !important;
-    }
+        .memo-link {
+            color: #2ecc71 !important;
+        }
 
-    .user-info-link {
-        color: #34495e !important;
-    }
+        .user-info-link {
+            color: #34495e !important;
+        }
 
-    .logout-link {
-        color: #95a5a6 !important;
-    }
+        .logout-link {
+            color: #95a5a6 !important;
+        }
     </style>
 </head>
 <body>
@@ -137,9 +137,9 @@
     </header>
     <div class="centered-content">
         <h2>イベント編集</h2>
-        <form method="post" action="{% url 'calendars:event_edit' event.id %}" class="form-container">
+        <form method="post" action="{% url 'calendars:event_edit' event.id %}" class="form-container" id="event-form">
             {% csrf_token %}
-            <div class="error-message">{{ form.non_field_errors }}</div>
+            <div id="error-message-container"></div> <!-- Error message container -->
             {% for field in form %}
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">
@@ -149,25 +149,6 @@
                     {% endif %}
                 </label>
                 {{ field }}
-                {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-                <strong>エラーが発生しました:</strong>
-                {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}
-                            <span class="required" style="color: red;">*</span>
-                        {% endif %}
-                    </label>
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
             </div>
             {% endfor %}
             <div class="button-group">
@@ -177,5 +158,37 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("event-form");
+            const errorMessageContainer = document.getElementById("error-message-container");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // トリムしてからスペースを削除
+                    this.value = this.value.trim().replace(/\s/g, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "error-message";
+                        errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                        errorMessageContainer.appendChild(errorDiv);
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

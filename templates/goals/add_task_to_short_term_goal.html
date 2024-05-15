@@ -95,6 +95,9 @@
             display: block; /* Make labels block level for better structure */
             margin-bottom: 5px;
         }
+        .required {
+            color: red; /* 必須マークの色を赤に設定 */
+        }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
             padding: 20px;
@@ -105,9 +108,6 @@
             color: red; /* エラーメッセージを赤色で表示 */
             font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
             margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
-        .required {
-            color: red; /* 必須マークの色を赤に設定 */
         }
         .task-list-link { color: #3498db !important; }
         .accountbook-link { color: #1abc9c !important; }
@@ -130,9 +130,9 @@
     </header>
     <div class="centered-content">
         <h2>短期目標 追加</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="centered-content" id="goal-form">
             {% csrf_token %}
-            <div class="error-message">{{ form.non_field_errors }}</div>
+            <div id="error-message-container"></div> <!-- Error message container -->
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
@@ -154,5 +154,44 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("goal-form");
+            const errorMessageContainer = document.getElementById("error-message-container");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "error-message";
+                        errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                        errorMessageContainer.appendChild(errorDiv);
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+
+            // Set default date to today for date fields
+            const dateFields = form.querySelectorAll("input[type='date']");
+            const today = new Date().toISOString().split('T')[0];
+            dateFields.forEach(function(dateField) {
+                dateField.value = today;
+            });
+        });
+    </script>
 </body>
 </html>

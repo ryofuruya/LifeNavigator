@@ -6,10 +6,12 @@ from django.utils.translation import gettext_lazy as _
 
 class EventForm(forms.ModelForm):
     date = forms.DateField(
+        initial=timezone.now().date(),
         label=_('イベント開始日'),  # ラベルを直接フィールドに設定
         widget=forms.DateInput(attrs={'type': 'date'})
     )
     deadline = forms.DateField(
+        initial=timezone.now().date(),
         label=_('イベント終了日'),  # ラベルを直接フィールドに設定
         widget=forms.DateInput(attrs={'type': 'date'})
     )

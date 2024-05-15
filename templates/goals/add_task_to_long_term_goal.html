@@ -129,8 +129,9 @@
     </header>
     <div class="centered-content">
         <h2>長期目標 追加</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="centered-content" id="goal-form">
             {% csrf_token %}
+            <div id="error-message-container"></div> <!-- Error message container -->
             {% if form.non_field_errors %}
             <div class="alert alert-danger" role="alert">
                 <strong>エラーが発生しました:</strong>
@@ -159,5 +160,44 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("goal-form");
+            const errorMessageContainer = document.getElementById("error-message-container");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "error-message";
+                        errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                        errorMessageContainer.appendChild(errorDiv);
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+
+            // Set default date to today for date fields
+            const dateFields = form.querySelectorAll("input[type='date']");
+            const today = new Date().toISOString().split('T')[0];
+            dateFields.forEach(function(dateField) {
+                dateField.value = today;
+            });
+        });
+    </script>
 </body>
 </html>

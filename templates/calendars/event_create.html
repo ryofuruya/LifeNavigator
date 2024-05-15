@@ -106,32 +106,26 @@
             margin-top: 5px; /* エラーメッセージのマージン調整 */
         }
         .task-list-link {
-        color: #3498db !important;
-    }
-
-    .goal-setting-link {
-        color: #9b59b6 !important;
-    }
-
-    .accountbook-link {
-        color: #1abc9c !important;
-    }
-
-    .values-link {
-        color: #e74c3c !important;
-    }
-
-    .memo-link {
-        color: #2ecc71 !important;
-    }
-
-    .user-info-link {
-        color: #34495e !important;
-    }
-
-    .logout-link {
-        color: #95a5a6 !important;
-    }
+            color: #3498db !important;
+        }
+        .goal-setting-link {
+            color: #9b59b6 !important;
+        }
+        .accountbook-link {
+            color: #1abc9c !important;
+        }
+        .values-link {
+            color: #e74c3c !important;
+        }
+        .memo-link {
+            color: #2ecc71 !important;
+        }
+        .user-info-link {
+            color: #34495e !important;
+        }
+        .logout-link {
+            color: #95a5a6 !important;
+        }
     </style>
 </head>
 <body>
@@ -146,7 +140,7 @@
     </header>
     <div class="centered-content">
         <h2>イベント追加</h2>
-        <form method="post" action="{% url 'calendars:event_create' %}" class="form-container">
+        <form method="post" action="{% url 'calendars:event_create' %}" class="form-container" id="event-form">
             {% csrf_token %}
             {% for field in form %}
                 <div class="form-group">
@@ -164,5 +158,44 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("event-form");
+            const errorMessageContainer = document.getElementById("error-message-container");
+
+            // Set default date for start_date and end_date
+            const today = new Date().toISOString().split('T')[0];
+            const startDateInput = form.querySelector("input[name='start_date']");
+            const endDateInput = form.querySelector("input[name='end_date']");
+            if (startDateInput) startDateInput.value = today;
+            if (endDateInput) endDateInput.value = today;
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "error-message";
+                        errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                        errorMessageContainer.appendChild(errorDiv);
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

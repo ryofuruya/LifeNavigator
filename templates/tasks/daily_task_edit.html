@@ -117,7 +117,7 @@
     </header>
     <div class="centered-content">
         <h2>Daily Task編集</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="centered-content" id="task-form">
             {% csrf_token %}
             <div class="error-message">{{ form.non_field_errors }}</div>
             <div class="form-container">
@@ -126,7 +126,7 @@
                     <label for="{{ field.id_for_label }}">
                         {{ field.label }}
                         {% if field.field.required %}
-                            <span class="required">*</span> <!-- 必須マークを赤色で表示 -->
+                            <span class="required">*</span>
                         {% endif %}
                     </label>
                     {{ field }}
@@ -141,5 +141,39 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("task-form");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                form.querySelectorAll(".error-message").forEach(function(error) {
+                    error.style.display = "none";
+                });
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = input.parentNode.querySelector(".error-message");
+                        if (errorDiv) {
+                            errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                            errorDiv.style.display = "block";
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

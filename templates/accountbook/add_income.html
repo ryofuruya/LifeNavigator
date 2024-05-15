@@ -136,25 +136,7 @@
                         {{ field.label }}{% if field.field.required %}<span class="required">*</span>{% endif %}
                     </label>
                     {{ field }}
-                    {% if form.errors %}
-            <div class="alert alert-danger" role="alert">
-                <strong>エラーが発生しました:</strong>
-                {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                        {% if field.field.required %}
-                            <span class="required" style="color: red;">*</span>
-                        {% endif %}
-                    </label>
-                    {{ field }}
-                    {% for error in field.errors %}
-                        <div class="error-message">{{ error }}</div>
-                    {% endfor %}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+                    <div class="error-message">{{ field.errors }}</div>
                 </div>
                 {% endfor %}
                 <div class="button-group">
@@ -169,11 +151,13 @@
 document.addEventListener("DOMContentLoaded", function() {
     const amountInput = document.querySelector('input[name="amount"]');
     const descriptionInput = document.querySelector('textarea[name="description"]');
+    const categoryInput = document.querySelector('input[name="category"]');
     const errorMessageDiv = document.createElement('div');
     errorMessageDiv.className = 'error-message';
     errorMessageDiv.style.display = 'none';
     amountInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), amountInput.nextSibling);
     descriptionInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), descriptionInput.nextSibling);
+    categoryInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), categoryInput.nextSibling);
 
     function validateInput(inputElement, isAmount = false) {
         const errorMessageDiv = inputElement.nextSibling;
@@ -184,6 +168,9 @@ document.addEventListener("DOMContentLoaded", function() {
             isValid = false;
         } else if (isAmount && !/^\d+$/.test(trimmedValue)) {
             errorMessageDiv.textContent = '整数値のみを入力してください。';
+            isValid = false;
+        } else if (isAmount && parseInt(trimmedValue, 10) <= 0) {
+            errorMessageDiv.textContent = '正の整数を入力してください。';
             isValid = false;
         }
 
@@ -200,6 +187,10 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     descriptionInput.addEventListener('input', function() {
+        validateInput(this);
+    });
+
+    categoryInput.addEventListener('input', function() {
         validateInput(this);
     });
 });

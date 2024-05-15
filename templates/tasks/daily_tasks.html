@@ -77,6 +77,8 @@
         display: inline-block;
         background-color: #000;
         color: #FFF;
+        text-align: center; /* テキストを中央に配置 */
+        white-space: nowrap; /* テキストを折り返さない */
     }
     .btn:hover {
         background-color: #00ff00;
@@ -114,11 +116,16 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
+        margin-bottom: 10px; /* 各タスク間の余白を追加 */
     }
     .task-details {
         font-size: 1.8rem;
         color: #FFD700;
         text-shadow: 2px 2px 4px #000;
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     .task-actions {
         display: flex;
@@ -156,12 +163,13 @@
     </header>
     <div class="buttons-container">
         <h2>Daily Tasks</h2>
+        {% if tasks %}
         <ul>
             {% for task in tasks %}
             <li>
                 <div class="task-container">
                     <span class="task-details">
-                        <span class="task-title">{{ task.title }}</span> - <span class="task-priority">{{ task.priority }}</span>
+                        <span class="task-title">{{ task.title }}</span> - <span class="task-priority">優先度:{{ task.priority }}</span> - <span class="task-priority">期日:{{ task.deadline }}</span> - <span class="task-priority">MEMO:{{ task.description }}</span>
                     </span>
                     <div class="task-actions">
                         <form action="{% url 'tasks:update_task_status' task.id %}" method="post" style="display: inline;">
@@ -174,6 +182,9 @@
             </li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p>登録データがありません。</p>
+        {% endif %}
         <div class="button-group">
             <a href="{% url 'tasks:add_daily_task' %}" class="btn add-btn">追加</a>
             <a href="{% url 'tasks:task_list' %}" class="btn back-btn">戻る</a>

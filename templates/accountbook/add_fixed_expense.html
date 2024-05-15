@@ -117,7 +117,6 @@
             font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
             margin-top: 5px; /* エラーメッセージのマージン調整 */
         }
-        
     </style>
 </head>
 <body>
@@ -133,7 +132,7 @@
     <div class="centered-content">
         <h2>固定費登録</h2>
         <form method="post" class="centered-content">
-        <div id="error-message" style="color: red; display: none;"></div>
+            <div id="error-message" style="color: red; display: none;"></div>
             {% csrf_token %}
             {% if form.errors %}
             <div class="alert alert-danger" role="alert">
@@ -183,19 +182,29 @@
 document.addEventListener("DOMContentLoaded", function() {
     const descriptionInput = document.getElementById('description'); // 説明入力フィールドを取得
     const amountInput = document.getElementById('amount'); // 金額入力フィールドを取得
+    const categoryInput = document.getElementById('category'); // カテゴリ入力フィールドを取得
     const errorMessageDiv = document.createElement('div'); // エラーメッセージ用のdivを生成
     errorMessageDiv.className = 'error-message'; // スタイル適用のためのクラス名設定
     errorMessageDiv.style.display = 'none'; // 初期状態ではエラーメッセージを隠す
     descriptionInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), descriptionInput.nextSibling); // descriptionInputの直後にエラーメッセージを挿入
     amountInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), amountInput.nextSibling); // amountInputの直後にエラーメッセージを挿入
+    categoryInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), categoryInput.nextSibling); // categoryInputの直後にエラーメッセージを挿入
 
-    function validateInput(inputElement) {
+    function validateInput(inputElement, isAmount = false) {
         const errorMessageDiv = inputElement.nextSibling;
         const trimmedValue = inputElement.value.trim(); // 入力値の前後の空白をトリム
         if (trimmedValue === '') {
             errorMessageDiv.textContent = 'このフィールドは必須です。';
             errorMessageDiv.style.display = 'block'; // エラーメッセージを表示
             inputElement.value = ''; // フィールドをクリア
+        } else if (isAmount && !/^\d+$/.test(trimmedValue)) {
+            errorMessageDiv.textContent = '整数値のみを入力してください。';
+            errorMessageDiv.style.display = 'block';
+            inputElement.value = ''; // フィールドをクリア
+        } else if (isAmount && parseInt(trimmedValue, 10) <= 0) {
+            errorMessageDiv.textContent = '正の整数を入力してください。';
+            errorMessageDiv.style.display = 'block';
+            inputElement.value = '';
         } else {
             errorMessageDiv.style.display = 'none'; // エラーメッセージを隠す
         }
@@ -206,25 +215,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     amountInput.addEventListener('input', function() {
-        const errorMessageDiv = this.nextSibling;
-        const value = parseInt(this.value, 10);
-        if (this.value !== '' && !Number.isInteger(value)) {
-            errorMessageDiv.textContent = '整数値のみを入力してください。';
-            errorMessageDiv.style.display = 'block';
-            this.value = ''; // フィールドをクリア
-        } else if (value < 0) {
-            errorMessageDiv.textContent = '負の値は許可されていません。';
-            errorMessageDiv.style.display = 'block';
-            this.value = '';
-        } else {
-            errorMessageDiv.style.display = 'none';
-        }
+        validateInput(this, true);
+    });
+
+    categoryInput.addEventListener('input', function() {
+        validateInput(this);
     });
 
     // 今日の日付を設定
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('record_date').value = today;
-    document.getElementById('payment_date').value = today;
 });
 </script>
 </body>

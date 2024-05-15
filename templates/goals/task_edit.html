@@ -116,16 +116,16 @@
     </header>
     <div class="centered-content">
         <h2>目標設定 編集</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="centered-content" id="goal-form">
             {% csrf_token %}
-            <div class="error-message">{{ form.non_field_errors }}</div>
+            <div id="error-message-container"></div> <!-- Error message container -->
             <div class="form-container">
                 {% for field in form %}
                 <div class="form-group">
                     {{ field.label_tag }}
                     {% if field.field.required %}
                             <span class="required">*</span> <!-- 必須マークを赤色で表示 -->
-                        {% endif %}
+                    {% endif %}
                     {{ field }}
                     <div class="error-message">{{ field.errors }}</div>
                 </div>
@@ -138,5 +138,37 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("goal-form");
+            const errorMessageContainer = document.getElementById("error-message-container");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = document.createElement("div");
+                        errorDiv.className = "error-message";
+                        errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                        errorMessageContainer.appendChild(errorDiv);
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

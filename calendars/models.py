@@ -1,10 +1,11 @@
-# models.py
+from django.utils import timezone
 
 from django.db import models
 
 class Event(models.Model):
     title = models.CharField(max_length=100)
-    date = models.DateField()
+    date = models.DateField(default=timezone.now)
+    deadline = models.DateField(default=timezone.now)
     description = models.TextField()
     is_deleted = models.BooleanField(default=False)
 

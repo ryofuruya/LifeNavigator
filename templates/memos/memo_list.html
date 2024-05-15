@@ -136,6 +136,16 @@
             background-color: #800080;
             color: white;
         }
+
+        .form-group {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -149,26 +159,35 @@
         <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
     </header>
     <div class="buttons-container">
-        <!-- ページタイトルとしてメモリストを表示 -->
-    <h2>Memo List</h2>
-    <!-- 検索フォーム、ユーザーがメモを検索できるようにする -->
-    <form method="get" class="mb-3">
-        {{ form.as_p }}
-        <!-- 検索ボタン -->
-        <button type="submit" class="btn-custom">Search</button>
-    </form>
-       {% if memos.exists %}
+        <h2>Memo List</h2>
+        <form method="get" class="mb-3 form-inline justify-content-center">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="keyword">Search for Memos</label>
+                {{ form.keyword }}
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="start_date">Start Date</label>
+                {{ form.start_date }}
+            </div>
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="end_date">End Date</label>
+                {{ form.end_date }}
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Search</button>
+        </form>
+        {% if memos.exists %}
         <ul class="list-unstyled">
-        {% for memo in memos %}
+            {% for memo in memos %}
             <li>
-                <!-- 各メモの詳細ページへのリンク付きタイトル -->
-                <h3><a href="{% url 'memos:memo_detail' memo.id %}" class="btn btn-primary">{{ memo.title }}</a></h3>
+                <div class="task-container">
+                    <h3><a href="{% url 'memos:memo_detail' memo.id %}" class="btn btn-primary">{{ memo.title }}</a></h3>
+                </div>
             </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-        <p>表示するメモがありません。</p> <!-- メモがない場合のメッセージ -->
-    {% endif %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>表示するメモがありません。</p>
+        {% endif %}
         <div class="button-group">
             <a href="{% url 'memos:memo_add' %}" class="btn add-btn">追加</a>
             <a href="{% url 'home' %}" class="btn home-btn">Home</a>

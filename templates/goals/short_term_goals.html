@@ -40,7 +40,7 @@
         header a:hover {
             color: #000;
         }
-        .task-list-link {color: #3498db !important;}
+        .task-list-link { color: #3498db !important; }
         .accountbook-link { color: #1abc9c !important; }
         .calendar-link { color: #f39c12 !important; }
         .values-link { color: #e74c3c !important; }
@@ -77,6 +77,8 @@
             display: inline-block;
             background-color: #000;
             opacity: 0.8;
+            text-align: center; /* テキストを中央に配置 */
+            white-space: nowrap; /* テキストを折り返さない */
         }
         .btn:hover {
             color: #000000;
@@ -128,6 +130,11 @@
             white-space: nowrap;
             text-overflow: ellipsis;
         }
+        .task-actions {
+            display: flex;
+            gap: 10px; /* ボタン間のスペースを追加 */
+            flex-direction: row; /* 横並びに設定 */
+        }
         .complete-btn { 
             border-color: #ff4500;
             color: #ff4500;
@@ -158,12 +165,13 @@
     </header>
     <div class="buttons-container">
         <h2>短期目標</h2>
+        {% if tasks %}
         <ul>
             {% for task in tasks %}
             <li>
                 <div class="task-container">
-                    <span class="task-title">{{ task.title }}</span> - <span class="task-priority">{{ task.priority }}</span>
-                    <div>
+                    <span class="task-title">{{ task.title }}</span> - <span class="task-priority">期日:{{ task.deadline }}</span>- <span class="task-priority">MEMO:{{ task.description }}</span>
+                    <div class="task-actions">
                         <form action="{% url 'goals:complete_task' task.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn complete-btn">完了</button>
@@ -174,6 +182,9 @@
             </li>
             {% endfor %}
         </ul>
+        {% else %}
+        <p>登録データがありません。</p>
+        {% endif %}
         <div class="button-group">
             <a href="{% url 'goals:add_task_to_short_term_goal' %}" class="btn add-btn">追加</a>
             <a href="{% url 'goals:goal_setting' %}" class="btn back-btn">戻る</a>

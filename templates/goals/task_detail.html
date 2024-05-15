@@ -98,10 +98,8 @@
     <h2>Task詳細</h2>
     <div class="content">
         <strong>Title:</strong> {{ task.title }}<br>
-        <strong>Details:</strong> {{ task.details|default:"No details provided." }}<br>
-        <strong>Status:</strong> {{ task.status }}<br>
-        <strong>Priority:</strong> {{ task.priority }}<br>
-        <strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d" }}
+        <strong>Deadline:</strong> {{ task.deadline|date:"Y-m-d" }}<br>
+        <strong>Description:</strong> {{ task.description|default:"No details provided." }}
     </div>
     <div>
         <a href="{% url 'goals:task_edit' task.id %}" class="btn edit-btn">編集</a>

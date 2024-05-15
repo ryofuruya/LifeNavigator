@@ -81,6 +81,7 @@
         }
         label {
             font-size: 1.5rem;
+            display: block;
         }
         .form-container {
             background-color: rgba(0, 0, 0, 0.7);
@@ -111,12 +112,13 @@
         <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
         <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
     </header>
     <div class="centered-content">
         <h2>memo 編集</h2>
-        <form method="post" class="centered-content">
+        <form method="post" class="centered-content" id="memo-form">
             {% csrf_token %}
             <div class="error-message">{{ form.non_field_errors }}</div>
             <div class="form-container">
@@ -140,5 +142,39 @@
             </div>
         </form>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("memo-form");
+
+            form.querySelectorAll("input, textarea").forEach(function(input) {
+                input.addEventListener("input", function() {
+                    // Remove leading spaces and trim
+                    this.value = this.value.trim().replace(/^\s+/, '');
+                });
+            });
+
+            form.addEventListener("submit", function(event) {
+                let isValid = true;
+                form.querySelectorAll(".error-message").forEach(function(error) {
+                    error.style.display = "none";
+                });
+
+                form.querySelectorAll("input, textarea").forEach(function(input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        const errorDiv = input.parentNode.querySelector(".error-message");
+                        if (errorDiv) {
+                            errorDiv.textContent = "このフィールドは必須です。空白のみの入力は無効です。";
+                            errorDiv.style.display = "block";
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 </body>
 </html>
