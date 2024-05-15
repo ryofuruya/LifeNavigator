@@ -160,10 +160,6 @@
                     <input type="date" id="record_date" name="record_date" required>
                 </div>
                 <div class="form-group">
-                    <label for="payment_date">支払日:現金が動く日<span class="required" style="color: red;">*</span></label>
-                    <input type="date" id="payment_date" name="payment_date" required>
-                </div>
-                <div class="form-group">
                     <label for="category">カテゴリ:費用の分類<span class="required" style="color: red;">*</span></label>
                     <input type="text" id="category" name="category" required>
                 </div>
@@ -184,27 +180,52 @@
         </form>
     </div>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const recordDateInput = document.getElementById('record_date');
-        const paymentDateInput = document.getElementById('payment_date');
-        const errorMessageDiv = document.getElementById('error-message');
+document.addEventListener("DOMContentLoaded", function() {
+    const descriptionInput = document.getElementById('description'); // 説明入力フィールドを取得
+    const amountInput = document.getElementById('amount'); // 金額入力フィールドを取得
+    const errorMessageDiv = document.createElement('div'); // エラーメッセージ用のdivを生成
+    errorMessageDiv.className = 'error-message'; // スタイル適用のためのクラス名設定
+    errorMessageDiv.style.display = 'none'; // 初期状態ではエラーメッセージを隠す
+    descriptionInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), descriptionInput.nextSibling); // descriptionInputの直後にエラーメッセージを挿入
+    amountInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), amountInput.nextSibling); // amountInputの直後にエラーメッセージを挿入
 
-        form.addEventListener('submit', function (event) {
-            const recordDate = new Date(recordDateInput.value);
-            const paymentDate = new Date(paymentDateInput.value);
+    function validateInput(inputElement) {
+        const errorMessageDiv = inputElement.nextSibling;
+        const trimmedValue = inputElement.value.trim(); // 入力値の前後の空白をトリム
+        if (trimmedValue === '') {
+            errorMessageDiv.textContent = 'このフィールドは必須です。';
+            errorMessageDiv.style.display = 'block'; // エラーメッセージを表示
+            inputElement.value = ''; // フィールドをクリア
+        } else {
+            errorMessageDiv.style.display = 'none'; // エラーメッセージを隠す
+        }
+    }
 
-            if (paymentDate < recordDate) {
-                // エラーメッセージを設定して表示
-                errorMessageDiv.textContent = '支払日は費用発生日以降の日付を選択してください。';
-                errorMessageDiv.style.display = 'block'; // エラーメッセージを表示
-                event.preventDefault(); // フォームの送信を阻止
-            } else {
-                // エラーがない場合はエラーメッセージを隠す
-                errorMessageDiv.style.display = 'none';
-            }
-        });
+    descriptionInput.addEventListener('input', function() {
+        validateInput(this);
     });
+
+    amountInput.addEventListener('input', function() {
+        const errorMessageDiv = this.nextSibling;
+        const value = parseInt(this.value, 10);
+        if (this.value !== '' && !Number.isInteger(value)) {
+            errorMessageDiv.textContent = '整数値のみを入力してください。';
+            errorMessageDiv.style.display = 'block';
+            this.value = ''; // フィールドをクリア
+        } else if (value < 0) {
+            errorMessageDiv.textContent = '負の値は許可されていません。';
+            errorMessageDiv.style.display = 'block';
+            this.value = '';
+        } else {
+            errorMessageDiv.style.display = 'none';
+        }
+    });
+
+    // 今日の日付を設定
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('record_date').value = today;
+    document.getElementById('payment_date').value = today;
+});
 </script>
 </body>
 </html>

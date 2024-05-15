@@ -11,7 +11,11 @@ class AccountBookForm(forms.ModelForm):
         widgets = {
             'record_date': forms.DateInput(attrs={'type': 'date'}),
         }
-    amount = forms.IntegerField(help_text='整数を入力してください。')  # 小数点なしの整数フィールドに変更
+
+    amount = forms.IntegerField(
+        min_value=0,  # 0 またはそれ以上の値のみ許可
+        help_text='0以上の整数を入力してください。'
+    )
 
     def __init__(self, *args, **kwargs):
         super(AccountBookForm, self).__init__(*args, **kwargs)
@@ -25,16 +29,17 @@ class FixedExpenseForm(forms.ModelForm):
     payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
     amount = forms.IntegerField(
         widget=forms.NumberInput(attrs={'step': '1'}),
-        help_text=_('整数のみを入力してください。')
+        min_value=0,  # 0以上の値のみ許可
+        help_text=_('0以上の整数のみを入力してください。')
     )
 
     class Meta:
         model = FixedExpense
-        fields = ['payment_date', 'amount', 'category', 'description']
+        fields = ['record_date', 'amount', 'category', 'description']
 
     def __init__(self, *args, **kwargs):
         super(FixedExpenseForm, self).__init__(*args, **kwargs)
-        self.fields['payment_date'].required = True
+        self.fields['record_date'].required = True
         self.fields['amount'].required = True
         self.fields['category'].required = True
         self.fields['description'].required = True
@@ -43,16 +48,17 @@ class VariableExpenseForm(forms.ModelForm):
     payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
     amount = forms.IntegerField(
         widget=forms.NumberInput(attrs={'step': '1'}),
-        help_text=_('整数のみを入力してください。')
+        min_value=0,  # 0以上の値のみ許可
+        help_text=_('0以上の整数のみを入力してください。')
     )
 
     class Meta:
         model = VariableExpense
-        fields = ['payment_date', 'amount', 'category', 'description']
+        fields = ['record_date', 'amount', 'category', 'description']
 
     def __init__(self, *args, **kwargs):
         super(VariableExpenseForm, self).__init__(*args, **kwargs)
-        self.fields['payment_date'].required = True
+        self.fields['record_date'].required = True
         self.fields['amount'].required = True
         self.fields['category'].required = True
         self.fields['description']. required = True

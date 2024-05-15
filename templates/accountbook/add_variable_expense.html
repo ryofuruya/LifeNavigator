@@ -165,5 +165,37 @@
             </div>
         </form>
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // フォーム内のすべての入力要素に対して検証を設定
+    const inputs = document.querySelectorAll('input[type="text"], input[type="number"], textarea');
+    inputs.forEach(input => {
+        const errorMessageDiv = document.createElement('div');
+        errorMessageDiv.className = 'error-message';
+        errorMessageDiv.style.display = 'none';
+        input.parentNode.insertBefore(errorMessageDiv, input.nextSibling);
+
+        input.addEventListener('input', function() {
+            const trimmedValue = this.value.trim(); // 入力値の前後の空白をトリム
+            errorMessageDiv.style.display = 'none'; // 初期状態ではエラーメッセージを隠す
+            if (trimmedValue === '') {
+                errorMessageDiv.textContent = 'このフィールドは必須です。空白のみの入力は無効です。';
+                errorMessageDiv.style.display = 'block';
+                this.value = ''; // フィールドをクリア
+            } else if (this.type === 'number') {
+                if (!Number.isInteger(parseFloat(trimmedValue))) {
+                    errorMessageDiv.textContent = '整数値のみを入力してください。';
+                    errorMessageDiv.style.display = 'block';
+                    this.value = ''; // フィールドをクリア
+                } else if (parseInt(trimmedValue, 10) < 0) {
+                    errorMessageDiv.textContent = '負の値は許可されていません。';
+                    errorMessageDiv.style.display = 'block';
+                    this.value = '';
+                }
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

@@ -78,14 +78,14 @@ def summary_view(request):
 
     monthly_expenses = VariableExpense.objects.filter(
         user=request.user,
-        payment_date__year=current_year,
-        payment_date__month=current_month
+        record_date__year=current_year,
+        record_date__month=current_month
     ).aggregate(total=Sum('amount'))['total'] or 0
     
     monthly_fixed_expenses = FixedExpense.objects.filter(
         user=request.user,
-        payment_date__year=current_year,
-        payment_date__month=current_month
+        record_date__year=current_year,
+        record_date__month=current_month
     ).aggregate(total=Sum('amount'))['total'] or 0
 
     total_monthly_outflow = monthly_expenses + monthly_fixed_expenses
@@ -175,7 +175,7 @@ def variable_expense_list(request):
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
 
-    variable_expenses = VariableExpense.objects.filter(user=request.user, payment_date__range=(month_start, month_end))
+    variable_expenses = VariableExpense.objects.filter(user=request.user, record_date__range=(month_start, month_end))
     total_variable_expense = variable_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
     
     context = {
@@ -195,10 +195,10 @@ def expense_list(request):
     else:
         current_month_end = datetime.datetime(now.year, now.month + 1, 1, tzinfo=utc_tz)
 
-    variable_expenses = VariableExpense.objects.filter(user=request.user, payment_date__range=(current_month_start, current_month_end))
+    variable_expenses = VariableExpense.objects.filter(user=request.user, record_date__range=(current_month_start, current_month_end))
     total_variable_expenses = variable_expenses.aggregate(total=Sum('amount'))['total'] or 0
 
-    fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__range=(current_month_start, current_month_end))
+    fixed_expenses = FixedExpense.objects.filter(user=request.user, record_date__range=(current_month_start, current_month_end))
     total_fixed_expenses = fixed_expenses.aggregate(total=Sum('amount'))['total'] or 0
 
     total_expenses = total_variable_expenses + total_fixed_expenses
@@ -218,7 +218,7 @@ def current_month_fixed_expenses(request):
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month, calendar.monthrange(now.year, now.month)[1])
     
-    fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__range=(month_start, month_end))
+    fixed_expenses = FixedExpense.objects.filter(user=request.user, record_date__range=(month_start, month_end))
     
     context = {'fixed_expenses': fixed_expenses}
     return render(request, 'accountbook/current_month_fixed_expenses.html', context)
@@ -229,7 +229,7 @@ def monthly_fixed_expenses(request):
     current_month_start = timezone.datetime(now.year, now.month, 1)
     current_month_end = timezone.datetime(now.year, now.month + 1, 1) - timezone.timedelta(seconds=1)
 
-    fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__range=(current_month_start, current_month_end))
+    fixed_expenses = FixedExpense.objects.filter(user=request.user, record_date__range=(current_month_start, current_month_end))
     total_expenses = fixed_expenses.aggregate(Sum('amount'))['amount__sum'] or 0
 
     context = {

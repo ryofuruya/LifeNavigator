@@ -165,5 +165,44 @@
             </div>
         </form>
     </div>
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const amountInput = document.querySelector('input[name="amount"]');
+    const descriptionInput = document.querySelector('textarea[name="description"]');
+    const errorMessageDiv = document.createElement('div');
+    errorMessageDiv.className = 'error-message';
+    errorMessageDiv.style.display = 'none';
+    amountInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), amountInput.nextSibling);
+    descriptionInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), descriptionInput.nextSibling);
+
+    function validateInput(inputElement, isAmount = false) {
+        const errorMessageDiv = inputElement.nextSibling;
+        const trimmedValue = inputElement.value.trim();
+        let isValid = true;
+        if (trimmedValue === '') {
+            errorMessageDiv.textContent = 'このフィールドは必須です。';
+            isValid = false;
+        } else if (isAmount && !/^\d+$/.test(trimmedValue)) {
+            errorMessageDiv.textContent = '整数値のみを入力してください。';
+            isValid = false;
+        }
+
+        if (!isValid) {
+            errorMessageDiv.style.display = 'block';
+            inputElement.value = ''; // フィールドをクリア
+        } else {
+            errorMessageDiv.style.display = 'none';
+        }
+    }
+
+    amountInput.addEventListener('input', function() {
+        validateInput(this, true);
+    });
+
+    descriptionInput.addEventListener('input', function() {
+        validateInput(this);
+    });
+});
+</script>
 </body>
 </html>

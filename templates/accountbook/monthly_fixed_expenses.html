@@ -172,7 +172,7 @@
             <li>
                 <div class="task-container">
                     <span class="task-details">
-                        <span class="task-title category-label">{{ expense.category }}</span> - <span class="task-priority amount-label">{{ expense.amount|floatformat:"0"|intcomma }}円</span> - <span class="task-priority date-label">{{ expense.payment_date|date:"Y-m-d" }}</span> - <span class="task-priority description-label">{{ expense.description }}</span>
+                        <span class="task-title category-label">{{ expense.category }}</span> - <span class="task-priority amount-label">{{ expense.amount|floatformat:"0"|intcomma }}円</span> - <span class="task-priority date-label">{{ expense.record_date|date:"Y-m-d" }}</span> - <span class="task-priority description-label">{{ expense.description }}</span>
                     </span>
                     <div class="task-actions">
                         <a href="{% url 'accountbook:detail_account_book' model_type='monthly_fixed_expense' id=expense.id %}" class="btn complete-btn">詳細</a>

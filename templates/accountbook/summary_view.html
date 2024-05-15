@@ -186,64 +186,73 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    var incomeData = {{ monthly_incomes|default_if_none:'0' }};
+    var outflowData = {{ total_monthly_outflow|default_if_none:'0' }};
     var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['支出', '収入'],
-            datasets: [{
-                label: '金額',
-                data: [{{ total_monthly_outflow }}, {{ monthly_incomes }}],
-                backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'], // 色を交換
-                borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'], // 色を交換
-                borderWidth: 2
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        font: {
-                            size: 16
+
+    if (incomeData === 0 && outflowData === 0) {
+        // データがない場合のメッセージを表示
+        document.getElementById('myChart').style.display = 'none'; // グラフを隠す
+        var noDataDiv = document.createElement('div');
+        noDataDiv.textContent = '登録データがありません。';
+        noDataDiv.style.color = '#ff0000'; // テキストの色を赤に
+        noDataDiv.style.fontSize = '20px'; // フォントサイズを大きく
+        document.querySelector('.container').appendChild(noDataDiv);
+    } else {
+        // データがある場合、グラフを描画
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['支出', '収入'],
+                datasets: [{
+                    label: '金額',
+                    data: [outflowData, incomeData],
+                    backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: Math.max(incomeData, outflowData) + 10, // Adjust the maximum value to be a bit higher than the maximum data value
+                        ticks: {
+                            stepSize: 1, // Ensure the steps are in whole numbers
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 16
+                            }
                         }
                     }
                 },
-                x: {
-                    ticks: {
-                        font: {
-                            size: 16
-                        }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                    labels: {
-                        font: {
-                            size: 18
-                        },
-                        color: '#000'
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true
                     }
                 },
-                tooltip: {
-                    enabled: true
-                },
-                background: {
-                    color: 'rgba(255, 255, 255, 0.8)'
-                }
-            },
-            layout: {
-                padding: {
-                    left: 20,
-                    right: 20,
-                    top: 20,
-                    bottom: 20
+                layout: {
+                    padding: {
+                        left: 20,
+                        right: 20,
+                        top: 20,
+                        bottom: 20
+                    }
                 }
             }
-        }
-    });
+        });
+    }
+});
 </script>
 </body>
 </html>

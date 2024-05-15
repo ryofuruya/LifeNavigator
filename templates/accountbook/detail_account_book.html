@@ -116,10 +116,7 @@
         <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
     </header>
     <div class="buttons-container">
-        <h1>{{ model_type|title }} の詳細</h1>
-        <div class="detail-item">
-            <strong>カテゴリ:</strong> <span class="category-label">{{ instance.category }}</span>
-        </div>
+        <h1>{{ instance.category }} の詳細</h1>
         <div class="detail-item">
             <strong>金額:</strong> <span class="amount-label">{{ instance.amount|floatformat:0|intcomma }}円</span>
         </div>
