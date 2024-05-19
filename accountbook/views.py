@@ -69,26 +69,32 @@ def add_account_entry(request):
 
 @login_required
 def summary_view(request):
-    current_month = timezone.now().month
-    current_year = timezone.now().year
+    now = timezone.now()
+    current_year = now.year
+    current_month = now.month
+    selected_month = request.GET.get('month', current_month)
 
+    # 月の選択肢を作成します
+    months = [{'value': i, 'display': calendar.month_name[i]} for i in range(1, 13)]
+
+    # 月別の収入と支出を計算します
     monthly_incomes = AccountBook.objects.filter(
         user=request.user,
         record_date__year=current_year,
-        record_date__month=current_month,
+        record_date__month=selected_month,
         type='income'
     ).aggregate(total=Sum('amount'))['total'] or 0
 
     monthly_expenses = VariableExpense.objects.filter(
         user=request.user,
         record_date__year=current_year,
-        record_date__month=current_month
+        record_date__month=selected_month
     ).aggregate(total=Sum('amount'))['total'] or 0
 
     monthly_fixed_expenses = FixedExpense.objects.filter(
         user=request.user,
         record_date__year=current_year,
-        record_date__month=current_month
+        record_date__month=selected_month
     ).aggregate(total=Sum('amount'))['total'] or 0
 
     total_monthly_outflow = monthly_expenses + monthly_fixed_expenses
@@ -99,6 +105,8 @@ def summary_view(request):
         'monthly_incomes': monthly_incomes,
         'total_monthly_outflow': total_monthly_outflow,
         'net_income': net_income,
+        'months': months,
+        'selected_month': int(selected_month),  # 選択された月を整数として渡します
     }
 
     return render(request, 'accountbook/summary_view.html', context)
