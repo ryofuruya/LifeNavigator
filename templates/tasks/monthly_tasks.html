@@ -18,7 +18,7 @@
         flex-direction: column;
         justify-content: start;
         align-items: center;
-        height: 100vh;
+        min-height: 100vh;
         color: #00ff00;
     }
     header {
@@ -58,7 +58,7 @@
     h2 {
         font-size: 3rem;
         text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
-        margin-top: 60px;
+        margin-top: 80px;
         margin-bottom: 20px;
     }
     .buttons-container, .button-group {
@@ -84,6 +84,8 @@
         display: inline-block;
         background-color: #000;
         color: #FFF;
+        text-align: center;
+        white-space: nowrap;
     }
     .btn:hover {
         background-color: #00ff00;
@@ -92,44 +94,30 @@
     .add-btn { border-color: #1e90ff; color: #1e90ff; }
     .back-btn { border-color: #32cd32; color: #32cd32; }
     .home-btn { border-color: #ffd700; color: #ffd700; }
-    .tooltip-text {
-        visibility: hidden;
-        width: 100%;
-        background-color: #0008;
-        color: #00ff00;
-        text-align: center;
-        position:absolute;
-        z-index: 1;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 2rem;
-        padding: 5px 0;
-        opacity: 0;
-        transition: opacity 0.3s, visibility 0.3s;
-        overflow: hidden;
-    }
-    .btn:hover .tooltip-text {
-        visibility: visible;
-        opacity: 1;
-    }
     .task-container {
         background-color: rgba(0, 0, 0, 0.5);
-        padding: 5px 10px;
+        padding: 10px;
         border-radius: 5px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: 100%;
+        width: 90%; /* Adjusted width to fit the screen */
+        max-width: 800px; /* Set a max-width to ensure it fits on the screen */
+        margin-bottom: 10px;
+        overflow: hidden;
     }
     .task-details {
-        font-size: 1.8rem;
+        font-size: 1.2rem;
         color: #FFD700;
         text-shadow: 2px 2px 4px #000;
+        flex: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     .task-actions {
         display: flex;
-        gap: 10px;
+        gap: 5px;
     }
     .complete-btn { 
         border-color: #ff4500;
@@ -160,8 +148,8 @@
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
         <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="logout-link">ログアウト</button>
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
         </form>
     </header>
     <div class="buttons-container">
@@ -172,13 +160,12 @@
             <li>
                 <div class="task-container">
                     <span class="task-details">
-                        <span class="task-title">{{ task.title }}</span> - <span class="task-priority">優先度:{{ task.priority }}</span> - <span class="task-priority">期日:{{ task.deadline }}</span> - <span class="task-priority">MEMO:{{ task.description }}</span>
+                        <span class="task-title">{{ task.title }}</span> - <span class="task-priority">優先度:{{ task.priority }}</span> - <span class="task-deadline">期日:{{ task.deadline }}</span> - <span class="task-memo">MEMO:{{ task.description }}</span>
                     </span>
                     <div class="task-actions">
-                        <!-- 完了ボタン -->
-                    <form action="{% url 'tasks:monthly_task_complete_confirm' task.id %}" method="get" style="display: inline;">
-                        <button type="submit" class="btn complete-btn">完了</button>
-                    </form>
+                        <form action="{% url 'tasks:monthly_task_complete_confirm' task.id %}" method="get" style="display: inline;">
+                            <button type="submit" class="btn complete-btn">完了</button>
+                        </form>
                         <a href="{% url 'tasks:monthly_task_detail' task.id %}" class="btn details-btn">詳細</a>
                     </div>
                 </div>
