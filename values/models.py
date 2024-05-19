@@ -1,12 +1,14 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 class Value(models.Model):
-    title = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=100)
     description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)  # 追加時の日時を自動記録
-    updated_at = models.DateTimeField(auto_now=True)      # 更新時の日時を自動記録
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     def __str__(self):
         return self.title
 

@@ -129,19 +129,16 @@
     <!-- メモのタイトルを表示 -->
     <h2>{{ memo.title }}の詳細</h2>
     <div class="content">
-    <!-- メモの内容を表示 -->
-    <p>{{ memo.content }}</p>
-    <p>追加日: {{ memo.created_at|date:"Y-m-d" }}</p>
-    <p>更新日: {{ memo.updated_at|date:"Y-m-d" }}</p>
+        <!-- メモの内容を表示 -->
+        <p>{{ memo.content }}</p>
+        <p>追加日: {{ memo.created_at|date:"Y-m-d" }}</p>
+        <p>更新日: {{ memo.updated_at|date:"Y-m-d" }}</p>
     </div>
     <div>
-    <!-- メモの編集ページへのリンクを提供。ボタンスタイルで視覚的に強調 -->
-    <a href="{% url 'memos:memo_edit' memo.id %}" class="btn edit-btn">編集</a>
-    <!-- メモを削除するためのフォーム。削除確認のためのJavaScriptの確認ダイアログが設定されています -->
-    <form action="{% url 'memos:memo_delete' memo.id %}" method="post" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-danger" onclick="return confirm('本当に削除しますか？');">削除</button>
-    </form>
+        <!-- メモの編集ページへのリンクを提供。ボタンスタイルで視覚的に強調 -->
+        <a href="{% url 'memos:memo_edit' memo.id %}" class="btn edit-btn">編集</a>
+        <!-- 削除確認ページへのリンク -->
+        <a href="{% url 'memos:memo_delete' memo.id %}" class="btn delete-btn">削除</a>
         <a href="{% url 'memos:memo_list' %}" class="btn back-btn">戻る</a>
         <a href="{% url 'home' %}" class="btn home-btn">Home</a>
     </div>

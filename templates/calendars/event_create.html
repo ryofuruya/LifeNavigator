@@ -33,11 +33,20 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a,
+        header button {
             color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        header a:hover,
+        header button:hover {
+            color: #000;
+            background-color: #00ff00;
         }
         h2 {
             font-size: 3rem;
@@ -136,12 +145,16 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="centered-content">
         <h2>イベント追加</h2>
         <form method="post" action="{% url 'calendars:event_create' %}" class="form-container" id="event-form">
             {% csrf_token %}
+            <div id="error-message-container"></div> <!-- Error messages container -->
             {% for field in form %}
                 <div class="form-group">
                     {{ field.label_tag }}{% if field.field.required %}<span style="color: red;">*</span>{% endif %}
@@ -163,10 +176,10 @@
             const form = document.getElementById("event-form");
             const errorMessageContainer = document.getElementById("error-message-container");
 
-            // Set default date for start_date and end_date
+            // Set default date for date and deadline
             const today = new Date().toISOString().split('T')[0];
-            const startDateInput = form.querySelector("input[name='start_date']");
-            const endDateInput = form.querySelector("input[name='end_date']");
+            const startDateInput = form.querySelector("input[name='date']");
+            const endDateInput = form.querySelector("input[name='deadline']");
             if (startDateInput) startDateInput.value = today;
             if (endDateInput) endDateInput.value = today;
 
@@ -180,6 +193,17 @@
             form.addEventListener("submit", function(event) {
                 let isValid = true;
                 errorMessageContainer.innerHTML = ''; // Clear previous error messages
+
+                const startDate = new Date(startDateInput.value);
+                const endDate = new Date(endDateInput.value);
+
+                if (endDate < startDate) {
+                    isValid = false;
+                    const errorDiv = document.createElement("div");
+                    errorDiv.className = "error-message";
+                    errorDiv.textContent = "終了日は開始日より後の日付を選択してください。";
+                    errorMessageContainer.appendChild(errorDiv);
+                }
 
                 form.querySelectorAll("input, textarea").forEach(function(input) {
                     if (input.value.trim() === "") {

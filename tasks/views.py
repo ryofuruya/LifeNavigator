@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST, require_http_methods
 from django.http import JsonResponse, HttpResponse
 import json
 import logging
-
+from django.urls import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -142,3 +142,34 @@ def completed_tasks(request):
     completed_tasks = Task.objects.filter(user=request.user, status='completed').order_by('-completed_at')
     return render(request, 'tasks/completed_tasks.html', {'completed_tasks': completed_tasks})
 
+@login_required
+def daily_task_delete(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user, task_type='daily')
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks:daily_tasks')
+    return render(request, 'common/delete_confirm.html', {
+        'object': task,
+        'cancel_url': reverse('tasks:daily_task_detail', kwargs={'pk': task.pk}),
+        'delete_url': reverse('tasks:daily_task_delete', kwargs={'pk': task.pk})
+    })
+
+@login_required
+def monthly_task_delete(request, pk):
+    task = get_object_or_404(Task, pk=pk, user=request.user, task_type='monthly')
+    if request.method == 'POST':
+        task.delete()
+        return redirect('tasks:monthly_tasks')
+    return render(request, 'common/delete_confirm.html', {
+        'object': task,
+        'cancel_url': reverse('tasks:monthly_task_detail', kwargs={'pk': task.pk}),
+        'delete_url': reverse('tasks:monthly_task_delete', kwargs={'pk': task.pk})
+    })
+    
+def complete_confirm(request, pk):
+    task = get_object_or_404(Task, pk=pk)
+    if request.method == 'POST':
+        task.is_completed = True
+        task.save()
+        return redirect('tasks:task_list')
+    return render(request, 'common/complete_confirm.html', {'cancel_url': request.META.get('HTTP_REFERER', '/')})

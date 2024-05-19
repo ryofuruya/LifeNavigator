@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.http import Http404
+from django.urls import reverse
+from datetime import timedelta
 
 @login_required
 def goals_overview(request):
@@ -62,16 +64,7 @@ def complete_task(request, task_id):
     task.completed = True
     task.completed_at = timezone.now()
     task.save()
-
-    # タスクが関連する目標の種類に基づいて適切なページにリダイレクト
-    if task.goal.goal_type == 'short_term':
-        return redirect('goals:short_term_goals')
-    elif task.goal.goal_type == 'medium_term':
-        return redirect('goals:medium_term_goals')
-    elif task.goal.goal_type == 'long_term':
-        return redirect('goals:long_term_goals')
-    else:
-        return redirect('goals:goals_setting')  # 予期せぬケースのためのデフォルトのリダイレクト
+    return redirect('goals:all_goals') 
 
 @login_required
 def task_detail(request, task_id):
@@ -93,21 +86,52 @@ def task_edit(request, task_id):
         form = TaskForm(request.POST, instance=task)
         if form.is_valid():
             form.save()
-            # タスクが関連する目標の種類に基づいて適切なページにリダイレクト
-            if task.goal.goal_type == 'short_term':
-                return redirect('goals:short_term_goals')
-            elif task.goal.goal_type == 'medium_term':
-                return redirect('goals:medium_term_goals')
-            elif task.goal.goal_type == 'long_term':
-                return redirect('goals:long_term_goals')
-            else:
-                return redirect('goals:goals_overview')
+            return redirect('goals:all_goals')
     else:
-        # POSTリクエストがない場合は、既存のインスタンスでフォームを初期化
         form = TaskForm(instance=task)
-    
-    # フォームとタスクオブジェクトをテンプレートに渡す
-    return render(request, 'goals/task_edit.html', {'form': form, 'task': task})
+    return render(request, 'goals/task_edit.html', {
+        'form': form,
+        'task': task,
+        'goal_type': task.goal.goal_type
+    })
+
+@login_required
+def add_task(request, goal_type=None):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            new_task = form.save(commit=False)
+            if not goal_type:
+                goal_type = calculate_goal_type(new_task.deadline)
+            goal, created = Goal.objects.get_or_create(
+                user=request.user,
+                goal_type=goal_type,
+                defaults={
+                    'title': f'{goal_type.replace("_", " ").title()} Goal',
+                    'description': f'Default description for {goal_type.replace("_", " ").title()} goal',
+                    'deadline': new_task.deadline,
+                    'completion_status': False,
+                    'achievement_percentage': 0,
+                }
+            )
+            new_task.goal = goal
+            new_task.save()
+            return redirect(f'goals:all_goals')
+    else:
+        form = TaskForm()
+
+    return render(request, 'goals/add_task.html', {'form': form})
+
+def calculate_goal_type(deadline):
+    now = timezone.now().date()
+    time_diff = deadline - now
+    if time_diff < timedelta(days=365):
+        return 'short_term'
+    elif timedelta(days=365) <= time_diff < timedelta(days=5*365):
+        return 'medium_term'
+    else:
+        return 'long_term'
+
 
 @login_required
 def add_task_to_short_term_goal(request):
@@ -183,3 +207,45 @@ def add_task_to_long_term_goal(request):
     else:
         form = TaskForm()
     return render(request, 'goals/add_task_to_long_term_goal.html', {'form': form})
+
+@login_required
+def task_delete(request, task_id):
+    task = get_object_or_404(Task, id=task_id, goal__user=request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('goals:all_goals')  # タスク一覧ページにリダイレクト
+    return render(request, 'common/delete_confirm.html', {
+        'object': task,
+        'cancel_url': reverse('goals:task_detail', kwargs={'task_id': task.id}),
+        'delete_url': reverse('goals:task_delete', kwargs={'task_id': task.id})
+    })
+
+@login_required
+def complete_task_confirm(request, task_id):
+    task = get_object_or_404(Task, id=task_id, goal__user=request.user)
+    cancel_url = request.GET.get('cancel_url', '/')
+    if request.method == 'POST':
+        task.completed = True
+        task.completed_at = timezone.now()
+        task.save()
+        
+        return redirect('goals:all_goals')
+    return render(request, 'common/complete_confirm.html', {'object': task, 'cancel_url': cancel_url})
+
+@login_required
+def all_goals(request):
+    tasks = Task.objects.filter(goal__user=request.user, completed=False).order_by('deadline')
+    tasks_with_types = []
+
+    for task in tasks:
+        time_diff = task.deadline - timezone.now().date()
+        if time_diff < timedelta(days=365):
+            goal_type = 'short_term'
+        elif timedelta(days=365) <= time_diff < timedelta(days=5*365):
+            goal_type = 'medium_term'
+        else:
+            goal_type = 'long_term'
+        
+        tasks_with_types.append({'task': task, 'goal_type': goal_type})
+    
+    return render(request, 'goals/all_goals.html', {'tasks': tasks_with_types})

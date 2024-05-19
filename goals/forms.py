@@ -23,10 +23,15 @@ class GoalForm(forms.ModelForm):
 
 class TaskForm(forms.ModelForm):
     deadline = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    priority = forms.ChoiceField(choices=[
+        ('High', _('High')),
+        ('Medium', _('Medium')),
+        ('Low', _('Low')),
+    ])
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'deadline']
+        fields = ['title', 'description', 'priority', 'deadline']
 
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)

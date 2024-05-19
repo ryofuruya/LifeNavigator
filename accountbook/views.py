@@ -4,14 +4,17 @@ from django.contrib.auth.decorators import login_required
 from .forms import AccountBookForm, FixedExpenseForm, VariableExpenseForm, ExpenseFilterForm
 from django.db.models import Sum
 from django.utils import timezone
-import datetime
 import pytz
 import calendar
+import datetime  # datetimeモジュールをインポート
 from django.http import JsonResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils.dateparse import parse_date
 from django.views.decorators.http import require_POST
+from django.urls import reverse
+from .models import AccountBook, FixedExpense, VariableExpense, Expense, Income, Outflow
+
 
 @login_required
 def accountbook_list(request):
@@ -32,7 +35,7 @@ def accountbook_list(request):
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
 
-    incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end))
+    incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end), type='income')
     total_income = incomes.aggregate(Sum('amount'))['amount__sum'] or 0
 
     total_variable_expense = VariableExpense.objects.filter(user=request.user).aggregate(total=Sum('amount'))['total'] or 0
@@ -68,7 +71,7 @@ def add_account_entry(request):
 def summary_view(request):
     current_month = timezone.now().month
     current_year = timezone.now().year
-    
+
     monthly_incomes = AccountBook.objects.filter(
         user=request.user,
         record_date__year=current_year,
@@ -81,7 +84,7 @@ def summary_view(request):
         record_date__year=current_year,
         record_date__month=current_month
     ).aggregate(total=Sum('amount'))['total'] or 0
-    
+
     monthly_fixed_expenses = FixedExpense.objects.filter(
         user=request.user,
         record_date__year=current_year,
@@ -90,27 +93,15 @@ def summary_view(request):
 
     total_monthly_outflow = monthly_expenses + monthly_fixed_expenses
 
+    net_income = monthly_incomes - total_monthly_outflow
+
     context = {
         'monthly_incomes': monthly_incomes,
         'total_monthly_outflow': total_monthly_outflow,
+        'net_income': net_income,
     }
 
     return render(request, 'accountbook/summary_view.html', context)
-
-@login_required
-def add_fixed_expense(request):
-    if request.method == 'POST':
-        form = FixedExpenseForm(request.POST)
-        if form.is_valid():
-            fixed_expense = form.save(commit=False)
-            fixed_expense.user = request.user
-            fixed_expense.save()
-            return redirect('accountbook:monthly_fixed_expenses')
-        else:
-            return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
-    else:
-        form = FixedExpenseForm()
-    return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
 
 @login_required
 def add_variable_expense(request):
@@ -159,7 +150,7 @@ def income_list(request):
     month_start = timezone.datetime(now.year, now.month, 1)
     month_end = timezone.datetime(now.year, now.month + 1, 1) if now.month < 12 else timezone.datetime(now.year + 1, 1, 1)
     
-    incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end))
+    incomes = AccountBook.objects.filter(user=request.user, record_date__range=(month_start, month_end), type='income')
     total_income = incomes.aggregate(Sum('amount'))['amount__sum'] or 0
     
     context = {
@@ -250,8 +241,8 @@ def income_summary_view(request):
     else:
         current_month_end = datetime.datetime(current_year, current_month + 1, 1, tzinfo=pytz.UTC) - datetime.timedelta(seconds=1)
 
-    monthly_fixed_expenses = FixedExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
-    monthly_expenses = VariableExpense.objects.filter(user=request.user, payment_date__year=current_year, payment_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
+    monthly_fixed_expenses = FixedExpense.objects.filter(user=request.user, record_date__year=current_year, record_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
+    monthly_expenses = VariableExpense.objects.filter(user=request.user, record_date__year=current_year, record_date__month=current_month).aggregate(total=Sum('amount'))['total'] or 0
     
     total_income = AccountBook.objects.filter(user=request.user, record_date__year=current_year, record_date__month=current_month, type='income').aggregate(total=Sum('amount'))['total'] or 0
 
@@ -297,94 +288,94 @@ def income_summary_view(request):
     return render(request, 'accountbook/income_summary_view.html', context)
 
 @csrf_exempt
+@require_POST
 def update_income(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        income_id = data.get('id')
-        field = data.get('field')
-        value = data.get('value')
-        
-        if field == 'record_date':
-            value = parse_date(value)
+    data = json.loads(request.body)
+    income_id = data.get('id')
+    field = data.get('field')
+    value = data.get('value')
 
-        income = AccountBook.objects.get(id=income_id)
-        setattr(income, field, value)
-        income.save()
+    if field == 'record_date':
+        value = parse_date(value)
 
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
+    income = get_object_or_404(AccountBook, id=income_id, user=request.user)
+    setattr(income, field, value)
+    income.save()
+
+    return JsonResponse({'status': 'success'})
 
 @login_required
-@csrf_exempt
 def delete_income(request, income_id):
     income = get_object_or_404(AccountBook, id=income_id, user=request.user)
-    income.delete()
-    return redirect('accountbook:income_list')
+    if request.method == 'POST':
+        income.delete()
+        return redirect('accountbook:income_list')
+    return render(request, 'common/delete_confirm.html', {'object': income, 'cancel_url': reverse('accountbook:income_list')})
 
 @login_required
 def delete_variable_expense(request, expense_id):
     expense = get_object_or_404(VariableExpense, id=expense_id, user=request.user)
-    expense.delete()
-    return redirect('accountbook:variable_expense_list')
+    if request.method == 'POST':
+        expense.delete()
+        return redirect('accountbook:variable_expense_list')
+    return render(request, 'common/delete_confirm.html', {'object': expense, 'cancel_url': reverse('accountbook:variable_expense_list')})
 
 @login_required
 def delete_fixed_expense(request, expense_id):
     expense = get_object_or_404(FixedExpense, id=expense_id, user=request.user)
-    expense.delete()
-    return redirect('accountbook:monthly_fixed_expenses')
+    if request.method == 'POST':
+        expense.delete()
+        return redirect('accountbook:monthly_fixed_expenses')
+    return render(request, 'common/delete_confirm.html', {'object': expense, 'cancel_url': reverse('accountbook:monthly_fixed_expenses')})
 
 @csrf_exempt
+@require_POST
 def update_variable_expense(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        expense_id = data.get('id')
-        field = data.get('field')
-        value = data.get('value')
+    data = json.loads(request.body)
+    expense_id = data.get('id')
+    field = data.get('field')
+    value = data.get('value')
 
-        expense = VariableExpense.objects.get(id=expense_id)
+    expense = get_object_or_404(VariableExpense, id=expense_id, user=request.user)
 
-        if field == 'amount':
-            value = int(round(float(value)))
+    if field == 'amount':
+        value = int(round(float(value)))
 
-        setattr(expense, field, value)
-        expense.save()
+    setattr(expense, field, value)
+    expense.save()
 
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'error'}, status=400)
-        
+    return JsonResponse({'status': 'success'})
+
 @csrf_exempt
+@require_POST
 def update_fixed_expense(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        expense_id = data.get('id')
-        field = data.get('field')
-        value = data.get('value')
+    data = json.loads(request.body)
+    expense_id = data.get('id')
+    field = data.get('field')
+    value = data.get('value')
 
-        expense = FixedExpense.objects.get(id=expense_id)
+    expense = get_object_or_404(FixedExpense, id=expense_id, user=request.user)
 
-        if field == 'amount':
-            value = int(round(float(value)))
+    if field == 'amount':
+        value = int(round(float(value)))
 
-        setattr(expense, field, value)
-        expense.save()
+    setattr(expense, field, value)
+    expense.save()
 
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'failed'}, status=400)
+    return JsonResponse({'status': 'success'})
 
 @require_POST
 @csrf_exempt
 def update_expense(request):
     try:
         data = json.loads(request.body)
-        expense = Expense.objects.get(id=data['id'])
+        expense = get_object_or_404(Expense, id=data['id'], user=request.user)
         setattr(expense, data['field'], data['value'])
         expense.save()
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-    
 @login_required
 def edit_account_book(request, model_type, id):
     model_classes = {
@@ -396,7 +387,7 @@ def edit_account_book(request, model_type, id):
     if not model:
         raise Http404("Account type not found.")
 
-    instance = get_object_or_404(model, pk=id)
+    instance = get_object_or_404(model, pk=id, user=request.user)
     if request.method == 'POST':
         form = AccountBookForm(request.POST, instance=instance)
         if form.is_valid():
@@ -415,7 +406,6 @@ def edit_account_book(request, model_type, id):
     }
     return render(request, 'accountbook/account_book_edit.html', context)
 
-
 @login_required
 def detail_account_book(request, model_type, id):
     model_classes = {
@@ -428,10 +418,25 @@ def detail_account_book(request, model_type, id):
     if not model:
         raise Http404("Account type not found.")
 
-    instance = get_object_or_404(model, pk=id)
+    instance = get_object_or_404(model, pk=id, user=request.user)
 
     context = {
         'instance': instance,
         'model_type': model_type
     }
     return render(request, 'accountbook/detail_account_book.html', context)
+
+@login_required
+def add_fixed_expense(request):
+    if request.method == 'POST':
+        form = FixedExpenseForm(request.POST)
+        if form.is_valid():
+            fixed_expense = form.save(commit=False)
+            fixed_expense.user = request.user
+            fixed_expense.save()
+            return redirect('accountbook:monthly_fixed_expenses')
+        else:
+            return render(request, 'accountbook/add_fixed_expense.html', {'form': form})
+    else:
+        form = FixedExpenseForm()
+    return render(request, 'accountbook/add_fixed_expense.html', {'form': form})

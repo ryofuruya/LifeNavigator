@@ -32,11 +32,15 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a, header form button {
             color: #9b59b6;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
         h2 {
             font-size: 3rem;
@@ -103,13 +107,16 @@
 </head>
 <body>
     <header>
-        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">タスクリスト</a>
         <a href="{% url 'goals:goal_setting' %}" class="goal-setting-link">目標設定</a>
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="centered-content">
         <h2>編集</h2>
@@ -119,14 +126,26 @@
             {% for field in form %}
             <div class="form-group">
                 <label for="{{ field.id_for_label }}">
-                    {{ field.label }}
+                    {% if field.label == "Amount" %}
+                        金額
+                    {% elif field.label == "Category" %}
+                        カテゴリー
+                    {% elif field.label == "Description" %}
+                        説明
+                    {% elif field.label == "Date" %}
+                        日付
+                    {% elif field.label == "Record date" %}
+                        記録日
+                    {% else %}
+                        {{ field.label }}
+                    {% endif %}
                     {% if field.field.required %}
                     <span class="required" style="color: red;">*</span>
                     {% endif %}
                 </label>
-                {% if field.name == 'Amount' %}
+                {% if field.name == 'amount' %}
                     <!-- Amountフィールドの場合、typeをnumberに設定し、小数点以下を切り捨てる -->
-                    <input type="number" name="{{ field.name }}" value="{{ field.value|default_if_none:''|floatformat:0 }}" min="0" step="1">
+                    <input type="number" name="{{ field.name }}" value="{{ field.value|default_if_none:''|floatformat:0 }}" min="0" step="1" maxlength="10">
                 {% else %}
                     {{ field }}
                 {% endif %}
@@ -138,9 +157,9 @@
             </div>
             {% endfor %}
             <div class="button-group">
-                <button type="submit" class="btn add-btn">Save</button>
+                <button type="submit" class="btn add-btn">保存</button>
                 <a href="{% url 'accountbook:detail_account_book' model_type=model_type id=instance.id %}" class="btn back-btn">戻る</a>
-                <a href="{% url 'home' %}" class="btn home-btn">Home</a>
+                <a href="{% url 'home' %}" class="btn home-btn">ホーム</a>
             </div>
         </form>
     </div>
@@ -150,8 +169,32 @@ document.addEventListener("DOMContentLoaded", function() {
     if (amountField) {
         amountField.value = parseInt(amountField.value) || 0;  // NaN の場合は0を設定
         amountField.addEventListener('input', function() {
-            this.value = parseInt(this.value.replace(/[^\d]/g, '')) || '';  // 数値以外が入力された場合は空文字を設定
+            const errorMessageDiv = amountField.nextElementSibling;
+            if (this.value.length > 10) {
+                errorMessageDiv.textContent = '金額は10桁以内で入力してください。';
+                errorMessageDiv.style.display = 'block';
+                this.value = this.value.slice(0, 10); // 10桁を超えたら切り捨て
+            } else {
+                errorMessageDiv.style.display = 'none';
+            }
         });
+    }
+
+    var categoryField = document.querySelector('input[name="category"]');  // フィールド名が正しいか確認
+    var descriptionField = document.querySelector('textarea[name="description"]');  // フィールド名が正しいか確認
+
+    function preventSpaceInput(event) {
+        if (event.key === ' ') {
+            event.preventDefault();
+        }
+    }
+
+    if (categoryField) {
+        categoryField.addEventListener('keypress', preventSpaceInput);
+    }
+
+    if (descriptionField) {
+        descriptionField.addEventListener('keypress', preventSpaceInput);
     }
 });
 </script>

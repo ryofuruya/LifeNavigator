@@ -31,15 +31,22 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a,
+        header button {
+            color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
-            transition: color 0.3s, background-color 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
-        header a:hover {
+        header a:hover,
+        header button:hover {
             color: #000;
+            background-color: #00ff00;
         }
+
 	    .task-list-link {color: #3498db !important;}
         .goal-setting-link { color: #9b59b6 !important; }
         .accountbook-link { color: #1abc9c !important; }
@@ -146,7 +153,10 @@
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="buttons-container">
         <h2>価値観</h2>

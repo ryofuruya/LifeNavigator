@@ -1,6 +1,5 @@
 {% load static %}
-{% load custom_filters %}
-{% load math_filters %}
+{% load humanize %}
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -8,6 +7,7 @@
     <meta charset="UTF-8">
     <title>集計結果</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             display: flex;
@@ -57,14 +57,14 @@
             font-size: 1.5rem;
             padding: 10px 20px;
             margin: 10px;
-            border: 2px solid #00ff00; /* Default green border */
-            background-color: #000; /* Black background */
-            color: #00ff00; /* Green text */
+            border: 2px solid #00ff00;
+            background-color: #000;
+            color: #00ff00;
             transition: background-color 0.3s, color 0.3s;
             text-decoration: none;
             display: inline-block;
             opacity: 0.8;
-            border-radius: 5px; /* Rounded corners */
+            border-radius: 5px;
         }
         .btn:hover {
             background-color: #00ff00;
@@ -72,15 +72,15 @@
             opacity: 1;
         }
         .btn-primary {
-            background-color: #1abc9c; /* Teal */
+            background-color: #1abc9c;
             border-color: #1abc9c;
         }
         .btn-secondary {
-            background-color: #2c3e50; /* Dark Gray */
+            background-color: #2c3e50;
             border-color: #2c3e50;
         }
         .btn-info {
-            background-color: #3498db; /* Blue */
+            background-color: #3498db;
             border-color: #3498db;
         }
         
@@ -91,13 +91,13 @@
             width: 90%;
             display: flex;
             flex-wrap: wrap;
-            justify-content: space-around; /* This centers and spaces out the columns */
+            justify-content: space-around;
         }
         .column {
-            flex: 1 1 300px; /* Flex-grow, flex-shrink, and flex-basis */
+            flex: 1 1 300px;
             margin: 10px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 10px;
         }
         
@@ -118,41 +118,46 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a, header form button {
             color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            transition: color 0.3s, background-color 0.3s;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        header a:hover, header form button:hover {
+            color: #000;
         }
         h2 {
             font-size: 3rem;
             text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
-            margin-top: 100px; /* Adjust for fixed header */
+            margin-top: 100px;
             margin-bottom: 20px;
         }
         .add-btn {
-        border-color: #1e90ff;
-        color: #1e90ff;
-    }
-    .adc-btn {
-        border-color: #1abc9c
-        color: #1abc9c
-    }
-
-    .back-btn {
-        border-color: #32cd32;
-        color: #32cd32;
-    }
-
-    .bacc-btn {
-        border-color: #1abc9c;
-        color: #1abc9c;
-    }
-
-    .home-btn {
-        border-color: #ffd700;
-        color: #ffd700;
-    }
+            border-color: #1e90ff;
+            color: #1e90ff;
+        }
+        .adc-btn {
+            border-color: #1abc9c;
+            color: #1abc9c;
+        }
+        .back-btn {
+            border-color: #32cd32;
+            color: #32cd32;
+        }
+        .bacc-btn {
+            border-color: #ff6347;
+            color: #ff6347;
+        }
+        .home-btn {
+            border-color: #ffd700;
+            color: #ffd700;
+        }
     </style>
 </head>
 <body>
@@ -163,19 +168,28 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="container">
         <h2>集計結果</h2>
         <div>
+            <label for="month-select">月を選択:</label>
+            <select id="month-select" onchange="location.href='?month=' + this.value;">
+                {% for month in months %}
+                    <option value="{{ month.value }}" {% if month.value == selected_month %}selected{% endif %}>{{ month.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
             <h3>月別収入: {{ monthly_incomes|intcomma }}円</h3>
             <h3>月別支出: {{ total_monthly_outflow|intcomma }}円</h3>
-            <h3>純収入: {{ monthly_incomes|subtract:total_monthly_outflow|intcomma }}円</h3>
+            <h3>純収入: {{ net_income|intcomma }}円</h3>
         </div>
-        <!-- Chart.js を使用したグラフの描画 -->
         <canvas id="myChart" width="400" height="400"></canvas>
     </div>
-     <!-- ナビゲーションリンク -->
     <div class="button-group">
         <a href="{% url 'accountbook:income_list' %}" class="btn bacc-btn">収入</a>
         <a href="{% url 'accountbook:variable_expense_list' %}" class="btn adc-btn">流動支出</a>
@@ -183,76 +197,73 @@
         <a href="{% url 'accountbook:accountbook_list' %}" class="btn back-btn">戻る</a>
         <a href="{% url 'home' %}" class="btn home-btn">ホーム</a>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    var incomeData = {{ monthly_incomes|default_if_none:'0' }};
-    var outflowData = {{ total_monthly_outflow|default_if_none:'0' }};
-    var ctx = document.getElementById('myChart').getContext('2d');
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var incomeData = {{ monthly_incomes|default_if_none:'0' }};
+        var outflowData = {{ total_monthly_outflow|default_if_none:'0' }};
+        var ctx = document.getElementById('myChart').getContext('2d');
 
-    if (incomeData === 0 && outflowData === 0) {
-        // データがない場合のメッセージを表示
-        document.getElementById('myChart').style.display = 'none'; // グラフを隠す
-        var noDataDiv = document.createElement('div');
-        noDataDiv.textContent = '登録データがありません。';
-        noDataDiv.style.color = '#ff0000'; // テキストの色を赤に
-        noDataDiv.style.fontSize = '20px'; // フォントサイズを大きく
-        document.querySelector('.container').appendChild(noDataDiv);
-    } else {
-        // データがある場合、グラフを描画
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['支出', '収入'],
-                datasets: [{
-                    label: '金額',
-                    data: [outflowData, incomeData],
-                    backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'],
-                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: Math.max(incomeData, outflowData) + 10, // Adjust the maximum value to be a bit higher than the maximum data value
-                        ticks: {
-                            stepSize: 1, // Ensure the steps are in whole numbers
-                            font: {
-                                size: 16
+        if (incomeData === 0 && outflowData === 0) {
+            document.getElementById('myChart').style.display = 'none';
+            var noDataDiv = document.createElement('div');
+            noDataDiv.textContent = '登録データがありません。';
+            noDataDiv.style.color = '#ff0000';
+            noDataDiv.style.fontSize = '20px';
+            document.querySelector('.container').appendChild(noDataDiv);
+        } else {
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['支出', '収入'],
+                    datasets: [{
+                        label: '金額',
+                        data: [outflowData, incomeData],
+                        backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: Math.max(incomeData, outflowData) + 10,
+                            ticks: {
+                                stepSize: 1,
+                                font: {
+                                    size: 16
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: {
+                                    size: 16
+                                }
                             }
                         }
                     },
-                    x: {
-                        ticks: {
-                            font: {
-                                size: 16
-                            }
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true
                         }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
                     },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-                layout: {
-                    padding: {
-                        left: 20,
-                        right: 20,
-                        top: 20,
-                        bottom: 20
+                    layout: {
+                        padding: {
+                            left: 20,
+                            right: 20,
+                            top: 20,
+                            bottom: 20
+                        }
                     }
                 }
-            }
-        });
-    }
-});
-</script>
+            });
+        }
+    });
+    </script>
 </body>
 </html>

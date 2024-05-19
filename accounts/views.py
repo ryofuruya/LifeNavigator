@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from .forms import CustomUserChangeForm, ProfileForm, SignUpForm
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,34 +6,50 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import DetailView, UpdateView, DeleteView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from django.contrib.auth import authenticate, login, update_session_auth_hash, logout
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import login, update_session_auth_hash, logout
 from django.http import HttpResponseRedirect
-from .models import UserProfile
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from accounts.models import UserProfile
 
 # ユーザー詳細ビュー
 @method_decorator(login_required, name='dispatch')
-class UserDetailView(DetailView):
+class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = User
     template_name = 'accounts/user_detail.html'
     context_object_name = 'user_obj'
 
+    def test_func(self):
+        user = self.get_object()
+        return self.request.user == user
+
 # ユーザー削除ビュー
 @method_decorator(login_required, name='dispatch')
-class UserDeleteView(DeleteView):
+class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = User
-    template_name = 'accounts/user_confirm_delete.html'
+    template_name = 'common/delete_confirm.html'
     success_url = reverse_lazy('home')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cancel_url'] = reverse_lazy('accounts:user_detail', kwargs={'pk': self.object.pk})
+        return context
+
+    def test_func(self):
+        user = self.get_object()
+        return self.request.user == user
+
 # ユーザー編集ビュー
-class UserEditView(LoginRequiredMixin, UpdateView):
+class UserEditView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = User
     form_class = CustomUserChangeForm
     second_form_class = PasswordChangeForm
     template_name = 'accounts/edit_profile.html'
+
+    def test_func(self):
+        user = self.get_object()
+        return self.request.user == user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

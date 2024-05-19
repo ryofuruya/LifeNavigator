@@ -27,6 +27,16 @@ class EventForm(forms.ModelForm):
         self.fields['date'].widget.attrs['min'] = today_iso
         self.fields['deadline'].widget.attrs['min'] = today_iso
 
+    def clean(self):
+        cleaned_data = super().clean()
+        date = cleaned_data.get('date')
+        deadline = cleaned_data.get('deadline')
+
+        if date and deadline and deadline < date:
+            raise ValidationError(_('終了日は開始日より後の日付を選択してください。'))
+
+        return cleaned_data
+
     def clean_title(self):
         title = self.cleaned_data.get('title', '').strip()
         if not title:

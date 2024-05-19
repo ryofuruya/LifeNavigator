@@ -32,15 +32,15 @@
         left: 0;
         z-index: 1000;
     }
-    header a {
-        color: #FFF;
+    header a, header form button {
+        color: #00ff00;
         margin: 0 20px;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: color 0.3s, background-color 0.3s;
-    }
-    header a:hover {
-        color: #FFD700;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
     }
     h1 {
         font-size: 3rem;
@@ -82,23 +82,22 @@
         margin-top: 20px;
     }
     .goal-setting-link { color: #9b59b6 !important; }
-    .task-list-link {color: #3498db !important;}
+    .task-list-link { color: #3498db !important; }
     .calendar-link { color: #f39c12 !important; }
     .values-link { color: #e74c3c !important; }
     .memo-link { color: #2ecc71 !important; }
     .user-info-link { color: #34495e !important; }
     .logout-link { color: #95a5a6 !important; }
     .edit-btn {
-    border-color: #1e90ff; /* 青色のボーダー */
-    color: #1e90ff; /* 青色のテキスト */
-    background-color: #000; /* 黒背景 */
-}
-
-.edit-btn:hover {
-    background-color: #1e90ff; /* ホバー時の背景色を青に */
-    color: #000; /* ホバー時のテキスト色を黒に */
-}
-.error-message {
+        border-color: #1e90ff; /* 青色のボーダー */
+        color: #1e90ff; /* 青色のテキスト */
+        background-color: #000; /* 黒背景 */
+    }
+    .edit-btn:hover {
+        background-color: #1e90ff; /* ホバー時の背景色を青に */
+        color: #000; /* ホバー時のテキスト色を黒に */
+    }
+    .error-message {
         color: red; /* エラーメッセージを赤色で表示 */
         font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
         margin-top: 5px; /* エラーメッセージのマージン調整 */
@@ -113,7 +112,10 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="buttons-container">
         <h1>{{ instance.category }} の詳細</h1>

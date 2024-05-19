@@ -33,11 +33,15 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a, header form button {
             color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
         h2 {
             font-size: 3rem;
@@ -100,6 +104,12 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+        .error-message {
+            color: red; /* エラーメッセージを赤色で表示 */
+            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
+            margin-top: 5px; /* エラーメッセージのマージン調整 */
+        }
+        .required { color: red; }
         .task-list-link { color: #3498db !important; }
         .goal-setting-link { color: #9b59b6 !important; }
         .calendar-link { color: #f39c12 !important; }
@@ -107,16 +117,6 @@
         .memo-link { color: #2ecc71 !important; }
         .user-info-link { color: #34495e !important; }
         .logout-link { color: #95a5a6 !important; }
-        .alert-danger {
-            color: red;
-            font-size: 1.2rem;
-            margin-top: 5px;
-        }
-        .error-message {
-            color: red; /* エラーメッセージを赤色で表示 */
-            font-size: 1.2rem; /* エラーメッセージのフォントサイズ調整 */
-            margin-top: 5px; /* エラーメッセージのマージン調整 */
-        }
     </style>
 </head>
 <body>
@@ -127,7 +127,10 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="centered-content">
         <h2>固定費登録</h2>
@@ -155,20 +158,24 @@
             {% endif %}
             <div class="form-container">
                 <div class="form-group">
-                    <label for="record_date">日付:費用発生日<span class="required" style="color: red;">*</span></label>
-                    <input type="date" id="record_date" name="record_date" required>
-                </div>
-                <div class="form-group">
-                    <label for="category">カテゴリ:費用の分類<span class="required" style="color: red;">*</span></label>
+                    <label for="category">カテゴリー:<span class="required">*</span></label>
                     <input type="text" id="category" name="category" required>
+                    <div class="error-message" style="display:none;"></div>
                 </div>
                 <div class="form-group">
-                    <label for="amount">金額:<span class="required" style="color: red;">*</span></label>
-                    <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required>
+                    <label for="amount">金額:<span class="required">*</span></label>
+                    <input type="number" id="amount" name="amount" step="1" title="整数のみを入力してください" required maxlength="10">
+                    <div class="error-message" style="display:none;"></div>
                 </div>
                 <div class="form-group">
-                    <label for="description">説明:費用の詳細 メモ<span class="required" style="color: red;">*</span></label>
+                    <label for="record_date">記録日:<span class="required">*</span></label>
+                    <input type="date" id="record_date" name="record_date" required>
+                    <div class="error-message" style="display:none;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="description">説明:<span class="required">*</span></label>
                     <textarea id="description" name="description" required></textarea>
+                    <div class="error-message" style="display:none;"></div>
                 </div>
                 <div class="button-group">
                     <button type="submit" class="btn add-btn">登録</button>
@@ -183,22 +190,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const descriptionInput = document.getElementById('description'); // 説明入力フィールドを取得
     const amountInput = document.getElementById('amount'); // 金額入力フィールドを取得
     const categoryInput = document.getElementById('category'); // カテゴリ入力フィールドを取得
-    const errorMessageDiv = document.createElement('div'); // エラーメッセージ用のdivを生成
-    errorMessageDiv.className = 'error-message'; // スタイル適用のためのクラス名設定
-    errorMessageDiv.style.display = 'none'; // 初期状態ではエラーメッセージを隠す
-    descriptionInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), descriptionInput.nextSibling); // descriptionInputの直後にエラーメッセージを挿入
-    amountInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), amountInput.nextSibling); // amountInputの直後にエラーメッセージを挿入
-    categoryInput.parentNode.insertBefore(errorMessageDiv.cloneNode(), categoryInput.nextSibling); // categoryInputの直後にエラーメッセージを挿入
 
     function validateInput(inputElement, isAmount = false) {
-        const errorMessageDiv = inputElement.nextSibling;
+        const errorMessageDiv = inputElement.nextElementSibling;
         const trimmedValue = inputElement.value.trim(); // 入力値の前後の空白をトリム
         if (trimmedValue === '') {
             errorMessageDiv.textContent = 'このフィールドは必須です。';
             errorMessageDiv.style.display = 'block'; // エラーメッセージを表示
             inputElement.value = ''; // フィールドをクリア
-        } else if (isAmount && !/^\d+$/.test(trimmedValue)) {
-            errorMessageDiv.textContent = '整数値のみを入力してください。';
+        } else if (isAmount && (!/^\d+$/.test(trimmedValue) || trimmedValue.length > 10)) {
+            errorMessageDiv.textContent = '整数値のみを入力してください。10桁以内で入力してください。';
             errorMessageDiv.style.display = 'block';
             inputElement.value = ''; // フィールドをクリア
         } else if (isAmount && parseInt(trimmedValue, 10) <= 0) {

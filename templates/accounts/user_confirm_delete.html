@@ -33,11 +33,19 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a, header form button {
             color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        header a:hover, header form button:hover {
+            color: #FFD700;
         }
         h1 {
             font-size: 3rem;
@@ -143,23 +151,25 @@
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="centered-content">
-       <h1>{{ object.username }}のアカウントを<br>削除しますか？</h1>
+        <h1>{{ object.username }}のアカウントを<br>削除しますか？</h1>
         <form method="post" class="centered-content">
             {% csrf_token %} <!-- CSRFトークンを使用してフォームのセキュリティを強化 -->
-        {{ form.non_field_errors }} <!-- フォーム全体のエラーを表示 -->
-        {% for field in form %}
+            {{ form.non_field_errors }} <!-- フォーム全体のエラーを表示 -->
+            {% for field in form %}
             <div>
                 {{ field.label_tag }} {{ field }} <!-- 各フィールドとラベルを表示 -->
                 {% for error in field.errors %}
                     <div class="error-message">{{ error }}</div> <!-- 各フィールドに関するエラーメッセージを表示 -->
                 {% endfor %}
             </div>
-        {% endfor %}
-                
-            </div>
+            {% endfor %}
             <div class="button-group">
                 <button type="submit" class="btn add-btn">削除</button>
                 <a href="{% url 'accounts:user_detail' user.id %}" class="btn back-btn">キャンセル</a>

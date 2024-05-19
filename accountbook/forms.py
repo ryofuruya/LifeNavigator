@@ -26,7 +26,7 @@ class AccountBookForm(forms.ModelForm):
         self.fields['amount'].widget.attrs.update({'step': '1'})
 
 class FixedExpenseForm(forms.ModelForm):
-    payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
+    record_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
     amount = forms.IntegerField(
         widget=forms.NumberInput(attrs={'step': '1'}),
         min_value=0,  # 0以上の値のみ許可
@@ -45,7 +45,7 @@ class FixedExpenseForm(forms.ModelForm):
         self.fields['description'].required = True
 
 class VariableExpenseForm(forms.ModelForm):
-    payment_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
+    record_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), initial=localtime().date())
     amount = forms.IntegerField(
         widget=forms.NumberInput(attrs={'step': '1'}),
         min_value=0,  # 0以上の値のみ許可

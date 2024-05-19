@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -23,6 +25,16 @@ class Task(models.Model):
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
 
+    @property
+    def goal_type(self):
+        now = timezone.now().date()
+        time_diff = self.deadline - now
+        if time_diff < timedelta(days=365):
+            return 'short_term'
+        elif timedelta(days=365) <= time_diff < timedelta(days=5 * 365):
+            return 'medium_term'
+        else:
+            return 'long_term'
+
     def __str__(self):
         return self.title
-    

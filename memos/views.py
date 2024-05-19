@@ -4,6 +4,7 @@ from .forms import MemoSearchForm, MemoForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Min, Max
 from django.utils.timezone import localtime
+from django.urls import reverse
 
 @login_required
 def memo_list(request):
@@ -53,8 +54,8 @@ def memo_add(request):
     return render(request, 'memos/memo_add.html', {'form': form})
 
 @login_required
-def memo_edit(request, pk):
-    memo = get_object_or_404(Memo, pk=pk, user=request.user)
+def memo_edit(request, memo_id):
+    memo = get_object_or_404(Memo, id=memo_id, user=request.user)
     if request.method == 'POST':
         form = MemoForm(request.POST, instance=memo)
         if form.is_valid():
@@ -65,14 +66,14 @@ def memo_edit(request, pk):
     return render(request, 'memos/memo_edit.html', {'form': form})
 
 @login_required
-def memo_delete(request, pk):
-    memo = get_object_or_404(Memo, pk=pk, user=request.user)
-    if request.method == 'POST':
-        memo.delete()
-        return redirect('memos:memo_list')
-    return render(request, 'memos/memo_delete.html', {'memo': memo})
+def memo_detail(request, memo_id):
+    memo = get_object_or_404(Memo, id=memo_id, user=request.user)
+    return render(request, 'memos/memo_detail.html', {'memo': memo})
 
 @login_required
-def memo_detail(request, pk):
-    memo = get_object_or_404(Memo, pk=pk, user=request.user)
-    return render(request, 'memos/memo_detail.html', {'memo': memo})
+def memo_delete(request, memo_id):
+    memo = get_object_or_404(Memo, id=memo_id, user=request.user)
+    if request.method == 'POST':
+        memo.delete()
+        return redirect('memos:memo_list')  # メモ一覧ページにリダイレクト
+    return render(request, 'common/delete_confirm.html', {'object': memo, 'cancel_url': reverse('memos:memo_detail', kwargs={'memo_id': memo.id})})

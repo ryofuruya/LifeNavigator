@@ -33,11 +33,15 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
+        header a, header form button {
             color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
         }
         h2 {
             font-size: 3rem;
@@ -95,7 +99,7 @@
             visibility: visible;
             opacity: 1;
         }
-        .task-list-link {color: #3498db !important;}
+        .task-list-link { color: #3498db !important; }
         .goal-setting-link { color: #9b59b6 !important; }
         .calendar-link { color: #f39c12 !important; }
         .values-link { color: #e74c3c !important; }
@@ -112,7 +116,10 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="buttons-container">
         <h2>家計簿</h2>

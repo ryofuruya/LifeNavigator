@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{% static "images/goals.jpeg" %}');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            min-height: 100vh;
+            color: #00ff00;
+        }
+        header {
+            background-color: #000;
+            padding: 10px 0;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .task-list-link {color: #3498db !important;}
+        .goal-setting-link { color: #9b59b6 !important; }
+        .accountbook-link { color: #1abc9c !important; }
+        .calendar-link { color: #f39c12 !important; }
+        .values-link { color: #e74c3c !important; }
+        .memo-link { color: #2ecc71 !important; }
+        .user-info-link { color: #34495e !important; }
+        .logout-link { color: #95a5a6 !important; }
+        header a,
+        header button {
+            color: #00ff00;
+            margin: 0 20px;
+            font-size: 1.5rem;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        header a:hover,
+        header button:hover {
+            color: #000;
+            background-color: #00ff00;
+        }
+
+        h2 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
+            margin-top: 60px;
+            margin-bottom: 20px;
+        }
+        .task-list {
+            width: 90%;
+            max-width: 800px;
+            padding-top: 100px;
+            margin-bottom: 50px; /* 追加ボタンと被らないようにするため */
+        }
+        .task {
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            color: #000;
+            text-align: left;
+            position: relative;
+        }
+        .short_term { background-color: #f39c12; }
+        .medium_term { background-color: #3498db; }
+        .long_term { background-color: #2ecc71; }
+        .btn {
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            margin: 10px;
+            border: 2px solid #00ff00;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            background-color: #000;
+            color: #00ff00;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+        .btn-add {
+            border-color: #3498db;
+        }
+        .btn-add:hover {
+            color: #3498db;
+        }
+        .btn-back {
+            border-color: #32cd32;
+        }
+        .btn-back:hover {
+            color: #32cd32;
+        }
+        .btn-home {
+            border-color: #ffd700;
+        }
+        .btn-home:hover {
+            color: #ffd700;
+        }
+        .btn-complete {
+            border-color: #ff4500;
+        }
+        .btn-complete:hover {
+            color: #ff4500;
+        }
+        .btn-details {
+            border-color: #800080;
+        }
+        .btn-details:hover {
+            color: #800080;
+        }
+        .task-actions {
+            display: flex;
+            justify-content: flex-end;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        .footer-buttons {
+            display: flex;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="{% url 'tasks:task_list' %}" class="task-list-link">Task List</a>
+        <a href="{% url 'accountbook:accountbook_list' %}" class="accountbook-link">家計簿</a>
+        <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
+        <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
+        <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
+        <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="logout-link">ログアウト</button>
+        </form>
+    </header>
+    <div class="task-list">
+        <h2>目標一覧</h2>
+        {% for item in tasks %}
+            <div class="task {% if item.goal_type == 'short_term' %}short_term{% elif item.goal_type == 'medium_term' %}medium_term{% else %}long_term{% endif %}">
+                <strong>Title:</strong> {{ item.task.title }}<br>
+                <strong>Description:</strong> {{ item.task.description|default:"No description provided." }}<br>
+                <strong>Priority:</strong> {{ item.task.priority }}<br>
+                <strong>Deadline:</strong> {{ item.task.deadline|date:"Y-m-d" }}<br>
+                <div class="task-actions">
+                    <a href="{% url 'goals:task_detail' item.task.id %}" class="btn btn-details">詳細</a>
+                    <a href="{% url 'goals:complete_task_confirm' item.task.id %}" class="btn btn-complete">完了</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="footer-buttons">
+        <a href="{% url 'goals:add_task' %}" class="btn btn-add">目標を追加</a>
+        <a href="{% url 'goals:goal_setting' %}" class="btn btn-back">戻る</a>
+        <a href="{% url 'home' %}" class="btn btn-home">Home</a>
+    </div>
+</body>
+</html>

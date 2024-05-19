@@ -187,10 +187,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var today = new Date();
-    var currentMonth = today.getMonth(); // 月は0から始まるため、1を加える必要がありますが、後で処理します。
+    var currentMonth = today.getMonth();
     var currentYear = today.getFullYear();
-    var eventDays = {{ event_days|safe }};
-    var taskDays = {{ task_days|safe }};
+    var eventDays = JSON.parse('{{ event_days|escapejs }}');
+    var taskDays = JSON.parse('{{ task_days|escapejs }}');
 
     function showCurrentMonthAndYear(month, year) {
         var months = ["1月", "2月", "3月", "4月", "5月", "6月",
@@ -226,9 +226,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     cell.textContent = date;
                     if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
                         cell.classList.add("bg-info");
-                    }
-                    if (eventDays.includes(date) || taskDays.includes(date)) {
-                        cell.style.backgroundColor = "#1abc9c";  // 色分け
+                    } else {
+                        var hasEvent = eventDays[year] && eventDays[year][month + 1] && eventDays[year][month + 1].includes(date);
+                        var hasTask = taskDays[year] && taskDays[year][month + 1] && taskDays[year][month + 1].includes(date);
+                        if (hasEvent && hasTask) {
+                            cell.style.backgroundColor = "#f39c12"; // イベントとタスクどちらも
+                        } else if (hasEvent) {
+                            cell.style.backgroundColor = "#1abc9c"; // イベントのみ
+                        } else if (hasTask) {
+                            cell.style.backgroundColor = "#3498db"; // タスクのみ
+                        }
                     }
                     cell.addEventListener('click', (function(year, month, day) {
                         return function() {

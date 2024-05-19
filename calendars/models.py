@@ -1,5 +1,5 @@
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 from django.db import models
 
 class Event(models.Model):
@@ -8,6 +8,7 @@ class Event(models.Model):
     deadline = models.DateField(default=timezone.now)
     description = models.TextField()
     is_deleted = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  
 
     def __str__(self):
         return self.title

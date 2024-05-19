@@ -32,12 +32,22 @@
             left: 0;
             z-index: 1000;
         }
-        header a {
-            color: #9b59b6;
+        header a,
+        header button {
+            color: #00ff00;
             margin: 0 20px;
             font-size: 1.5rem;
             text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
         }
+        header a:hover,
+        header button:hover {
+            color: #000;
+            background-color: #00ff00;
+        }
+
         h2 {
             font-size: 3rem;
             text-shadow: 0 0 10px #ff1493, 0 0 20px #ff1493, 0 0 30px #ff1493, 0 0 40px #ff1493, 0 0 50px #ff1493;
@@ -113,7 +123,10 @@
         <a href="{% url 'calendars:calendar_view' %}" class="calendar-link">カレンダー</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="centered-content">
         <h2>価値観 編集</h2>

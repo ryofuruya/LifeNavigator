@@ -31,15 +31,22 @@
         left: 0;
         z-index: 1000;
     }
-    header a {
+    header a,
+    header button {
+        color: #00ff00;
         margin: 0 20px;
         font-size: 1.5rem;
         text-decoration: none;
-        transition: color 0.3s, background-color 0.3s;
+        background: none;
+        border: none;
+        cursor: pointer;
     }
-    header a:hover {
+    header a:hover,
+    header button:hover {
         color: #000;
+        background-color: #00ff00;
     }
+
     .goal-setting-link { color: #9b59b6 !important; }
     .accountbook-link { color: #1abc9c !important; }
     .calendar-link { color: #f39c12 !important; }
@@ -152,7 +159,10 @@
         <a href="{% url 'values:value_list' %}" class="values-link">価値観</a>
         <a href="{% url 'memos:memo_list' %}" class="memo-link">メモ</a>
         <a href="{% url 'accounts:user_detail' request.user.pk %}" class="user-info-link">ユーザー情報</a>
-        <a href="{% url 'logout' %}" class="logout-link">ログアウト</a>
+        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="logout-link">ログアウト</button>
+        </form>
     </header>
     <div class="buttons-container">
         <h2>Monthly Tasks</h2>
@@ -165,10 +175,10 @@
                         <span class="task-title">{{ task.title }}</span> - <span class="task-priority">優先度:{{ task.priority }}</span> - <span class="task-priority">期日:{{ task.deadline }}</span> - <span class="task-priority">MEMO:{{ task.description }}</span>
                     </span>
                     <div class="task-actions">
-                        <form action="{% url 'tasks:update_task_status' task.id %}" method="post" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn complete-btn">完了</button>
-                        </form>
+                        <!-- 完了ボタン -->
+                    <form action="{% url 'tasks:monthly_task_complete_confirm' task.id %}" method="get" style="display: inline;">
+                        <button type="submit" class="btn complete-btn">完了</button>
+                    </form>
                         <a href="{% url 'tasks:monthly_task_detail' task.id %}" class="btn details-btn">詳細</a>
                     </div>
                 </div>
